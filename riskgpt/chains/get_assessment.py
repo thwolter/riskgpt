@@ -25,6 +25,6 @@ def get_assessment_chain(request: AssessmentRequest) -> AssessmentResponse:
     inputs["domain_section"] = (
         f"Domain knowledge: {request.domain_knowledge}" if request.domain_knowledge else ""
     )
-    inputs["system_prompt"] = system_prompt
 
+    inputs["system_prompt"] = system_prompt
     return chain.invoke(inputs)

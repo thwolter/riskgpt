@@ -2,6 +2,7 @@ version: "v1"
 description: "Assess the impact and probability of a risk."
 template: |
   {system_prompt}
+
   Risk description: {risk_description}
   {domain_section}
 
