@@ -22,3 +22,29 @@ class CategoryResponse(BaseModel):
     categories: List[str]
     rationale: Optional[str]
     response_info: Optional[ResponseInfo] = None
+
+
+class RiskRequest(BaseModel):
+    """Input model for risk identification."""
+
+    project_id: str
+    project_description: str
+    category: str
+    domain_knowledge: Optional[str] = None
+    language: Optional[str] = "en"
+
+
+class Risk(BaseModel):
+    """Representation of a single risk."""
+
+    title: str
+    description: str
+    category: str
+
+
+class RiskResponse(BaseModel):
+    """Output model for identified risks."""
+
+    risks: List[Risk]
+    references: Optional[List[str]] = None
+    response_info: Optional[ResponseInfo] = None
