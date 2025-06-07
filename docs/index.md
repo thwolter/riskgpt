@@ -25,3 +25,7 @@ RiskGPT is a Python package for analyzing project-related risks and opportunitie
 Use `riskgpt.configure_logging()` to enable basic logging. Token usage is logged
 at the INFO level whenever a chain is executed.
 
+For information on environment variables and configuration see the
+[Environment Variables](../README.md#environment-variables) section in the
+README.
+
