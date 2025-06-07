@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-from typing import List, Optional
+from typing import List, Optional, Dict
 
 
 class Prompt(BaseModel):
@@ -13,6 +13,15 @@ class ResponseInfo(BaseModel):
     total_cost: float
     prompt_name: str
     model_name: str
+
+
+class Dist(BaseModel):
+    """Generic distribution model."""
+
+    name: str
+    parameters: Optional[Dict[str, float]] = None
+    source: Optional[str] = None
+    correlation_tag: Optional[str] = None
 
 
 class CategoryRequest(BaseModel):
@@ -67,6 +76,7 @@ class DefinitionCheckResponse(BaseModel):
     """Output model for a revised risk definition."""
 
     revised_description: str
+    biases: Optional[List[str]] = None
     rationale: Optional[str] = None
     response_info: Optional[ResponseInfo] = None
 
@@ -104,6 +114,7 @@ class AssessmentResponse(BaseModel):
     most_likely: Optional[float] = None
     maximum: Optional[float] = None
     distribution: Optional[str] = None
+    distribution_fit: Optional[Dist] = None
     impact: Optional[float] = None
     probability: Optional[float] = None
     evidence: Optional[str] = None
@@ -201,5 +212,35 @@ class CommunicationRequest(BaseModel):
 
 
 class CommunicationResponse(BaseModel):
-    report: str
+    executive_summary: str
+    technical_annex: Optional[str] = None
+    response_info: Optional[ResponseInfo] = None
+
+
+class BiasCheckRequest(BaseModel):
+    """Input for checking risk description biases."""
+
+    risk_description: str
+    language: Optional[str] = "en"
+
+
+class BiasCheckResponse(BaseModel):
+    biases: List[str]
+    suggestions: Optional[str] = None
+    response_info: Optional[ResponseInfo] = None
+
+
+class CorrelationTagRequest(BaseModel):
+    """Input model for defining correlation tags."""
+
+    project_description: str
+    risk_titles: List[str]
+    known_drivers: Optional[List[str]] = None
+    domain_knowledge: Optional[str] = None
+    language: Optional[str] = "en"
+
+
+class CorrelationTagResponse(BaseModel):
+    tags: List[str]
+    rationale: Optional[str] = None
     response_info: Optional[ResponseInfo] = None

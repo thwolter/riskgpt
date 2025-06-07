@@ -1,13 +1,13 @@
 version: "v1"
-description: "Generate summaries for stakeholders."
+description: "Suggest correlation tags for risks."
 template: |
   {system_prompt}
-  Summary: {summary}
+  Project description: {project_description}
+  Risk titles: {risk_titles}
+  Known drivers: {known_drivers}
   {domain_section}
 
-  Write two sections:
-  1. Executive summary in plain English for board members (≤150 words).
-  2. Technical annex for analysts with detailed reasoning.
+  Provide short correlation tags that group related risks for modelling purposes.
   Respond in the following language: {language}
 
   {format_instructions}
