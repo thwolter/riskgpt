@@ -9,3 +9,6 @@ configure_logging()
 
 See the `docs/` directory for details.
 
+An example Jupyter notebook is available in `notebooks/playground.ipynb` for an
+interactive playground.
+
