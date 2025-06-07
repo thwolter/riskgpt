@@ -1,7 +1,12 @@
+import logging
+
 from langchain.chains import LLMChain
 from langchain_core.output_parsers import PydanticOutputParser
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_openai import ChatOpenAI
+
+
+logger = logging.getLogger(__name__)
 
 from langchain_community.callbacks import get_openai_callback
 from riskgpt.utils.prompt_loader import load_prompt
@@ -42,6 +47,12 @@ def get_categories_chain(request: CategoryRequest) -> CategoryResponse:
             consumed_tokens=cb.total_tokens,
             total_cost=cb.total_cost,
             prompt_name="get_categories",
-            model_name=settings.OPENAI_MODEL_NAME
+            model_name=settings.OPENAI_MODEL_NAME,
+        )
+        logger.info(
+            "Prompt '%s' consumed %s tokens (cost %.6f USD)",
+            result.response_info.prompt_name,
+            result.response_info.consumed_tokens,
+            result.response_info.total_cost,
         )
     return result
