@@ -17,6 +17,9 @@ def test_prepare_presentation_executive():
     resp = prepare_presentation_output(request)
     assert resp.executive_summary
     assert isinstance(resp.main_risks, list)
+    assert resp.key_drivers is not None
+    assert resp.mitigations is not None
+    assert resp.response_info is not None
 
 
 def test_prepare_presentation_workshop():
@@ -29,4 +32,6 @@ def test_prepare_presentation_workshop():
     )
     resp = prepare_presentation_output(request)
     assert resp.mitigations is not None
+    assert resp.key_drivers is not None
+    assert resp.response_info is not None
 
