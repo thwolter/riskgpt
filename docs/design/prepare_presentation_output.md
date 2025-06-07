@@ -25,11 +25,9 @@ print(result.executive_summary)
 ```mermaid
 flowchart TD
     A[Identify Risks] --> B[Assess Risks]
-    B -->|executive| E[Correlation Tags]
-    B -->|workshop| C[Identify Drivers]
+    B --> C[Identify Drivers]
     C --> D[Mitigations]
-    C --> E
-    D --> E
+    D --> E[Correlation Tags]
     E --> F[Summary]
 ```
 
