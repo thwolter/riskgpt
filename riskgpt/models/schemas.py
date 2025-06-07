@@ -244,3 +244,28 @@ class CorrelationTagResponse(BaseModel):
     tags: List[str]
     rationale: Optional[str] = None
     response_info: Optional[ResponseInfo] = None
+
+
+class PresentationRequest(BaseModel):
+    """Input model for presentation-oriented summaries."""
+
+    project_id: str
+    project_description: str
+    audience: str
+    focus_areas: Optional[List[str]] = None
+    language: Optional[str] = "en"
+
+
+class PresentationResponse(BaseModel):
+    """Structured output for presentation-ready summaries."""
+
+    executive_summary: str
+    main_risks: List[str]
+    quantitative_summary: Optional[str] = None
+    key_drivers: Optional[List[str]] = None
+    correlation_tags: Optional[List[str]] = None
+    mitigations: Optional[List[str]] = None
+    open_questions: Optional[List[str]] = None
+    chart_placeholders: Optional[List[str]] = None
+    appendix: Optional[str] = None
+    response_info: Optional[ResponseInfo] = None
