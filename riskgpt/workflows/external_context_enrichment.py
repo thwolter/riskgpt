@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Tuple
 
 from riskgpt.logger import logger
 from riskgpt.models.schemas import (
@@ -21,12 +21,12 @@ except Exception:  # pragma: no cover - optional dependency
     DuckDuckGoSearchAPIWrapper = None
 
 
-def _search(query: str, source_type: str) -> List[Dict[str, str]]:
+def _search(query: str, source_type: str) -> Tuple[List[Dict[str, str]], bool]:
     """Perform a DuckDuckGo search and format results."""
     results: List[Dict[str, str]] = []
     if DuckDuckGoSearchAPIWrapper is None:
         logger.warning("duckduckgo-search not available")
-        return results
+        return results, False
     try:
         wrapper = DuckDuckGoSearchAPIWrapper()
         for item in wrapper.results(query, max_results=3):
@@ -41,7 +41,8 @@ def _search(query: str, source_type: str) -> List[Dict[str, str]]:
             )
     except Exception as exc:  # pragma: no cover - search failure should not crash
         logger.error("Search failed: %s", exc)
-    return results
+        return results, False
+    return results, True
 
 
 def _build_graph(request: ExternalContextRequest):
@@ -54,28 +55,43 @@ def _build_graph(request: ExternalContextRequest):
         query = f"{request.project_name} {request.business_context} news"
         if request.focus_keywords:
             query += " " + " ".join(request.focus_keywords)
-        state.setdefault("sources", []).extend(_search(query, "news"))
+        res, ok = _search(query, "news")
+        state.setdefault("sources", []).extend(res)
+        if not ok:
+            state["search_failed"] = True
         return state
 
     def professional_search(state: Dict[str, Any]) -> Dict[str, Any]:
         query = f"{request.project_name} {request.business_context} LinkedIn"
-        state.setdefault("sources", []).extend(_search(query, "social"))
+        res, ok = _search(query, "social")
+        state.setdefault("sources", []).extend(res)
+        if not ok:
+            state["search_failed"] = True
         return state
 
     def regulatory_search(state: Dict[str, Any]) -> Dict[str, Any]:
         query = f"{request.business_context} regulation"
-        state.setdefault("sources", []).extend(_search(query, "regulation"))
+        res, ok = _search(query, "regulation")
+        state.setdefault("sources", []).extend(res)
+        if not ok:
+            state["search_failed"] = True
         return state
 
     def peer_search(state: Dict[str, Any]) -> Dict[str, Any]:
         query = f"{request.business_context} competitor incident"
-        state.setdefault("sources", []).extend(_search(query, "peer"))
+        res, ok = _search(query, "peer")
+        state.setdefault("sources", []).extend(res)
+        if not ok:
+            state["search_failed"] = True
         return state
 
     def summarise(state: Dict[str, Any]) -> Dict[str, Any]:
         sources = state.get("sources", [])
         if not sources:
-            summary = "No recent relevant information found"
+            if state.get("search_failed"):
+                summary = "No external data retrieved due to network restrictions or missing dependencies"
+            else:
+                summary = "No recent relevant information found"
             risks: List[str] = []
             recs: List[str] = []
         else:

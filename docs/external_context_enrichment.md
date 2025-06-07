@@ -2,6 +2,9 @@
 
 The `external_context_enrichment` workflow collects recent external information about a project or sector and provides a short summary for workshop preparation.
 
+**Note**: The workflow relies on live DuckDuckGo searches. If network access is
+restricted the search steps will fail and the response may be empty.
+
 ## Input
 
 `ExternalContextRequest`
