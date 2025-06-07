@@ -29,3 +29,29 @@ def prioritize_risks_chain(request: PrioritizationRequest) -> PrioritizationResp
     inputs["system_prompt"] = system_prompt
 
     return chain.invoke(inputs)
+
+
+async def async_prioritize_risks_chain(
+    request: PrioritizationRequest,
+) -> PrioritizationResponse:
+    """Asynchronous wrapper around :func:`prioritize_risks_chain`."""
+    settings = RiskGPTSettings()
+    prompt_data = load_prompt("prioritize_risks")
+    system_prompt = load_system_prompt()
+
+    parser = PydanticOutputParser(pydantic_object=PrioritizationResponse)
+    chain = BaseChain(
+        prompt_template=prompt_data["template"],
+        parser=parser,
+        settings=settings,
+        prompt_name="prioritize_risks",
+    )
+
+    inputs = request.model_dump()
+    inputs["risks"] = ", ".join(request.risks)
+    inputs["domain_section"] = (
+        f"Domain knowledge: {request.domain_knowledge}" if request.domain_knowledge else ""
+    )
+    inputs["system_prompt"] = system_prompt
+
+    return await chain.invoke_async(inputs)

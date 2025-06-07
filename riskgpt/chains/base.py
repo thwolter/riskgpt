@@ -82,3 +82,23 @@ class BaseChain:
                 self.settings.OPENAI_MODEL_NAME,
             )
         return result
+
+    async def invoke_async(self, inputs: Dict[str, Any]):
+        """Asynchronously invoke the underlying chain."""
+        with get_openai_callback() as cb:
+            result = await self.chain.ainvoke(inputs, memory=self.memory)
+            if hasattr(result, "response_info"):
+                result.response_info = ResponseInfo(
+                    consumed_tokens=cb.total_tokens,
+                    total_cost=cb.total_cost,
+                    prompt_name=self.prompt_name,
+                    model_name=self.settings.OPENAI_MODEL_NAME,
+                )
+            logger.info(
+                "Consumed %s tokens (%.4f USD) for '%s' using %s",
+                cb.total_tokens,
+                cb.total_cost,
+                self.prompt_name or "prompt",
+                self.settings.OPENAI_MODEL_NAME,
+            )
+        return result
