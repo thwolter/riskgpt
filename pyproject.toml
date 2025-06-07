@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "riskgpt"
-version = "0.1.1"
+version = "0.1.2"
 description = "Analyze project risks and opportunities using AI"
 readme = "README.md"
 license = "MIT"
@@ -10,6 +10,11 @@ classifiers = [
     "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent",
 ]
+
+[tool.poetry.urls]
+"Documentation" = "https://thwolter.github.io/riskgpt/"
+"Source" = "https://github.com/thwolter/riskgpt.git"
+"Tracker" = "https://github.com/thwolter/riskgpt/issues"
 
 [tool.poetry.dependencies]
 python = "^3.12"

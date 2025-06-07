@@ -1,5 +1,15 @@
 # RiskGPT
 
+
+[![PyPI version](https://badge.fury.io/py/riskgpt.svg)](https://pypi.org/project/riskgpt/)
+[![PyPI](https://img.shields.io/pypi/v/riskgpt)](https://pypi.org/project/riskgpt/)
+[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+[![Linted by Ruff](https://img.shields.io/badge/lint-ruff-green.svg)](https://docs.astral.sh/ruff/)
+[![Checked with mypy](https://img.shields.io/badge/type%20checked-mypy-blue.svg)](http://mypy-lang.org/)
+[![pre-commit](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit&logoColor=white)](https://pre-commit.com/)
+[![License: MIT](https://img.shields.io/pypi/l/riskgpt.svg)](https://github.com/<USER_OR_ORG>/riskgpt/blob/main/LICENSE)
+[![Python](https://img.shields.io/pypi/pyversions/riskgpt)](https://pypi.org/project/riskgpt/)
+
 RiskGPT provides utilities for analysing project risks and opportunities using LLM based chains. The package is available on PyPI.
 
 ```python

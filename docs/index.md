@@ -2,6 +2,23 @@
 
 RiskGPT is a Python package for analyzing project-related risks and opportunities using LLM-based chains.
 
+[![PyPI](https://img.shields.io/pypi/v/riskgpt)](https://pypi.org/project/riskgpt/)
+[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+[![Linted by Ruff](https://img.shields.io/badge/lint-ruff-green.svg)](https://docs.astral.sh/ruff/)
+[![Checked with mypy](https://img.shields.io/badge/type%20checked-mypy-blue.svg)](http://mypy-lang.org/)
+[![pre-commit](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit&logoColor=white)](https://pre-commit.com/)
+[![License: MIT](https://img.shields.io/pypi/l/riskgpt.svg)](https://github.com/thwolter/riskgpt/blob/main/LICENSE)
+[![Python](https://img.shields.io/pypi/pyversions/riskgpt)](https://pypi.org/project/riskgpt/)
+
+---
+
+## Installation
+
+Install the latest release from [PyPI](https://pypi.org/project/riskgpt/):
+```bash
+pip install riskgpt
+```
+
 ## Features
 
 - Extract risk categories from project descriptions
