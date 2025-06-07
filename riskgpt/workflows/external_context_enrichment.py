@@ -34,7 +34,7 @@ def _search(query: str, source_type: str) -> Tuple[List[Dict[str, str]], bool]:
                 {
                     "title": item.get("title", ""),
                     "url": item.get("link", ""),
-                    "date": item.get("date"),
+                    "date": item.get("date") or "",
                     "type": source_type,
                     "comment": item.get("snippet", ""),
                 }
@@ -95,7 +95,9 @@ def _build_graph(request: ExternalContextRequest):
             risks: List[str] = []
             recs: List[str] = []
         else:
-            summary = f"Collected {len(sources)} external sources for {request.project_name}."
+            summary = (
+                f"Collected {len(sources)} external sources for {request.project_name}."
+            )
             risks = [f"Potential issue: {s['title']}" for s in sources[:3]]
             recs = [f"Review source: {s['title']}" for s in sources[:2]]
         resp = ExternalContextResponse(
@@ -130,7 +132,9 @@ def _build_graph(request: ExternalContextRequest):
     return graph.compile()
 
 
-def external_context_enrichment(request: ExternalContextRequest) -> ExternalContextResponse:
+def external_context_enrichment(
+    request: ExternalContextRequest,
+) -> ExternalContextResponse:
     """Run the external context enrichment workflow."""
 
     app = _build_graph(request)

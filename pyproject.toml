@@ -25,6 +25,7 @@ langchain-community = "^0.3.24"
 notebook = "^7.4.3"
 langchain-core = "^0.3.64"
 langgraph = "^0.4.8"
+duckduckgo-search = "^8.0.2"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.4.0"
