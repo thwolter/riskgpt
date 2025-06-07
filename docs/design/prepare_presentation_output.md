@@ -2,18 +2,19 @@
 
 The `prepare_presentation_output` workflow orchestrates existing chains with
 [LangGraph](https://github.com/langchain-ai/langgraph) to create a structured
-summary for slides or workshops.
+summary for slides or workshops. Output formatting differs per audience as
+described in [Audience Output Matrix](audience_output.md).
 
 ## Usage
 
 ```python
 from riskgpt.workflows import prepare_presentation_output
-from riskgpt.models.schemas import PresentationRequest
+from riskgpt.models.schemas import PresentationRequest, AudienceEnum
 
 req = PresentationRequest(
     project_id="p42",
     project_description="Introduce a new CRM system",
-    audience="executive",
+    audience=AudienceEnum.executive,
     focus_areas=["Technical"],
 )
 result = prepare_presentation_output(req)

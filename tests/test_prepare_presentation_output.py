@@ -3,14 +3,14 @@ import pytest
 pytest.importorskip("langgraph")
 
 from riskgpt.workflows import prepare_presentation_output
-from riskgpt.models.schemas import PresentationRequest
+from riskgpt.models.schemas import PresentationRequest, AudienceEnum
 
 
 def test_prepare_presentation_executive():
     request = PresentationRequest(
         project_id="p1",
         project_description="CRM rollout",
-        audience="executive",
+        audience=AudienceEnum.executive,
         focus_areas=["Technical"],
         language="en",
     )
@@ -26,7 +26,7 @@ def test_prepare_presentation_workshop():
     request = PresentationRequest(
         project_id="p2",
         project_description="ERP migration",
-        audience="workshop",
+        audience=AudienceEnum.workshop,
         focus_areas=["Technical"],
         language="en",
     )
