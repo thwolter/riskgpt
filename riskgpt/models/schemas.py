@@ -283,3 +283,34 @@ class PresentationResponse(BaseModel):
     chart_placeholders: Optional[List[str]] = None
     appendix: Optional[str] = None
     response_info: Optional[ResponseInfo] = None
+
+
+class SourceEntry(BaseModel):
+    """Structured reference to an external source."""
+
+    title: str
+    url: str
+    date: Optional[str] = None
+    type: Optional[str] = None
+    comment: Optional[str] = None
+
+
+class ExternalContextRequest(BaseModel):
+    """Input model for external context enrichment."""
+
+    project_name: str
+    business_context: str
+    focus_keywords: Optional[List[str]] = None
+    time_horizon_months: Optional[int] = 12
+    language: Optional[str] = "en"
+
+
+class ExternalContextResponse(BaseModel):
+    """Output model containing summarised external information."""
+
+    sector_summary: str
+    external_risks: List[str]
+    source_table: List[Dict[str, str]]
+    workshop_recommendations: List[str]
+    full_report: Optional[str] = None
+    response_info: Optional[ResponseInfo] = None
