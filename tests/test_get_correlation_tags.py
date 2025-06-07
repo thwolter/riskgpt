@@ -1,8 +1,5 @@
-import pytest
 
-pytest.importorskip("langchain")
-pytest.importorskip("langchain_openai")
-pytest.importorskip("langchain_community")
+
 
 from riskgpt.chains.get_correlation_tags import get_correlation_tags_chain
 from riskgpt.models.schemas import CorrelationTagRequest

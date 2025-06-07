@@ -4,7 +4,6 @@ import types
 
 import pytest
 
-pytest.importorskip("pydantic")
 from riskgpt.processors.input_validator import (
     validate_assessment_request,
     validate_category_request,

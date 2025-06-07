@@ -1,8 +1,4 @@
-import pytest
 
-pytest.importorskip("langchain")
-pytest.importorskip("langchain_openai")
-pytest.importorskip("langchain_community")
 
 from riskgpt.chains.get_risks import get_risks_chain
 from riskgpt.models.schemas import RiskRequest

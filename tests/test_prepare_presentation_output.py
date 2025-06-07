@@ -1,7 +1,3 @@
-import pytest
-
-pytest.importorskip("langgraph")
-
 from riskgpt.models.schemas import AudienceEnum, PresentationRequest
 from riskgpt.workflows import prepare_presentation_output
 

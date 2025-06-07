@@ -2,12 +2,6 @@ import asyncio
 import logging
 from types import SimpleNamespace
 
-import pytest
-
-pytest.importorskip("langchain")
-pytest.importorskip("langchain_openai")
-pytest.importorskip("langchain_community")
-
 from langchain_core.output_parsers import BaseOutputParser
 
 from riskgpt.chains.base import BaseChain

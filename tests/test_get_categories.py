@@ -1,8 +1,5 @@
-import pytest
 
-pytest.importorskip("langchain")
-pytest.importorskip("langchain_openai")
-pytest.importorskip("langchain_community")
+
 
 from riskgpt.chains.get_categories import get_categories_chain
 from riskgpt.models.schemas import CategoryRequest
