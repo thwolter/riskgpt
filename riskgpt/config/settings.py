@@ -12,7 +12,7 @@ class RiskGPTSettings(BaseSettings):
     REDIS_URL: Optional[str] = None
     OPENAI_API_KEY: Optional[SecretStr] = None
     TEMPERATURE: float = Field(default=0.7, ge=0.0, le=1.0)
-    OPENAI_MODEL_NAME: str = Field(default="gpt-4.1-mini")
+    OPENAI_MODEL_NAME: str = Field(default="gpt-4.1-nano")
     DEFAULT_PROMPT_VERSION: str = Field(default="v1")
 
     @field_validator("MEMORY_TYPE")
