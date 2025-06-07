@@ -1,9 +1,5 @@
 import importlib
 
-import pytest
-
-pytest.importorskip("langchain")
-
 from riskgpt.registry.chain_registry import available, get
 
 # Import chains package to trigger registration via decorators

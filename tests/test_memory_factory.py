@@ -2,12 +2,9 @@ import pathlib
 import sys
 
 import pytest
-
-pytest.importorskip("pydantic")
 from pydantic import ValidationError
 
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parents[1]))
-pytest.importorskip("langchain")
 
 from langchain.memory import ConversationBufferMemory
 
