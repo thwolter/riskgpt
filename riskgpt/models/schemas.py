@@ -1,6 +1,11 @@
 from pydantic import BaseModel
 from typing import List, Optional
 
+class Prompt(BaseModel):
+    version: str
+    description: str
+    template: str
+
 class ResponseInfo(BaseModel):
     consumed_tokens: int
     total_cost: float

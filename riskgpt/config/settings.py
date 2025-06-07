@@ -12,4 +12,5 @@ class RiskGPTSettings(BaseSettings):
     OPENAI_API_KEY: Optional[str] = None
     TEMPERATURE: float = Field(default=0.7, ge=0.0, le=1.0)
     OPENAI_MODEL_NAME: str = Field(default="gpt-4.1-mini")
+    DEFAULT_PROMPT_VERSION: str = Field(default="v1")
 
