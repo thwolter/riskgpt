@@ -10,7 +10,7 @@ from .base import BaseChain
 @register("get_categories")
 def get_categories_chain(request: CategoryRequest) -> CategoryResponse:
     settings = RiskGPTSettings()
-    prompt_data = load_prompt("get_categories", version="v1")
+    prompt_data = load_prompt("get_categories")
 
     parser = PydanticOutputParser(pydantic_object=CategoryResponse)
     chain = BaseChain(

@@ -36,9 +36,26 @@ def test_load_prompt(monkeypatch):
     monkeypatch.setitem(sys.modules, "yaml", yaml_stub)
 
     prompt_loader = importlib.reload(importlib.import_module("riskgpt.utils.prompt_loader"))
-    data = prompt_loader.load_prompt("get_categories", "v1")
+    data = prompt_loader.load_prompt("get_categories")
     assert data["version"] == "v1"
     assert "You are a risk analyst." in data["template"]
+
+
+def test_load_prompt_default_version(monkeypatch, tmp_path):
+    prompts_dir = tmp_path / "prompts" / "foo"
+    prompts_dir.mkdir(parents=True)
+    file = prompts_dir / "v2.yaml"
+    file.write_text('version: "v2"\ndescription: "d"\ntemplate: |\n  test')
+
+    import importlib
+    from riskgpt.utils import prompt_loader
+
+    monkeypatch.setattr(prompt_loader, "PROMPT_DIR", tmp_path / "prompts")
+    monkeypatch.setenv("DEFAULT_PROMPT_VERSION", "v2")
+    importlib.reload(prompt_loader)
+
+    data = prompt_loader.load_prompt("foo")
+    assert data["version"] == "v2"
 
 
 def test_validate_category_request_valid():
