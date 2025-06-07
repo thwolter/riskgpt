@@ -5,6 +5,7 @@ from typing import Any, Dict, Optional
 from langchain_core.output_parsers import BaseOutputParser
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_openai import ChatOpenAI
+from langchain_community.llms import FakeListLLM
 from langchain_community.callbacks import get_openai_callback
 from riskgpt.logger import logger
 
@@ -33,11 +34,27 @@ class BaseChain:
             partial_variables=self._partial_variables(),
         )
 
-        self.model = ChatOpenAI(
-            api_key=self.settings.OPENAI_API_KEY,
-            temperature=self.settings.TEMPERATURE,
-            model=self.settings.OPENAI_MODEL_NAME,
-        )
+        if self.settings.OPENAI_API_KEY:
+            self.model = ChatOpenAI(
+                api_key=self.settings.OPENAI_API_KEY,
+                temperature=self.settings.TEMPERATURE,
+                model=self.settings.OPENAI_MODEL_NAME,
+            )
+        else:
+            if hasattr(self.parser, "pydantic_object"):
+                data = {}
+                for name, field in self.parser.pydantic_object.model_fields.items():
+                    ann = getattr(field.annotation, "__origin__", field.annotation)
+                    if ann is list:
+                        data[name] = []
+                    elif ann in (int, float):
+                        data[name] = 0
+                    else:
+                        data[name] = None
+                dummy = self.parser.pydantic_object.model_construct(**data)
+                self.model = FakeListLLM(responses=[dummy.model_dump_json()])
+            else:
+                self.model = FakeListLLM(responses=["{}"])
 
         self.memory = get_memory(self.settings)
         self.chain = self.prompt | self.model | self.parser

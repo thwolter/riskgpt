@@ -1,0 +1,14 @@
+version: "v1"
+description: "Suggest mitigation measures based on identified risk drivers."
+template: |
+  You are a risk analyst.
+  Risk description: {risk_description}
+  {drivers_section}
+  {domain_section}
+
+  Propose mitigation measures addressing the identified drivers.
+  Provide references in Harvard style where useful.
+  Respond in the following language: {language}
+
+  {format_instructions}
+  Output the result as a JSON object that conforms to the schema above and do not include any additional text

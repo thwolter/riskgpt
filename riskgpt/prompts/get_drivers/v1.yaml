@@ -1,0 +1,13 @@
+version: "v1"
+description: "Identify key risk drivers for a given risk."
+template: |
+  You are a risk analyst.
+  Risk description: {risk_description}
+  {domain_section}
+
+  List the main drivers that could increase the likelihood or impact of this risk.
+  Support your answer with references to studies or academic papers in Harvard style.
+  Respond in the following language: {language}
+
+  {format_instructions}
+  Output the result as a JSON object that conforms to the schema above and do not include any additional text

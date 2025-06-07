@@ -1,0 +1,13 @@
+version: "v1"
+description: "Check and revise a risk definition using the event-cause-consequence structure."
+template: |
+  You are a risk analyst.
+  Provided risk definition: {risk_description}
+  {domain_section}
+
+  Evaluate whether the definition follows the event, cause, consequence logic.
+  Rewrite it if necessary so that it clearly states the event, its cause and the consequence.
+  Respond in the following language: {language}
+
+  {format_instructions}
+  Output the result as a JSON object that conforms to the schema above and do not include any additional text
