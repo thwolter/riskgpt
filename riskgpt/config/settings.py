@@ -1,4 +1,4 @@
-from pydantic import Field
+from pydantic import Field, SecretStr
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from typing import Optional
 from pydantic import field_validator
@@ -10,7 +10,7 @@ class RiskGPTSettings(BaseSettings):
 
     MEMORY_TYPE: str = Field(default="buffer")
     REDIS_URL: Optional[str] = None
-    OPENAI_API_KEY: Optional[str] = None
+    OPENAI_API_KEY: Optional[SecretStr] = None
     TEMPERATURE: float = Field(default=0.7, ge=0.0, le=1.0)
     OPENAI_MODEL_NAME: str = Field(default="gpt-4.1-mini")
     DEFAULT_PROMPT_VERSION: str = Field(default="v1")
