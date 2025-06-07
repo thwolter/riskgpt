@@ -12,7 +12,9 @@ from riskgpt.models.schemas import (
     DriverRequest,
     CorrelationTagRequest,
     CommunicationRequest,
+    ResponseInfo,
 )
+from riskgpt.config.settings import RiskGPTSettings
 from riskgpt.chains import (
     get_risks_chain,
     get_assessment_chain,
@@ -35,6 +37,9 @@ def _build_graph(request: PresentationRequest):
 
     graph = StateGraph(Dict[str, Any])
 
+    settings = RiskGPTSettings()
+    totals = {"tokens": 0, "cost": 0.0}
+
     def identify_risks(state: Dict[str, Any]) -> Dict[str, Any]:
         category = (request.focus_areas or ["General"])[0]
         logger.info("Identify risks for category '%s'", category)
@@ -46,6 +51,9 @@ def _build_graph(request: PresentationRequest):
                 language=request.language,
             )
         )
+        if res.response_info:
+            totals["tokens"] += res.response_info.consumed_tokens
+            totals["cost"] += res.response_info.total_cost
         state["risks"] = res.risks
         return state
 
@@ -53,15 +61,17 @@ def _build_graph(request: PresentationRequest):
         assessments = []
         for risk in state.get("risks", []):
             logger.info("Assess risk '%s'", risk.title)
-            assessments.append(
-                get_assessment_chain(
-                    AssessmentRequest(
-                        project_id=request.project_id,
-                        risk_description=risk.description,
-                        language=request.language,
-                    )
+            assess = get_assessment_chain(
+                AssessmentRequest(
+                    project_id=request.project_id,
+                    risk_description=risk.description,
+                    language=request.language,
                 )
             )
+            if assess.response_info:
+                totals["tokens"] += assess.response_info.consumed_tokens
+                totals["cost"] += assess.response_info.total_cost
+            assessments.append(assess)
         state["assessments"] = assessments
         return state
 
@@ -76,6 +86,9 @@ def _build_graph(request: PresentationRequest):
                     language=request.language,
                 )
             )
+            if res.response_info:
+                totals["tokens"] += res.response_info.consumed_tokens
+                totals["cost"] += res.response_info.total_cost
             driver_lists.append(res.drivers)
         state["drivers"] = driver_lists
         return state
@@ -92,6 +105,9 @@ def _build_graph(request: PresentationRequest):
                     language=request.language,
                 )
             )
+            if res.response_info:
+                totals["tokens"] += res.response_info.consumed_tokens
+                totals["cost"] += res.response_info.total_cost
             mitigation_lists.append(res.mitigations)
         state["mitigations"] = mitigation_lists
         return state
@@ -108,6 +124,9 @@ def _build_graph(request: PresentationRequest):
                 language=request.language,
             )
         )
+        if res.response_info:
+            totals["tokens"] += res.response_info.consumed_tokens
+            totals["cost"] += res.response_info.total_cost
         state["correlation_tags"] = res.tags
         return state
 
@@ -124,6 +143,9 @@ def _build_graph(request: PresentationRequest):
                 language=request.language,
             )
         )
+        if com.response_info:
+            totals["tokens"] += com.response_info.consumed_tokens
+            totals["cost"] += com.response_info.total_cost
         resp = PresentationResponse(
             executive_summary=com.executive_summary,
             main_risks=[r.title for r in state.get("risks", [])],
@@ -134,6 +156,12 @@ def _build_graph(request: PresentationRequest):
             open_questions=[],
             chart_placeholders=["risk_overview_chart"],
             appendix=com.technical_annex,
+        )
+        resp.response_info = ResponseInfo(
+            consumed_tokens=totals["tokens"],
+            total_cost=totals["cost"],
+            prompt_name="prepare_presentation_output",
+            model_name=settings.OPENAI_MODEL_NAME,
         )
         state["response"] = resp
         return state
@@ -147,17 +175,9 @@ def _build_graph(request: PresentationRequest):
 
     graph.set_entry_point("identify_risks")
     graph.add_edge("identify_risks", "assess_risks")
-
-    if request.audience == "executive":
-        graph.add_edge("assess_risks", "correlation")
-    else:
-        graph.add_edge("assess_risks", "drivers")
-        if request.audience == "workshop":
-            graph.add_edge("drivers", "mitigations")
-            graph.add_edge("mitigations", "correlation")
-        else:
-            graph.add_edge("drivers", "correlation")
-
+    graph.add_edge("assess_risks", "drivers")
+    graph.add_edge("drivers", "mitigations")
+    graph.add_edge("mitigations", "correlation")
     graph.add_edge("correlation", "summary")
     graph.add_edge("summary", END)
 
