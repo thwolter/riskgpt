@@ -7,6 +7,11 @@ class RiskGPTSettings(BaseSettings):
 
     model_config = SettingsConfigDict(env_file='../.env', env_ignore_empty=True, extra='ignore')
 
+    RISKGPT_LOG_LEVEL: Literal["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"] = Field(
+        default="WARNING",
+        description="The logging level for the RiskGPT application.",
+    )
+
     MEMORY_TYPE: Literal["none", "buffer", "redis"] = Field(default="buffer")
     REDIS_URL: Optional[str] = None
     OPENAI_API_KEY: Optional[str] = None

@@ -9,6 +9,4 @@ def test_get_categories_chain():
         language="de"
     )
     response = get_categories_chain(request)
-    print(f"\nTokens consumed: {response.response_info.consumed_tokens}, Cost: {response.response_info.total_cost:.4f} USD")
-    print(response.categories)
     assert isinstance(response.categories, list)

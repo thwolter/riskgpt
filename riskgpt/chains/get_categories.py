@@ -49,10 +49,4 @@ def get_categories_chain(request: CategoryRequest) -> CategoryResponse:
             prompt_name="get_categories",
             model_name=settings.OPENAI_MODEL_NAME,
         )
-        logger.info(
-            "Prompt '%s' consumed %s tokens (cost %.6f USD)",
-            result.response_info.prompt_name,
-            result.response_info.consumed_tokens,
-            result.response_info.total_cost,
-        )
     return result
