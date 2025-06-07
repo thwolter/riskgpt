@@ -177,10 +177,9 @@ def _build_graph(request: PresentationRequest):
             executive_summary=com.executive_summary,
             main_risks=[r.title for r in state.get("risks", [])],
             quantitative_summary=text,
-            key_drivers=[d for lst in state.get("drivers", []) for d in lst] or None,
+            key_drivers=[d for lst in state.get("drivers", []) for d in lst],
             correlation_tags=state.get("correlation_tags"),
-            mitigations=[m for lst in state.get("mitigations", []) for m in lst]
-            or None,
+            mitigations=[m for lst in state.get("mitigations", []) for m in lst],
             open_questions=[],
             chart_placeholders=["risk_overview_chart"],
             appendix=com.technical_annex,
