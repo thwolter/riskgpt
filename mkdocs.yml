@@ -1,0 +1,10 @@
+site_name: RiskGPT
+theme:
+  name: material
+nav:
+  - Home: index.md
+markdown_extensions:
+  - toc:
+      permalink: true
+  - admonition
+  - codehilite

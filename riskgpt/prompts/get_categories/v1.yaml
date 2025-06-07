@@ -1,0 +1,14 @@
+version: "v1"
+description: "Identify risk categories for a given project."
+template: |
+  You are a risk analyst.
+  Project description: {project_description}
+  {domain_section}
+
+  Please identify the relevant risk categories for this project.
+  Briefly explain each category.
+  Respond in the following language: {language}
+  
+  {format_instructions}
+  Output the result as a JSON object that conforms to the schema above and do not include any additional text
+
