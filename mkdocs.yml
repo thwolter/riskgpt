@@ -3,6 +3,8 @@ theme:
   name: material
 nav:
   - Home: index.md
+  - Chains:
+      - Get Categories: get_categories.md
 markdown_extensions:
   - toc:
       permalink: true
