@@ -1,8 +1,15 @@
 [tool.poetry]
 name = "riskgpt"
 version = "0.1.0"
-description = "Analyse von Projektrisiken und -chancen mit KI"
+description = "Analyze project risks and opportunities using AI"
+readme = "README.md"
+license = "MIT"
 authors = ["Thomas Wolter <thwolter@gmail.com>"]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
 
 [tool.poetry.dependencies]
 python = "^3.12"
