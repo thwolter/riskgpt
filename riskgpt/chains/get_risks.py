@@ -9,7 +9,6 @@ from .base import BaseChain
 
 @register("get_risks")
 def get_risks_chain(request: RiskRequest) -> RiskResponse:
-    """Identify risks for a given category."""
     settings = RiskGPTSettings()
     prompt_data = load_prompt("get_risks")
 

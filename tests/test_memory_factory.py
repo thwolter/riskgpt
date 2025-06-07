@@ -1,6 +1,7 @@
 import pathlib
 import sys
 import pytest
+from pydantic import ValidationError
 
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parents[1]))
 pytest.importorskip("langchain")
@@ -16,9 +17,10 @@ def test_get_memory_buffer():
 
 
 def test_get_memory_unknown():
-    with pytest.raises(ValueError) as exc:
+    with pytest.raises(ValidationError) as exc_info:
         get_memory(RiskGPTSettings(MEMORY_TYPE="unknown"))
-    assert "Unsupported memory type" in str(exc.value)
+    assert "MEMORY_TYPE" in str(exc_info.value)
+    assert "Input should be 'none', 'buffer' or 'redis'" in str(exc_info.value)
 
 
 def test_register_new_backend():
