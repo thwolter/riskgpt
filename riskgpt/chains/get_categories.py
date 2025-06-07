@@ -8,8 +8,10 @@ from riskgpt.utils.prompt_loader import load_prompt
 from riskgpt.utils.memory_factory import get_memory
 from riskgpt.config.settings import RiskGPTSettings
 from riskgpt.models.schemas import CategoryRequest, CategoryResponse, ResponseInfo
+from riskgpt.registry.chain_registry import register
 
 
+@register("get_categories")
 def get_categories_chain(request: CategoryRequest) -> CategoryResponse:
     settings = RiskGPTSettings()
     prompt_data = load_prompt("get_categories", version="v1")
