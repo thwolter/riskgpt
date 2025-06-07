@@ -6,6 +6,7 @@ from langchain_core.output_parsers import BaseOutputParser
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_openai import ChatOpenAI
 from langchain_community.callbacks import get_openai_callback
+from riskgpt.logger import logger
 
 from riskgpt.config.settings import RiskGPTSettings
 from riskgpt.utils.memory_factory import get_memory
@@ -56,4 +57,11 @@ class BaseChain:
                     prompt_name=self.prompt_name,
                     model_name=self.settings.OPENAI_MODEL_NAME,
                 )
+            logger.info(
+                "Consumed %s tokens (%.4f USD) for '%s' using %s",
+                cb.total_tokens,
+                cb.total_cost,
+                self.prompt_name or "prompt",
+                self.settings.OPENAI_MODEL_NAME,
+            )
         return result
