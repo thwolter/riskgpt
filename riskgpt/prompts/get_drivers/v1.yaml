@@ -1,7 +1,8 @@
 version: "v1"
 description: "Identify key risk drivers for a given risk."
+
 template: |
-  You are a risk analyst.
+  {system_prompt}
   Risk description: {risk_description}
   {domain_section}
 

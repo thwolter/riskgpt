@@ -1,6 +1,8 @@
 # Get Mitigations
 
 The `get_mitigations` chain suggests mitigation measures for a risk based on its drivers.
+It also includes the system prompt so that references are only given when the model
+is reasonably sure of a real source.
 
 ## Input
 
