@@ -1,0 +1,13 @@
+version: "v1"
+description: "Identify opportunities that arise from the risks."
+template: |
+  {system_prompt}
+  Risks: {risks}
+  {domain_section}
+
+  Describe potential positive developments or opportunities that could result from these risks.
+  Provide references in Harvard style where relevant.
+  Respond in the following language: {language}
+
+  {format_instructions}
+  Output the result as a JSON object that conforms to the schema above and do not include any additional text

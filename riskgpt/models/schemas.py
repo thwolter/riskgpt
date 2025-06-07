@@ -150,3 +150,79 @@ class MitigationResponse(BaseModel):
     mitigations: List[str]
     references: Optional[List[str]] = None
     response_info: Optional[ResponseInfo] = None
+
+class PrioritizationRequest(BaseModel):
+    """Input model for prioritizing risks."""
+    project_id: str
+    risks: List[str]
+    domain_knowledge: Optional[str] = None
+    language: Optional[str] = "en"
+
+
+class PrioritizationResponse(BaseModel):
+    """Output model containing prioritized risks."""
+    prioritized_risks: List[str]
+    rationale: Optional[str] = None
+    response_info: Optional[ResponseInfo] = None
+
+
+class CostBenefitRequest(BaseModel):
+    """Input for cost-benefit analysis of mitigations."""
+    project_id: str
+    risk_description: str
+    mitigations: List[str]
+    domain_knowledge: Optional[str] = None
+    language: Optional[str] = "en"
+
+
+class CostBenefit(BaseModel):
+    mitigation: str
+    cost: Optional[str] = None
+    benefit: Optional[str] = None
+
+
+class CostBenefitResponse(BaseModel):
+    analyses: List[CostBenefit]
+    references: Optional[List[str]] = None
+    response_info: Optional[ResponseInfo] = None
+
+
+class MonitoringRequest(BaseModel):
+    """Input for deriving monitoring indicators."""
+    project_id: str
+    risk_description: str
+    domain_knowledge: Optional[str] = None
+    language: Optional[str] = "en"
+
+
+class MonitoringResponse(BaseModel):
+    indicators: List[str]
+    references: Optional[List[str]] = None
+    response_info: Optional[ResponseInfo] = None
+
+
+class OpportunityRequest(BaseModel):
+    """Input for identifying opportunities."""
+    project_id: str
+    risks: List[str]
+    domain_knowledge: Optional[str] = None
+    language: Optional[str] = "en"
+
+
+class OpportunityResponse(BaseModel):
+    opportunities: List[str]
+    references: Optional[List[str]] = None
+    response_info: Optional[ResponseInfo] = None
+
+
+class CommunicationRequest(BaseModel):
+    """Input for summarising risks for stakeholders."""
+    project_id: str
+    summary: str
+    domain_knowledge: Optional[str] = None
+    language: Optional[str] = "en"
+
+
+class CommunicationResponse(BaseModel):
+    report: str
+    response_info: Optional[ResponseInfo] = None

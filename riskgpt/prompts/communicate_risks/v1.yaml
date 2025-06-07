@@ -1,0 +1,12 @@
+version: "v1"
+description: "Generate a short report for stakeholders."
+template: |
+  {system_prompt}
+  Summary: {summary}
+  {domain_section}
+
+  Provide a concise communication or slide text that conveys the key points to stakeholders.
+  Respond in the following language: {language}
+
+  {format_instructions}
+  Output the result as a JSON object that conforms to the schema above and do not include any additional text
