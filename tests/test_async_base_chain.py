@@ -1,15 +1,17 @@
-from types import SimpleNamespace
 import asyncio
 import logging
+from types import SimpleNamespace
+
 import pytest
 
 pytest.importorskip("langchain")
 pytest.importorskip("langchain_openai")
 pytest.importorskip("langchain_community")
 
-from riskgpt.logger import configure_logging
-from riskgpt.chains.base import BaseChain
 from langchain_core.output_parsers import BaseOutputParser
+
+from riskgpt.chains.base import BaseChain
+from riskgpt.logger import configure_logging
 from riskgpt.models.schemas import CategoryResponse
 
 
@@ -46,4 +48,3 @@ def test_async_invoke(monkeypatch, caplog):
     asyncio.run(chain.invoke_async({}))
 
     assert any("Consumed" in record.getMessage() for record in caplog.records)
-

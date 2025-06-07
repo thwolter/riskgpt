@@ -2,16 +2,16 @@ from __future__ import annotations
 
 from typing import Any, Dict, Optional
 
+from langchain_community.callbacks import get_openai_callback
+from langchain_community.llms import FakeListLLM
 from langchain_core.output_parsers import BaseOutputParser
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_openai import ChatOpenAI
-from langchain_community.llms import FakeListLLM
-from langchain_community.callbacks import get_openai_callback
-from riskgpt.logger import logger
 
 from riskgpt.config.settings import RiskGPTSettings
-from riskgpt.utils.memory_factory import get_memory
+from riskgpt.logger import logger
 from riskgpt.models.schemas import ResponseInfo
+from riskgpt.utils.memory_factory import get_memory
 
 
 class BaseChain:
@@ -42,7 +42,7 @@ class BaseChain:
             )
         else:
             if hasattr(self.parser, "pydantic_object"):
-                data = {}
+                data: Dict[str, Any] = {}
                 for name, field in self.parser.pydantic_object.model_fields.items():
                     ann = getattr(field.annotation, "__origin__", field.annotation)
                     if ann is list:
@@ -61,7 +61,7 @@ class BaseChain:
 
     def _partial_variables(self) -> Dict[str, str]:
         fmt = self.parser.get_format_instructions()
-        fmt = fmt.replace('{', '{{').replace('}', '}}')
+        fmt = fmt.replace("{", "{{").replace("}", "}}")
         return {"format_instructions": fmt}
 
     def invoke(self, inputs: Dict[str, Any]):

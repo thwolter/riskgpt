@@ -1,5 +1,6 @@
 import pathlib
 import sys
+
 import pytest
 
 pytest.importorskip("pydantic")
@@ -8,9 +9,10 @@ from pydantic import ValidationError
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parents[1]))
 pytest.importorskip("langchain")
 
-from riskgpt.utils.memory_factory import get_memory, register_memory_backend
-from riskgpt.config.settings import RiskGPTSettings
 from langchain.memory import ConversationBufferMemory
+
+from riskgpt.config.settings import RiskGPTSettings
+from riskgpt.utils.memory_factory import get_memory, register_memory_backend
 
 
 def test_get_memory_buffer():
@@ -29,12 +31,10 @@ def test_register_new_backend():
     called = {}
 
     def creator(settings):
-        called['settings'] = settings
+        called["settings"] = settings
         return "dummy"
 
     register_memory_backend("dummy", creator)
     mem = get_memory(RiskGPTSettings(MEMORY_TYPE="dummy"))
     assert mem == "dummy"
-    assert 'settings' in called
-
-
+    assert "settings" in called

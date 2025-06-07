@@ -1,12 +1,14 @@
-from pydantic import Field, SecretStr
-from pydantic_settings import BaseSettings, SettingsConfigDict
 from typing import Optional
-from pydantic import field_validator
+
+from pydantic import Field, SecretStr, field_validator
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class RiskGPTSettings(BaseSettings):
 
-    model_config = SettingsConfigDict(env_file='../.env', env_ignore_empty=True, extra='ignore')
+    model_config = SettingsConfigDict(
+        env_file="../.env", env_ignore_empty=True, extra="ignore"
+    )
 
     MEMORY_TYPE: str = Field(default="buffer")
     REDIS_URL: Optional[str] = None
@@ -19,8 +21,8 @@ class RiskGPTSettings(BaseSettings):
     @classmethod
     def validate_memory_type(cls, v: str) -> str:
         from riskgpt.utils.memory_factory import _CREATORS
+
         allowed = {"none", "buffer", "redis"}.union(_CREATORS.keys())
         if v not in allowed:
             raise ValueError("Input should be 'none', 'buffer' or 'redis'")
         return v
-

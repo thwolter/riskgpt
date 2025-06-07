@@ -16,4 +16,3 @@ def test_get_assessment_chain():
     )
     response = get_assessment_chain(request)
     assert hasattr(response, "evidence")
-

@@ -23,7 +23,9 @@ def bias_check_chain(request: BiasCheckRequest) -> BiasCheckResponse:
             "Check whether recent events unduly influence the assessment."
         )
 
-    return BiasCheckResponse(biases=list(set(biases)), suggestions="; ".join(suggestions))
+    return BiasCheckResponse(
+        biases=list(set(biases)), suggestions="; ".join(suggestions)
+    )
 
 
 async def async_bias_check_chain(request: BiasCheckRequest) -> BiasCheckResponse:

@@ -2,8 +2,8 @@ import pytest
 
 pytest.importorskip("langgraph")
 
+from riskgpt.models.schemas import AudienceEnum, PresentationRequest
 from riskgpt.workflows import prepare_presentation_output
-from riskgpt.models.schemas import PresentationRequest, AudienceEnum
 
 
 def test_prepare_presentation_executive():
@@ -34,4 +34,3 @@ def test_prepare_presentation_workshop():
     assert resp.mitigations is not None
     assert resp.key_drivers is not None
     assert resp.response_info is not None
-

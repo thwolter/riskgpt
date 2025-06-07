@@ -1,9 +1,10 @@
 from langchain_core.output_parsers import PydanticOutputParser
 
-from riskgpt.utils.prompt_loader import load_prompt, load_system_prompt
 from riskgpt.config.settings import RiskGPTSettings
 from riskgpt.models.schemas import MitigationRequest, MitigationResponse
 from riskgpt.registry.chain_registry import register
+from riskgpt.utils.prompt_loader import load_prompt, load_system_prompt
+
 from .base import BaseChain
 
 
@@ -23,10 +24,14 @@ def get_mitigations_chain(request: MitigationRequest) -> MitigationResponse:
 
     inputs = request.model_dump()
     inputs["domain_section"] = (
-        f"Domain knowledge: {request.domain_knowledge}" if request.domain_knowledge else ""
+        f"Domain knowledge: {request.domain_knowledge}"
+        if request.domain_knowledge
+        else ""
     )
     inputs["drivers_section"] = (
-        f"Identified risk drivers: {', '.join(request.drivers)}" if request.drivers else ""
+        f"Identified risk drivers: {', '.join(request.drivers)}"
+        if request.drivers
+        else ""
     )
     inputs["system_prompt"] = system_prompt
 
@@ -49,10 +54,14 @@ async def async_get_mitigations_chain(request: MitigationRequest) -> MitigationR
 
     inputs = request.model_dump()
     inputs["domain_section"] = (
-        f"Domain knowledge: {request.domain_knowledge}" if request.domain_knowledge else ""
+        f"Domain knowledge: {request.domain_knowledge}"
+        if request.domain_knowledge
+        else ""
     )
     inputs["drivers_section"] = (
-        f"Identified risk drivers: {', '.join(request.drivers)}" if request.drivers else ""
+        f"Identified risk drivers: {', '.join(request.drivers)}"
+        if request.drivers
+        else ""
     )
     inputs["system_prompt"] = system_prompt
 

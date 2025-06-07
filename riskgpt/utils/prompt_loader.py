@@ -1,17 +1,17 @@
-import yaml
 from pathlib import Path
 from typing import Any, Dict, Optional
 
+import yaml  # type: ignore
+
 from riskgpt.config.settings import RiskGPTSettings
 from riskgpt.models.schemas import Prompt
-
 
 # ``PROMPT_DIR`` is defined in a way that allows tests to override it using
 # ``monkeypatch`` even when the module is reloaded.  On reload the module's
 # globals are reused, therefore we only set the default value if it has not been
 # provided already.  This mirrors the behaviour of environment derived
 # configuration without hard coding the value on every reload.
-if 'PROMPT_DIR' not in globals():
+if "PROMPT_DIR" not in globals():
     PROMPT_DIR = Path(__file__).parent.parent / "prompts"
 
 
@@ -32,4 +32,3 @@ def load_system_prompt(version: Optional[str] = None) -> str:
     """Return the system prompt text for reuse across chains."""
     data = load_prompt("system", version)
     return data["template"]
-
