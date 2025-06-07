@@ -21,6 +21,7 @@ RiskGPT is a Python package for analyzing project-related risks and opportunitie
 - [Communicate Risks](communicate_risks.md) – create stakeholder summaries
 - [Prepare Presentation Output](design/prepare_presentation_output.md) – combine chains for slides
 - [Audience Output Matrix](design/audience_output.md) – target group specifics
+- [External Context Enrichment](external_context_enrichment.md) – summarise recent external information
 
 ## Logging
 
