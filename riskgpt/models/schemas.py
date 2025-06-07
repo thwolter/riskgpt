@@ -111,29 +111,6 @@ class AssessmentResponse(BaseModel):
     response_info: Optional[ResponseInfo] = None
 
 
-class AssessmentRequest(BaseModel):
-    """Input model for assessing a risk's impact."""
-
-    project_id: str
-    risk_description: str
-    domain_knowledge: Optional[str] = None
-    language: Optional[str] = "en"
-
-
-class AssessmentResponse(BaseModel):
-    """Output model for a risk impact assessment."""
-
-    minimum: Optional[float] = None
-    most_likely: Optional[float] = None
-    maximum: Optional[float] = None
-    distribution: Optional[str] = None
-    impact: Optional[float] = None
-    probability: Optional[float] = None
-    evidence: Optional[str] = None
-    references: Optional[List[str]] = None
-    response_info: Optional[ResponseInfo] = None
-
-
 class MitigationRequest(BaseModel):
     """Input model for risk mitigation measures."""
 
