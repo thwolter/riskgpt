@@ -2,8 +2,8 @@ import pytest
 
 pytest.importorskip("langgraph")
 
-from riskgpt.workflows import external_context_enrichment
 from riskgpt.models.schemas import ExternalContextRequest
+from riskgpt.workflows import external_context_enrichment
 
 
 def test_external_context_enrichment_basic():

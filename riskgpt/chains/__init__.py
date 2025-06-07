@@ -16,7 +16,7 @@ try:  # pragma: no cover - optional dependencies
     from .get_categories import (
         async_get_categories_chain,
         get_categories_chain,
-    )  # noqa: F401
+    )
 except Exception:  # pragma: no cover - optional dependency
     get_categories_chain = None
     async_get_categories_chain = None
@@ -31,7 +31,7 @@ try:  # pragma: no cover - optional dependencies
     from .check_definition import (
         async_check_definition_chain,
         check_definition_chain,
-    )  # noqa: F401
+    )
 except Exception:  # pragma: no cover - optional dependency
     check_definition_chain = None
     async_check_definition_chain = None
@@ -64,7 +64,7 @@ try:  # pragma: no cover - optional dependencies
     from .prioritize_risks import (
         async_prioritize_risks_chain,
         prioritize_risks_chain,
-    )  # noqa: F401
+    )
 except Exception:  # pragma: no cover - optional dependency
     prioritize_risks_chain = None
     async_prioritize_risks_chain = None
@@ -112,7 +112,7 @@ try:  # pragma: no cover - optional dependencies
     from .get_correlation_tags import (
         async_get_correlation_tags_chain,
         get_correlation_tags_chain,
-    )  # noqa: F401
+    )
 except Exception:  # pragma: no cover - optional dependency
     get_correlation_tags_chain = None
     async_get_correlation_tags_chain = None
