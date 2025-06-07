@@ -1,9 +1,10 @@
 from langchain_core.output_parsers import PydanticOutputParser
 
-from riskgpt.utils.prompt_loader import load_prompt
 from riskgpt.config.settings import RiskGPTSettings
 from riskgpt.models.schemas import CategoryRequest, CategoryResponse
 from riskgpt.registry.chain_registry import register
+from riskgpt.utils.prompt_loader import load_prompt
+
 from .base import BaseChain
 
 
@@ -22,7 +23,9 @@ def get_categories_chain(request: CategoryRequest) -> CategoryResponse:
 
     inputs = request.model_dump()
     inputs["domain_section"] = (
-        f"Domain knowledge: {request.domain_knowledge}" if request.domain_knowledge else ""
+        f"Domain knowledge: {request.domain_knowledge}"
+        if request.domain_knowledge
+        else ""
     )
 
     return chain.invoke(inputs)
@@ -43,7 +46,9 @@ async def async_get_categories_chain(request: CategoryRequest) -> CategoryRespon
 
     inputs = request.model_dump()
     inputs["domain_section"] = (
-        f"Domain knowledge: {request.domain_knowledge}" if request.domain_knowledge else ""
+        f"Domain knowledge: {request.domain_knowledge}"
+        if request.domain_knowledge
+        else ""
     )
 
     return await chain.invoke_async(inputs)

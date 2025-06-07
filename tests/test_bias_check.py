@@ -7,6 +7,8 @@ from riskgpt.models.schemas import BiasCheckRequest
 
 
 def test_bias_check_chain():
-    request = BiasCheckRequest(risk_description="This will always fail due to recent issues.")
+    request = BiasCheckRequest(
+        risk_description="This will always fail due to recent issues."
+    )
     response = bias_check_chain(request)
     assert isinstance(response.biases, list)

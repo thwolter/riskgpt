@@ -10,7 +10,9 @@ logger = logging.getLogger("riskgpt")
 logger.addHandler(logging.NullHandler())
 
 
-def configure_logging(level: int = logging.INFO, handler: Optional[logging.Handler] = None) -> logging.Logger:
+def configure_logging(
+    level: int = logging.INFO, handler: Optional[logging.Handler] = None
+) -> logging.Logger:
     """Configure logging for RiskGPT.
 
     Parameters
@@ -34,4 +36,3 @@ def configure_logging(level: int = logging.INFO, handler: Optional[logging.Handl
 
     logger.setLevel(level)
     return logger
-

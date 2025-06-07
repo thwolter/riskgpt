@@ -1,16 +1,18 @@
+import re
+
 from langchain_core.output_parsers import PydanticOutputParser
 
-from riskgpt.utils.prompt_loader import load_prompt
 from riskgpt.config.settings import RiskGPTSettings
-import re
 from riskgpt.models.schemas import (
+    BiasCheckRequest,
     DefinitionCheckRequest,
     DefinitionCheckResponse,
-    BiasCheckRequest,
 )
-from .bias_check import bias_check_chain
 from riskgpt.registry.chain_registry import register
+from riskgpt.utils.prompt_loader import load_prompt
+
 from .base import BaseChain
+from .bias_check import bias_check_chain
 
 
 @register("check_definition")
@@ -28,12 +30,16 @@ def check_definition_chain(request: DefinitionCheckRequest) -> DefinitionCheckRe
 
     inputs = request.model_dump()
     inputs["domain_section"] = (
-        f"Domain knowledge: {request.domain_knowledge}" if request.domain_knowledge else ""
+        f"Domain knowledge: {request.domain_knowledge}"
+        if request.domain_knowledge
+        else ""
     )
 
     response = chain.invoke(inputs)
     bias_res = bias_check_chain(
-        BiasCheckRequest(risk_description=response.revised_description, language=request.language)
+        BiasCheckRequest(
+            risk_description=response.revised_description, language=request.language
+        )
     )
 
     extras = []
@@ -66,12 +72,16 @@ async def async_check_definition_chain(
 
     inputs = request.model_dump()
     inputs["domain_section"] = (
-        f"Domain knowledge: {request.domain_knowledge}" if request.domain_knowledge else ""
+        f"Domain knowledge: {request.domain_knowledge}"
+        if request.domain_knowledge
+        else ""
     )
 
     response = await chain.invoke_async(inputs)
     bias_res = bias_check_chain(
-        BiasCheckRequest(risk_description=response.revised_description, language=request.language)
+        BiasCheckRequest(
+            risk_description=response.revised_description, language=request.language
+        )
     )
 
     extras = []

@@ -1,6 +1,7 @@
-from pydantic import BaseModel
 from enum import Enum
-from typing import List, Optional, Dict
+from typing import Dict, List, Optional
+
+from pydantic import BaseModel
 
 
 class Prompt(BaseModel):
@@ -140,8 +141,10 @@ class MitigationResponse(BaseModel):
     references: Optional[List[str]] = None
     response_info: Optional[ResponseInfo] = None
 
+
 class PrioritizationRequest(BaseModel):
     """Input model for prioritizing risks."""
+
     project_id: str
     risks: List[str]
     domain_knowledge: Optional[str] = None
@@ -150,6 +153,7 @@ class PrioritizationRequest(BaseModel):
 
 class PrioritizationResponse(BaseModel):
     """Output model containing prioritized risks."""
+
     prioritized_risks: List[str]
     rationale: Optional[str] = None
     response_info: Optional[ResponseInfo] = None
@@ -157,6 +161,7 @@ class PrioritizationResponse(BaseModel):
 
 class CostBenefitRequest(BaseModel):
     """Input for cost-benefit analysis of mitigations."""
+
     project_id: str
     risk_description: str
     mitigations: List[str]
@@ -178,6 +183,7 @@ class CostBenefitResponse(BaseModel):
 
 class MonitoringRequest(BaseModel):
     """Input for deriving monitoring indicators."""
+
     project_id: str
     risk_description: str
     domain_knowledge: Optional[str] = None
@@ -192,6 +198,7 @@ class MonitoringResponse(BaseModel):
 
 class OpportunityRequest(BaseModel):
     """Input for identifying opportunities."""
+
     project_id: str
     risks: List[str]
     domain_knowledge: Optional[str] = None
@@ -206,6 +213,7 @@ class OpportunityResponse(BaseModel):
 
 class CommunicationRequest(BaseModel):
     """Input for summarising risks for stakeholders."""
+
     project_id: str
     summary: str
     domain_knowledge: Optional[str] = None

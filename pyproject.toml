@@ -21,6 +21,11 @@ langgraph = "^0.4.8"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.4.0"
+pytest-cov = "^5.0.0"
+black = "^24.4.2"
+ruff = "^0.3.7"
+mypy = "^1.8.0"
+pre-commit = "^3.7.1"
 
 [tool.pytest.ini_options]
 pythonpath = ["riskgpt"]
@@ -28,3 +33,16 @@ pythonpath = ["riskgpt"]
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
+
+[tool.black]
+line-length = 88
+target-version = ["py312"]
+
+[tool.ruff]
+line-length = 88
+extend-select = ["I"]
+
+[tool.mypy]
+python_version = "3.12"
+ignore_missing_imports = true
+pretty = true

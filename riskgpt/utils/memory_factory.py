@@ -6,12 +6,13 @@ from langchain.memory import ConversationBufferMemory, RedisChatMessageHistory
 
 from riskgpt.config.settings import RiskGPTSettings
 
-
 # Mapping of memory backend names to creator callables
 _CREATORS: Dict[str, Callable[[RiskGPTSettings], Optional[object]]] = {}
 
 
-def register_memory_backend(name: str, creator: Callable[[RiskGPTSettings], Optional[object]]) -> None:
+def register_memory_backend(
+    name: str, creator: Callable[[RiskGPTSettings], Optional[object]]
+) -> None:
     """Register a new memory backend.
 
     Parameters
@@ -24,6 +25,7 @@ def register_memory_backend(name: str, creator: Callable[[RiskGPTSettings], Opti
     """
 
     _CREATORS[name] = creator
+
 
 def _buffer_memory(_: RiskGPTSettings) -> ConversationBufferMemory:
     """Default in-memory conversation buffer."""
@@ -53,5 +55,7 @@ def get_memory(settings: RiskGPTSettings = RiskGPTSettings()) -> Optional[object
     creator = _CREATORS.get(mem_type)
     if creator is None:
         available = ", ".join(sorted(_CREATORS)) or "none"
-        raise ValueError(f"Unsupported memory type '{mem_type}'. Available types: {available}")
+        raise ValueError(
+            f"Unsupported memory type '{mem_type}'. Available types: {available}"
+        )
     return creator(settings)

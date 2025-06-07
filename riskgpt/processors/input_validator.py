@@ -1,10 +1,12 @@
 from pydantic import ValidationError
+
 from riskgpt.models.schemas import (
-    CategoryRequest,
-    RiskRequest,
-    MitigationRequest,
     AssessmentRequest,
+    CategoryRequest,
+    MitigationRequest,
+    RiskRequest,
 )
+
 
 def validate_category_request(data: dict) -> CategoryRequest:
     try:

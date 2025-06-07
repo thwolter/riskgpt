@@ -1,9 +1,10 @@
 from langchain_core.output_parsers import PydanticOutputParser
 
-from riskgpt.utils.prompt_loader import load_prompt, load_system_prompt
 from riskgpt.config.settings import RiskGPTSettings
 from riskgpt.models.schemas import PrioritizationRequest, PrioritizationResponse
 from riskgpt.registry.chain_registry import register
+from riskgpt.utils.prompt_loader import load_prompt, load_system_prompt
+
 from .base import BaseChain
 
 
@@ -24,7 +25,9 @@ def prioritize_risks_chain(request: PrioritizationRequest) -> PrioritizationResp
     inputs = request.model_dump()
     inputs["risks"] = ", ".join(request.risks)
     inputs["domain_section"] = (
-        f"Domain knowledge: {request.domain_knowledge}" if request.domain_knowledge else ""
+        f"Domain knowledge: {request.domain_knowledge}"
+        if request.domain_knowledge
+        else ""
     )
     inputs["system_prompt"] = system_prompt
 
@@ -50,7 +53,9 @@ async def async_prioritize_risks_chain(
     inputs = request.model_dump()
     inputs["risks"] = ", ".join(request.risks)
     inputs["domain_section"] = (
-        f"Domain knowledge: {request.domain_knowledge}" if request.domain_knowledge else ""
+        f"Domain knowledge: {request.domain_knowledge}"
+        if request.domain_knowledge
+        else ""
     )
     inputs["system_prompt"] = system_prompt
 

@@ -1,4 +1,5 @@
 """Simple registry for chain callables."""
+
 from typing import Callable, Dict, List
 
 _CHAIN_REGISTRY: Dict[str, Callable] = {}
@@ -6,9 +7,11 @@ _CHAIN_REGISTRY: Dict[str, Callable] = {}
 
 def register(name: str) -> Callable[[Callable], Callable]:
     """Register a chain callable under the given name."""
+
     def decorator(func: Callable) -> Callable:
         _CHAIN_REGISTRY[name] = func
         return func
+
     return decorator
 
 

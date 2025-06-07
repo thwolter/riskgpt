@@ -2,31 +2,33 @@ from __future__ import annotations
 
 from typing import Any, Dict, List
 
-from riskgpt.logger import logger
-from riskgpt.models.schemas import (
-    PresentationRequest,
-    PresentationResponse,
-    RiskRequest,
-    AssessmentRequest,
-    MitigationRequest,
-    DriverRequest,
-    CorrelationTagRequest,
-    CommunicationRequest,
-    ResponseInfo,
-    AudienceEnum,
+from riskgpt.chains import (
+    communicate_risks_chain,
+    get_assessment_chain,
+    get_correlation_tags_chain,
+    get_drivers_chain,
+    get_mitigations_chain,
+    get_risks_chain,
 )
 from riskgpt.config.settings import RiskGPTSettings
-from riskgpt.chains import (
-    get_risks_chain,
-    get_assessment_chain,
-    get_mitigations_chain,
-    get_drivers_chain,
-    get_correlation_tags_chain,
-    communicate_risks_chain,
+from riskgpt.logger import logger
+from riskgpt.models.schemas import (
+    AssessmentRequest,
+    AudienceEnum,
+    CommunicationRequest,
+    CorrelationTagRequest,
+    DriverRequest,
+    MitigationRequest,
+    PresentationRequest,
+    PresentationResponse,
+    ResponseInfo,
+    RiskRequest,
 )
 
 
-def apply_audience_formatting(resp: PresentationResponse, audience: AudienceEnum) -> PresentationResponse:
+def apply_audience_formatting(
+    resp: PresentationResponse, audience: AudienceEnum
+) -> PresentationResponse:
     """Adjust output fields based on the target audience."""
     if audience == AudienceEnum.executive:
         resp.main_risks = resp.main_risks[:3]
@@ -47,6 +49,7 @@ def apply_audience_formatting(resp: PresentationResponse, audience: AudienceEnum
     elif audience == AudienceEnum.operations:
         resp.appendix = (resp.appendix or "") + "\n[KRI dashboard]"
     return resp
+
 
 try:
     from langgraph.graph import END, StateGraph
@@ -176,7 +179,8 @@ def _build_graph(request: PresentationRequest):
             quantitative_summary=text,
             key_drivers=[d for lst in state.get("drivers", []) for d in lst] or None,
             correlation_tags=state.get("correlation_tags"),
-            mitigations=[m for lst in state.get("mitigations", []) for m in lst] or None,
+            mitigations=[m for lst in state.get("mitigations", []) for m in lst]
+            or None,
             open_questions=[],
             chart_placeholders=["risk_overview_chart"],
             appendix=com.technical_annex,
@@ -214,4 +218,3 @@ def prepare_presentation_output(request: PresentationRequest) -> PresentationRes
     app = _build_graph(request)
     result = app.invoke({})
     return result["response"]
-
