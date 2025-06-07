@@ -1,7 +1,3 @@
-import pytest
-
-pytest.importorskip("pydantic")
-
 from riskgpt.chains.bias_check import bias_check_chain
 from riskgpt.models.schemas import BiasCheckRequest
 

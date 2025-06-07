@@ -1,9 +1,3 @@
-import pytest
-
-pytest.importorskip("langchain")
-pytest.importorskip("langchain_openai")
-pytest.importorskip("langchain_community")
-
 from riskgpt.chains.get_mitigations import get_mitigations_chain
 from riskgpt.models.schemas import MitigationRequest
 
