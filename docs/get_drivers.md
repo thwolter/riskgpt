@@ -1,6 +1,8 @@
 # Get Drivers
 
 The `get_drivers` chain identifies key drivers that influence a specific risk.
+It uses the shared system prompt so that any cited evidence should only
+reference sources the model is confident actually exist.
 
 ## Input
 
