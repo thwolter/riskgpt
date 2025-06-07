@@ -1,4 +1,5 @@
 from pydantic import BaseModel
+from enum import Enum
 from typing import List, Optional, Dict
 
 
@@ -246,12 +247,25 @@ class CorrelationTagResponse(BaseModel):
     response_info: Optional[ResponseInfo] = None
 
 
+class AudienceEnum(str, Enum):
+    """Supported audiences for presentation output."""
+
+    executive = "executive"
+    workshop = "workshop"
+    risk_internal = "risk_internal"
+    audit = "audit"
+    regulator = "regulator"
+    project_owner = "project_owner"
+    investor = "investor"
+    operations = "operations"
+
+
 class PresentationRequest(BaseModel):
     """Input model for presentation-oriented summaries."""
 
     project_id: str
     project_description: str
-    audience: str
+    audience: AudienceEnum
     focus_areas: Optional[List[str]] = None
     language: Optional[str] = "en"
 
