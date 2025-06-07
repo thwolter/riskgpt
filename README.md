@@ -12,3 +12,7 @@ See the `docs/` directory for details.
 An example Jupyter notebook is available in `notebooks/playground.ipynb` for an
 interactive playground.
 
+Validation helpers such as `validate_risk_request()` are available in
+`riskgpt.processors.input_validator` to convert dictionaries into request
+objects.
+

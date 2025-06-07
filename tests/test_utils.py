@@ -4,7 +4,12 @@ import types
 import pytest
 
 pytest.importorskip("pydantic")
-from riskgpt.processors.input_validator import validate_category_request
+from riskgpt.processors.input_validator import (
+    validate_category_request,
+    validate_risk_request,
+    validate_mitigation_request,
+    validate_assessment_request,
+)
 
 
 def test_load_prompt(monkeypatch):
@@ -81,4 +86,49 @@ def test_validate_category_request_invalid():
     req = {"project_description": "Test project"}
     with pytest.raises(ValueError):
         validate_category_request(req)
+
+
+def test_validate_risk_request_valid():
+    req = {
+        "project_id": "1",
+        "project_description": "Test project",
+        "category": "tech",
+        "language": "en",
+    }
+    result = validate_risk_request(req)
+    assert result.category == "tech"
+
+
+def test_validate_risk_request_invalid():
+    with pytest.raises(ValueError):
+        validate_risk_request({"project_id": "1"})
+
+
+def test_validate_mitigation_request_valid():
+    req = {
+        "project_id": "1",
+        "risk_description": "failure",
+        "drivers": ["x"],
+    }
+    result = validate_mitigation_request(req)
+    assert result.risk_description == "failure"
+
+
+def test_validate_mitigation_request_invalid():
+    with pytest.raises(ValueError):
+        validate_mitigation_request({"project_id": "1"})
+
+
+def test_validate_assessment_request_valid():
+    req = {
+        "project_id": "1",
+        "risk_description": "something",
+    }
+    result = validate_assessment_request(req)
+    assert result.project_id == "1"
+
+
+def test_validate_assessment_request_invalid():
+    with pytest.raises(ValueError):
+        validate_assessment_request({"risk_description": "foo"})
 
