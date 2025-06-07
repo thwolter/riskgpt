@@ -8,3 +8,7 @@ RiskGPT is a Python package for analyzing project-related risks and opportunitie
 - Identify specific risks per category
 - Estimate impact using probabilistic methods
 - Support for domain-specific context and memory
+
+## Chains
+
+- [Get Categories](get_categories.md) – determine relevant risk categories for a project description
