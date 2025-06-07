@@ -48,3 +48,75 @@ class RiskResponse(BaseModel):
     risks: List[Risk]
     references: Optional[List[str]] = None
     response_info: Optional[ResponseInfo] = None
+
+
+class DefinitionCheckRequest(BaseModel):
+    """Input model for checking and revising a risk definition."""
+
+    project_id: str
+    risk_description: str
+    domain_knowledge: Optional[str] = None
+    language: Optional[str] = "en"
+
+
+class DefinitionCheckResponse(BaseModel):
+    """Output model for a revised risk definition."""
+
+    revised_description: str
+    rationale: Optional[str] = None
+    response_info: Optional[ResponseInfo] = None
+
+
+class DriverRequest(BaseModel):
+    """Input model for risk driver identification."""
+
+    project_id: str
+    risk_description: str
+    domain_knowledge: Optional[str] = None
+    language: Optional[str] = "en"
+
+
+class DriverResponse(BaseModel):
+    """Output model containing risk drivers."""
+
+    drivers: List[str]
+    references: Optional[List[str]] = None
+    response_info: Optional[ResponseInfo] = None
+
+
+class ImpactRequest(BaseModel):
+    """Input model for estimating risk impact."""
+
+    project_id: str
+    risk_description: str
+    domain_knowledge: Optional[str] = None
+    language: Optional[str] = "en"
+
+
+class ImpactResponse(BaseModel):
+    """Output model for a three-point impact estimate."""
+
+    minimum: float
+    most_likely: float
+    maximum: float
+    distribution: str
+    references: Optional[List[str]] = None
+    response_info: Optional[ResponseInfo] = None
+
+
+class MitigationRequest(BaseModel):
+    """Input model for risk mitigation measures."""
+
+    project_id: str
+    risk_description: str
+    drivers: Optional[List[str]] = None
+    domain_knowledge: Optional[str] = None
+    language: Optional[str] = "en"
+
+
+class MitigationResponse(BaseModel):
+    """Output model containing mitigation measures."""
+
+    mitigations: List[str]
+    references: Optional[List[str]] = None
+    response_info: Optional[ResponseInfo] = None

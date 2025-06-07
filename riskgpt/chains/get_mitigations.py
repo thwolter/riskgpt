@@ -1,0 +1,31 @@
+from langchain_core.output_parsers import PydanticOutputParser
+
+from riskgpt.utils.prompt_loader import load_prompt
+from riskgpt.config.settings import RiskGPTSettings
+from riskgpt.models.schemas import MitigationRequest, MitigationResponse
+from riskgpt.registry.chain_registry import register
+from .base import BaseChain
+
+
+@register("get_mitigations")
+def get_mitigations_chain(request: MitigationRequest) -> MitigationResponse:
+    settings = RiskGPTSettings()
+    prompt_data = load_prompt("get_mitigations")
+
+    parser = PydanticOutputParser(pydantic_object=MitigationResponse)
+    chain = BaseChain(
+        prompt_template=prompt_data["template"],
+        parser=parser,
+        settings=settings,
+        prompt_name="get_mitigations",
+    )
+
+    inputs = request.model_dump()
+    inputs["domain_section"] = (
+        f"Domain knowledge: {request.domain_knowledge}" if request.domain_knowledge else ""
+    )
+    inputs["drivers_section"] = (
+        f"Identified risk drivers: {', '.join(request.drivers)}" if request.drivers else ""
+    )
+
+    return chain.invoke(inputs)

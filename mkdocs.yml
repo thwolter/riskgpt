@@ -5,6 +5,10 @@ nav:
   - Home: index.md
   - Chains:
       - Get Categories: get_categories.md
+      - Check Definition: check_definition.md
+      - Get Drivers: get_drivers.md
+      - Get Impact: get_impact.md
+      - Get Mitigations: get_mitigations.md
 markdown_extensions:
   - toc:
       permalink: true
