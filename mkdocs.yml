@@ -7,7 +7,7 @@ nav:
       - Get Categories: get_categories.md
       - Check Definition: check_definition.md
       - Get Drivers: get_drivers.md
-      - Get Impact: get_impact.md
+      - Get Assessment: get_assessment.md
       - Get Mitigations: get_mitigations.md
 markdown_extensions:
   - toc:
