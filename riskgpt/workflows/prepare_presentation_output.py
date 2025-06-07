@@ -13,6 +13,7 @@ from riskgpt.models.schemas import (
     CorrelationTagRequest,
     CommunicationRequest,
     ResponseInfo,
+    AudienceEnum,
 )
 from riskgpt.config.settings import RiskGPTSettings
 from riskgpt.chains import (
@@ -23,6 +24,29 @@ from riskgpt.chains import (
     get_correlation_tags_chain,
     communicate_risks_chain,
 )
+
+
+def apply_audience_formatting(resp: PresentationResponse, audience: AudienceEnum) -> PresentationResponse:
+    """Adjust output fields based on the target audience."""
+    if audience == AudienceEnum.executive:
+        resp.main_risks = resp.main_risks[:3]
+        resp.chart_placeholders = ["executive_overview_chart"]
+        resp.open_questions = None
+    elif audience == AudienceEnum.workshop:
+        resp.open_questions = ["Discuss mitigation priorities"]
+    elif audience == AudienceEnum.risk_internal:
+        resp.appendix = (resp.appendix or "") + "\n[Model parameters]"
+    elif audience == AudienceEnum.audit:
+        resp.appendix = (resp.appendix or "") + "\n[Audit trail]"
+    elif audience == AudienceEnum.regulator:
+        resp.appendix = (resp.appendix or "") + "\n[Compliance mapping]"
+    elif audience == AudienceEnum.project_owner:
+        resp.appendix = (resp.appendix or "") + "\n[Project milestones]"
+    elif audience == AudienceEnum.investor:
+        resp.appendix = (resp.appendix or "") + "\n[Financial impact]"
+    elif audience == AudienceEnum.operations:
+        resp.appendix = (resp.appendix or "") + "\n[KRI dashboard]"
+    return resp
 
 try:
     from langgraph.graph import END, StateGraph
@@ -163,7 +187,7 @@ def _build_graph(request: PresentationRequest):
             prompt_name="prepare_presentation_output",
             model_name=settings.OPENAI_MODEL_NAME,
         )
-        state["response"] = resp
+        state["response"] = apply_audience_formatting(resp, request.audience)
         return state
 
     graph.add_node("identify_risks", identify_risks)
