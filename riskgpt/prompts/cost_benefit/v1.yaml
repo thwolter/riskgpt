@@ -1,0 +1,14 @@
+version: "v1"
+description: "Estimate costs and benefits for mitigations."
+template: |
+  {system_prompt}
+  Risk description: {risk_description}
+  Proposed mitigations: {mitigations}
+  {domain_section}
+
+  For each mitigation, estimate the expected cost or effort and the potential benefit.
+  Provide references in Harvard style when useful.
+  Respond in the following language: {language}
+
+  {format_instructions}
+  Output the result as a JSON object that conforms to the schema above and do not include any additional text

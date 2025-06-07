@@ -1,0 +1,12 @@
+version: "v1"
+description: "Rank risks based on urgency or expected impact."
+template: |
+  {system_prompt}
+  Risks: {risks}
+  {domain_section}
+
+  Sort the risks by urgency or expected impact and return the ranked list.
+  Respond in the following language: {language}
+
+  {format_instructions}
+  Output the result as a JSON object that conforms to the schema above and do not include any additional text

@@ -6,6 +6,11 @@ from .check_definition import check_definition_chain  # noqa: F401
 from .get_drivers import get_drivers_chain  # noqa: F401
 from .get_assessment import get_assessment_chain  # noqa: F401
 from .get_mitigations import get_mitigations_chain  # noqa: F401
+from .prioritize_risks import prioritize_risks_chain  # noqa: F401
+from .cost_benefit import cost_benefit_chain  # noqa: F401
+from .get_monitoring import get_monitoring_chain  # noqa: F401
+from .get_opportunities import get_opportunities_chain  # noqa: F401
+from .communicate_risks import communicate_risks_chain  # noqa: F401
 
 __all__ = [
     "BaseChain",
@@ -15,4 +20,9 @@ __all__ = [
     "get_drivers_chain",
     "get_assessment_chain",
     "get_mitigations_chain",
+    "prioritize_risks_chain",
+    "cost_benefit_chain",
+    "get_monitoring_chain",
+    "get_opportunities_chain",
+    "communicate_risks_chain",
 ]

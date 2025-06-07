@@ -1,0 +1,13 @@
+version: "v1"
+description: "Suggest monitoring indicators for a risk."
+template: |
+  {system_prompt}
+  Risk description: {risk_description}
+  {domain_section}
+
+  Suggest indicators or leading signals that should be tracked to monitor this risk.
+  Provide references in Harvard style if appropriate.
+  Respond in the following language: {language}
+
+  {format_instructions}
+  Output the result as a JSON object that conforms to the schema above and do not include any additional text
