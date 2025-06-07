@@ -27,3 +27,9 @@ def load_prompt(name: str, version: Optional[str] = None) -> Dict[str, Any]:
     prompt = Prompt(**data)
     return prompt.model_dump()
 
+
+def load_system_prompt(version: Optional[str] = None) -> str:
+    """Return the system prompt text for reuse across chains."""
+    data = load_prompt("system", version)
+    return data["template"]
+

@@ -41,6 +41,13 @@ def test_load_prompt(monkeypatch):
     assert "You are a risk analyst." in data["template"]
 
 
+def test_load_system_prompt(monkeypatch):
+    from riskgpt.utils import prompt_loader
+
+    monkeypatch.setattr(prompt_loader, "load_prompt", lambda name, version=None: {"template": "sys"})
+    assert prompt_loader.load_system_prompt() == "sys"
+
+
 def test_load_prompt_default_version(monkeypatch, tmp_path):
     prompts_dir = tmp_path / "prompts" / "foo"
     prompts_dir.mkdir(parents=True)

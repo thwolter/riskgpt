@@ -1,7 +1,7 @@
 version: "v1"
 description: "Identify risks within a category using project information."
 template: |
-  You are a risk analyst.
+  {system_prompt}
   Project description: {project_description}
   {domain_section}
 
