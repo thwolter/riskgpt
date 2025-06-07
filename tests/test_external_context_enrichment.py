@@ -35,7 +35,7 @@ def test_external_context_sources_have_url():
 
 def test_external_context_demo_company():
     req = ExternalContextRequest(
-        project_name="SEFE Energy",
+        project_name="Energy Company",
         business_context="fiber optic infrastructure",
         focus_keywords=["cyber"],
     )
