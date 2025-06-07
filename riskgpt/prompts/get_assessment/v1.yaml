@@ -1,0 +1,16 @@
+version: "v1"
+description: "Assess the impact and probability of a risk."
+template: |
+  You are a risk analyst.
+  Risk description: {risk_description}
+  {domain_section}
+
+  Determine whether this risk is a single event or not.
+  - If it is not a single event, provide a three-point estimate (minimum, most likely, maximum) for its impact and specify an appropriate probability distribution.
+  - If it is a single event, provide an impact estimate and the probability of occurrence.
+
+  Explain why you assessed the risk in this way and how you derived the values. Include references in Harvard style when possible.
+  Respond in the following language: {language}
+
+  {format_instructions}
+  Output the result as a JSON object that conforms to the schema above and do not include any additional text.
