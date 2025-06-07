@@ -1,3 +1,4 @@
+import pydantic
 import pytest
 
 from riskgpt.models.schemas import ExternalContextRequest
@@ -17,7 +18,7 @@ def test_external_context_enrichment_basic():
 
 
 def test_external_context_enrichment_missing_param():
-    with pytest.raises(TypeError):
+    with pytest.raises(pydantic.ValidationError):
         ExternalContextRequest()
 
 
@@ -39,4 +40,3 @@ def test_external_context_demo_company():
     )
     resp = external_context_enrichment(req)
     assert resp.sector_summary
-
