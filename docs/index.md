@@ -25,7 +25,20 @@ RiskGPT is a Python package for analyzing project-related risks and opportunitie
 Use `riskgpt.configure_logging()` to enable basic logging. Token usage is logged
 at the INFO level whenever a chain is executed.
 
+
+## Input Validation
+
+The module `riskgpt.processors.input_validator` provides convenience functions
+for validating dictionaries against the request models. These helpers raise a
+`ValueError` if the input does not conform to the schema.
+
+- `validate_category_request`
+- `validate_risk_request`
+- `validate_assessment_request`
+- `validate_mitigation_request`
+
 For information on environment variables and configuration see the
 [Environment Variables](../README.md#environment-variables) section in the
 README.
+
 

@@ -12,6 +12,11 @@ See the `docs/` directory for details.
 An example Jupyter notebook is available in `notebooks/playground.ipynb` for an
 interactive playground.
 
+
+Validation helpers such as `validate_risk_request()` are available in
+`riskgpt.processors.input_validator` to convert dictionaries into request
+objects.
+
 ## Environment Variables
 
 RiskGPT loads configuration from environment variables using a `.env` file at
@@ -25,4 +30,5 @@ available:
 | `MEMORY_TYPE` | `buffer` | Conversation memory backend. Choose `none`, `buffer` or `redis`. |
 | `REDIS_URL` | – | Redis connection string. Needed when `MEMORY_TYPE` is set to `redis`. |
 | `DEFAULT_PROMPT_VERSION` | `v1` | Version identifier for prompts under `riskgpt/prompts`. |
+
 
