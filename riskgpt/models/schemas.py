@@ -1,10 +1,12 @@
 from pydantic import BaseModel
 from typing import List, Optional
 
+
 class Prompt(BaseModel):
     version: str
     description: str
     template: str
+
 
 class ResponseInfo(BaseModel):
     consumed_tokens: int
@@ -12,11 +14,13 @@ class ResponseInfo(BaseModel):
     prompt_name: str
     model_name: str
 
+
 class CategoryRequest(BaseModel):
     project_id: str
     project_description: str
     domain_knowledge: Optional[str] = None
     language: Optional[str] = "en"
+
 
 class CategoryResponse(BaseModel):
     categories: List[str]
@@ -84,8 +88,8 @@ class DriverResponse(BaseModel):
     response_info: Optional[ResponseInfo] = None
 
 
-class ImpactRequest(BaseModel):
-    """Input model for estimating risk impact."""
+class AssessmentRequest(BaseModel):
+    """Input model for assessing a risk's impact."""
 
     project_id: str
     risk_description: str
@@ -93,13 +97,16 @@ class ImpactRequest(BaseModel):
     language: Optional[str] = "en"
 
 
-class ImpactResponse(BaseModel):
-    """Output model for a three-point impact estimate."""
+class AssessmentResponse(BaseModel):
+    """Output model for a risk impact assessment."""
 
-    minimum: float
-    most_likely: float
-    maximum: float
-    distribution: str
+    minimum: Optional[float] = None
+    most_likely: Optional[float] = None
+    maximum: Optional[float] = None
+    distribution: Optional[str] = None
+    impact: Optional[float] = None
+    probability: Optional[float] = None
+    evidence: Optional[str] = None
     references: Optional[List[str]] = None
     response_info: Optional[ResponseInfo] = None
 

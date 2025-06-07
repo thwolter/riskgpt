@@ -1,7 +1,8 @@
 version: "v1"
 description: "Assess the impact and probability of a risk."
 template: |
-  You are a risk analyst.
+  {system_prompt}
+
   Risk description: {risk_description}
   {domain_section}
 
