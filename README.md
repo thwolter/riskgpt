@@ -1,6 +1,6 @@
 # RiskGPT
 
-RiskGPT provides utilities for analysing project risks and opportunities using LLM based chains.
+RiskGPT provides utilities for analysing project risks and opportunities using LLM based chains. The package is available on PyPI.
 
 ```python
 from riskgpt import configure_logging
@@ -13,7 +13,13 @@ Validation helpers such as `validate_risk_request()` are available in `riskgpt.p
 
 ## Installation
 
-This project uses [Poetry](https://python-poetry.org/) for dependency management. To install all dependencies including the development tools run:
+Install the latest release from PyPI:
+
+```bash
+pip install riskgpt
+```
+
+For development this project uses [Poetry](https://python-poetry.org/) for dependency management. Install all dependencies including the development tools with:
 
 ```bash
 poetry install --with dev
@@ -46,3 +52,7 @@ RiskGPT loads configuration from environment variables using a `.env` file at th
 | `MEMORY_TYPE` | `buffer` | Conversation memory backend. Choose `none`, `buffer` or `redis`. |
 | `REDIS_URL` | – | Redis connection string. Needed when `MEMORY_TYPE` is set to `redis`. |
 | `DEFAULT_PROMPT_VERSION` | `v1` | Version identifier for prompts under `riskgpt/prompts`. |
+
+## License
+
+RiskGPT is distributed under the terms of the MIT license. See the [LICENSE](LICENSE) file for details.
