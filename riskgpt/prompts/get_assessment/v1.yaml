@@ -7,8 +7,8 @@ template: |
   {domain_section}
 
   Determine whether this risk is a single event or not.
-  - If it is not a single event, provide a three-point estimate (minimum, most likely, maximum) for its impact and specify an appropriate probability distribution.
-  - If it is a single event, provide an impact estimate and the probability of occurrence.
+  - If it is not a single event, provide a three-point estimate (minimum, most likely, maximum) for its impact, specify an appropriate probability distribution and suggest a plausible distribution fit.
+  - If it is a single event, provide an impact estimate and the probability of occurrence and recommend a suitable distribution where possible.
 
   Explain why you assessed the risk in this way and how you derived the values. Include references in Harvard style when possible.
   Respond in the following language: {language}

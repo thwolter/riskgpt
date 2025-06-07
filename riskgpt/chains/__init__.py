@@ -20,6 +20,11 @@ from .cost_benefit import cost_benefit_chain, async_cost_benefit_chain  # noqa: 
 from .get_monitoring import get_monitoring_chain, async_get_monitoring_chain  # noqa: F401
 from .get_opportunities import get_opportunities_chain, async_get_opportunities_chain  # noqa: F401
 from .communicate_risks import communicate_risks_chain, async_communicate_risks_chain  # noqa: F401
+from .bias_check import bias_check_chain, async_bias_check_chain  # noqa: F401
+from .get_correlation_tags import (
+    get_correlation_tags_chain,
+    async_get_correlation_tags_chain,
+)  # noqa: F401
 
 __all__ = [
     "BaseChain",
@@ -34,6 +39,8 @@ __all__ = [
     "get_monitoring_chain",
     "get_opportunities_chain",
     "communicate_risks_chain",
+    "bias_check_chain",
+    "get_correlation_tags_chain",
     "async_get_categories_chain",
     "async_get_risks_chain",
     "async_check_definition_chain",
@@ -45,4 +52,6 @@ __all__ = [
     "async_get_monitoring_chain",
     "async_get_opportunities_chain",
     "async_communicate_risks_chain",
+    "async_bias_check_chain",
+    "async_get_correlation_tags_chain",
 ]

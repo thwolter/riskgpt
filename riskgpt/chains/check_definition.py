@@ -2,7 +2,13 @@ from langchain_core.output_parsers import PydanticOutputParser
 
 from riskgpt.utils.prompt_loader import load_prompt
 from riskgpt.config.settings import RiskGPTSettings
-from riskgpt.models.schemas import DefinitionCheckRequest, DefinitionCheckResponse
+import re
+from riskgpt.models.schemas import (
+    DefinitionCheckRequest,
+    DefinitionCheckResponse,
+    BiasCheckRequest,
+)
+from .bias_check import bias_check_chain
 from riskgpt.registry.chain_registry import register
 from .base import BaseChain
 
@@ -25,7 +31,22 @@ def check_definition_chain(request: DefinitionCheckRequest) -> DefinitionCheckRe
         f"Domain knowledge: {request.domain_knowledge}" if request.domain_knowledge else ""
     )
 
-    return chain.invoke(inputs)
+    response = chain.invoke(inputs)
+    bias_res = bias_check_chain(
+        BiasCheckRequest(risk_description=response.revised_description, language=request.language)
+    )
+
+    extras = []
+    desc = response.revised_description.lower()
+    if re.search(r"\bmay\b|\bcould\b|\bpossibly\b", desc):
+        extras.append("ambiguous wording")
+    if re.search(r"\b(is|was|were|be|been|being|are)\b\s+\w+ed\b", desc):
+        extras.append("passive voice")
+    if not re.search(r"\d", desc):
+        extras.append("missing quantifiers")
+
+    response.biases = list(set((bias_res.biases or []) + extras))
+    return response
 
 
 async def async_check_definition_chain(
@@ -48,4 +69,19 @@ async def async_check_definition_chain(
         f"Domain knowledge: {request.domain_knowledge}" if request.domain_knowledge else ""
     )
 
-    return await chain.invoke_async(inputs)
+    response = await chain.invoke_async(inputs)
+    bias_res = bias_check_chain(
+        BiasCheckRequest(risk_description=response.revised_description, language=request.language)
+    )
+
+    extras = []
+    desc = response.revised_description.lower()
+    if re.search(r"\bmay\b|\bcould\b|\bpossibly\b", desc):
+        extras.append("ambiguous wording")
+    if re.search(r"\b(is|was|were|be|been|being|are)\b\s+\w+ed\b", desc):
+        extras.append("passive voice")
+    if not re.search(r"\d", desc):
+        extras.append("missing quantifiers")
+
+    response.biases = list(set((bias_res.biases or []) + extras))
+    return response
