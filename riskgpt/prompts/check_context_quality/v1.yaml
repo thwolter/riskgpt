@@ -1,0 +1,15 @@
+version: "v1"
+description: "Assess the completeness of project context knowledge."
+template: |
+  {system_prompt}
+  Evaluate whether the provided context information is sufficient to identify and assess risks, opportunities and impacts for the project.
+  If shortcomings are found, list them as bullet points and suggest an improved version of the text.
+  Always justify your assessment briefly and cite at least one relevant publication in Harvard style.
+  Respond in the following language: {language}
+
+  Project type/domain: {project_type}
+  Context knowledge:
+  {context_knowledge}
+
+  {format_instructions}
+  Output the result as a JSON object that conforms to the schema above and do not include any additional text

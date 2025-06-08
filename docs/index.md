@@ -39,6 +39,7 @@ pip install riskgpt
 - [Prepare Presentation Output](design/prepare_presentation_output.md) – combine chains for slides
 - [Audience Output Matrix](design/audience_output.md) – target group specifics
 - [External Context Enrichment](external_context_enrichment.md) – summarise recent external information
+- [Check Context Quality](check_context_quality.md) – validate project background
 
 ## Logging
 

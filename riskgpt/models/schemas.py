@@ -322,3 +322,20 @@ class ExternalContextResponse(BaseModel):
     workshop_recommendations: List[str]
     full_report: Optional[str] = None
     response_info: Optional[ResponseInfo] = None
+
+
+class ContextQualityRequest(BaseModel):
+    """Input model for evaluating context knowledge."""
+
+    context_knowledge: str
+    project_type: Optional[str] = None
+    language: Optional[str] = "en"
+
+
+class ContextQualityResponse(BaseModel):
+    """Output model describing context quality."""
+
+    shortcomings: List[str]
+    rationale: str
+    suggested_improvements: str
+    response_info: Optional[ResponseInfo] = None
