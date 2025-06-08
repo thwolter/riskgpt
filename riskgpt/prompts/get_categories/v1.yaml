@@ -4,8 +4,10 @@ template: |
   You are a risk analyst.
   Project description: {project_description}
   {domain_section}
+  {existing_categories_section}
 
   Please identify the relevant risk categories for this project.
+  If existing categories are provided, extend the list with any additional categories that make sense.
   Briefly explain each category.
   Respond in the following language: {language}
   
