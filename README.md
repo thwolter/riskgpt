@@ -19,14 +19,6 @@ configure_logging()
 
 See the `docs/` directory for detailed documentation. An example Jupyter notebook is available in `notebooks/playground.ipynb` for an interactive playground.
 
-If you prefer a web interface to explore the chains, RiskGPT also provides an
-optional [LangServe](https://github.com/langchain-ai/langserve) playground.
-Install with the `serve` extra and run:
-
-```bash
-python -m riskgpt.playground.langserve_app
-```
-
 Validation helpers such as `validate_risk_request()` are available in `riskgpt.processors.input_validator` to convert dictionaries into request objects.
 
 ## Installation
@@ -37,11 +29,6 @@ Install the latest release from PyPI:
 pip install riskgpt
 ```
 
-To enable the optional LangServe playground install with the `serve` extra:
-
-```bash
-pip install riskgpt[serve]
-```
 
 For development this project uses [Poetry](https://python-poetry.org/) for dependency management. Install all dependencies including the development tools with:
 

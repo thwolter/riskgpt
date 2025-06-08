@@ -19,12 +19,8 @@ Install the latest release from [PyPI](https://pypi.org/project/riskgpt/):
 pip install riskgpt
 ```
 
-To try the LangServe playground:
+An interactive example notebook is available in `notebooks/playground.ipynb`.
 
-```bash
-pip install riskgpt[serve]
-python -m riskgpt.playground.langserve_app
-```
 
 ## Features
 
