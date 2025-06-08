@@ -8,6 +8,7 @@ The `get_risks` chain identifies specific risks for a given risk category.
 - `project_id` (`str`): unique identifier of the project.
 - `project_description` (`str`): description of the project.
 - `category` (`str`): the risk category to analyse.
+- `max_risks` (`int`, optional, default `5`): maximum number of risks to return.
 - `domain_knowledge` (`str`, optional): additional domain-specific context.
 - `language` (`str`, optional, default `"en"`): language for the response.
 
@@ -28,6 +29,7 @@ request = RiskRequest(
     project_id="123",
     project_description="An IT project to introduce a new CRM system.",
     category="Technical",
+    max_risks=5,
     domain_knowledge="The company operates in the B2B market.",
     language="de"
 )
