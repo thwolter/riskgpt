@@ -1,4 +1,5 @@
 site_name: RiskGPT
+site_url: https://thwolter.github.io/riskgpt/
 theme:
   name: material
 nav:
