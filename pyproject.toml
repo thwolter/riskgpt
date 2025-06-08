@@ -31,7 +31,6 @@ notebook = "^7.4.3"
 langchain-core = "^0.3.64"
 langgraph = "^0.4.8"
 duckduckgo-search = "^8.0.2"
-langserve = {version = "^0.3.1", extras = ["server"], optional = true}
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.4.0"
@@ -40,6 +39,10 @@ black = "^24.4.2"
 ruff = "^0.11.13"
 mypy = "^1.8.0"
 pre-commit = "^3.7.1"
+langserve = "^0.3.1"
+fastapi = "^0.115.12"
+sse-starlette = "^2.3.6"
+uvicorn = "^0.34.3"
 
 [tool.pytest.ini_options]
 pythonpath = ["riskgpt"]
