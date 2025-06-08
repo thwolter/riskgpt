@@ -8,6 +8,7 @@ The `get_categories` chain identifies relevant risk categories for a project des
 - `project_id` (`str`): unique identifier of the project.
 - `project_description` (`str`): description of the project.
 - `domain_knowledge` (`str`, optional): additional domain-specific context.
+- `existing_categories` (`List[str]`, optional): predefined categories to extend.
 - `language` (`str`, optional, default `"en"`): language for the response.
 
 ## Output
@@ -27,6 +28,7 @@ request = CategoryRequest(
     project_id="123",
     project_description="An IT project to introduce a new CRM system.",
     domain_knowledge="The company operates in the B2B market.",
+    existing_categories=["technical", "strategic"],
     language="de"
 )
 

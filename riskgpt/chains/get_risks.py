@@ -28,6 +28,11 @@ def get_risks_chain(request: RiskRequest) -> RiskResponse:
         if request.domain_knowledge
         else ""
     )
+    inputs["existing_risks_section"] = (
+        f"Existing risks: {', '.join(request.existing_risks)}"
+        if request.existing_risks
+        else ""
+    )
     inputs["system_prompt"] = system_prompt
 
     return chain.invoke(inputs)
@@ -51,6 +56,11 @@ async def async_get_risks_chain(request: RiskRequest) -> RiskResponse:
     inputs["domain_section"] = (
         f"Domain knowledge: {request.domain_knowledge}"
         if request.domain_knowledge
+        else ""
+    )
+    inputs["existing_risks_section"] = (
+        f"Existing risks: {', '.join(request.existing_risks)}"
+        if request.existing_risks
         else ""
     )
     inputs["system_prompt"] = system_prompt

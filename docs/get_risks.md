@@ -10,6 +10,7 @@ The `get_risks` chain identifies specific risks for a given risk category.
 - `category` (`str`): the risk category to analyse.
 - `max_risks` (`int`, optional, default `5`): maximum number of risks to return.
 - `domain_knowledge` (`str`, optional): additional domain-specific context.
+- `existing_risks` (`List[str]`, optional): already identified risks to exclude.
 - `language` (`str`, optional, default `"en"`): language for the response.
 
 ## Output
@@ -31,6 +32,7 @@ request = RiskRequest(
     category="Technical",
     max_risks=5,
     domain_knowledge="The company operates in the B2B market.",
+    existing_risks=["Data loss"],
     language="de"
 )
 

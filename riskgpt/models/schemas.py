@@ -30,6 +30,7 @@ class CategoryRequest(BaseModel):
     project_id: str
     project_description: str
     domain_knowledge: Optional[str] = None
+    existing_categories: Optional[List[str]] = None
     language: Optional[str] = "en"
 
 
@@ -47,6 +48,7 @@ class RiskRequest(BaseModel):
     category: str
     max_risks: Optional[int] = 5
     domain_knowledge: Optional[str] = None
+    existing_risks: Optional[List[str]] = None
     language: Optional[str] = "en"
 
 

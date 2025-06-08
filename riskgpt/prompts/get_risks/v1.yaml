@@ -4,8 +4,10 @@ template: |
   {system_prompt}
   Project description: {project_description}
   {domain_section}
+  {existing_risks_section}
 
   Identify the most important risks in the category: {category}.
+  If existing risks are provided, propose additional risks that are not on the list.
   List no more than {max_risks} risks.
   Each risk must have a short title and a description using the event, cause, consequence structure.
   Support the risks with references to studies or academic papers and list the references in Harvard style.

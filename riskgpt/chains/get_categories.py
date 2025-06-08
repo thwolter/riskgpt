@@ -27,6 +27,11 @@ def get_categories_chain(request: CategoryRequest) -> CategoryResponse:
         if request.domain_knowledge
         else ""
     )
+    inputs["existing_categories_section"] = (
+        f"Existing categories: {', '.join(request.existing_categories)}"
+        if request.existing_categories
+        else ""
+    )
 
     return chain.invoke(inputs)
 
@@ -48,6 +53,11 @@ async def async_get_categories_chain(request: CategoryRequest) -> CategoryRespon
     inputs["domain_section"] = (
         f"Domain knowledge: {request.domain_knowledge}"
         if request.domain_knowledge
+        else ""
+    )
+    inputs["existing_categories_section"] = (
+        f"Existing categories: {', '.join(request.existing_categories)}"
+        if request.existing_categories
         else ""
     )
 
