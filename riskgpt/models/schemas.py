@@ -45,6 +45,7 @@ class RiskRequest(BaseModel):
     project_id: str
     project_description: str
     category: str
+    max_risks: Optional[int] = 5
     domain_knowledge: Optional[str] = None
     language: Optional[str] = "en"
 
