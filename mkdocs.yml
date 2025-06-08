@@ -4,6 +4,7 @@ theme:
   name: material
 nav:
   - Home: index.md
+  - LangServe Playground: langserve.md
   - Chains:
       - Get Categories: get_categories.md
       - Check Definition: check_definition.md

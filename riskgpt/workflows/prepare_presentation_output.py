@@ -51,8 +51,14 @@ def apply_audience_formatting(
     return resp
 
 
+END: Any
+StateGraph: Any
 try:
-    from langgraph.graph import END, StateGraph
+    from langgraph.graph import END as _END
+    from langgraph.graph import StateGraph as _StateGraph
+
+    END = _END
+    StateGraph = _StateGraph
 except Exception:  # pragma: no cover - optional dependency
     END = None
     StateGraph = None
@@ -65,7 +71,7 @@ def _build_graph(request: PresentationRequest):
     graph = StateGraph(Dict[str, Any])
 
     settings = RiskGPTSettings()
-    totals = {"tokens": 0, "cost": 0.0}
+    totals: Dict[str, float | int] = {"tokens": 0, "cost": 0.0}
 
     def identify_risks(state: Dict[str, Any]) -> Dict[str, Any]:
         category = (request.focus_areas or ["General"])[0]
@@ -185,8 +191,8 @@ def _build_graph(request: PresentationRequest):
             appendix=com.technical_annex,
         )
         resp.response_info = ResponseInfo(
-            consumed_tokens=totals["tokens"],
-            total_cost=totals["cost"],
+            consumed_tokens=int(totals["tokens"]),
+            total_cost=float(totals["cost"]),
             prompt_name="prepare_presentation_output",
             model_name=settings.OPENAI_MODEL_NAME,
         )

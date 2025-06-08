@@ -2,7 +2,7 @@
 
 from typing import Literal, Optional
 
-from pydantic import BaseSettings
+from pydantic_settings import BaseSettings
 
 from riskgpt.config.settings import RiskGPTSettings
 from riskgpt.utils.memory_factory import (

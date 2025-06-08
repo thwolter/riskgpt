@@ -9,14 +9,23 @@ from riskgpt.models.schemas import (
     ResponseInfo,
 )
 
+END: Any
+StateGraph: Any
 try:
-    from langgraph.graph import END, StateGraph
+    from langgraph.graph import END as _END
+    from langgraph.graph import StateGraph as _StateGraph
+
+    END = _END
+    StateGraph = _StateGraph
 except Exception:  # pragma: no cover - optional dependency
     END = None
     StateGraph = None
 
+DuckDuckGoSearchAPIWrapper: Any
 try:
-    from langchain_community.utilities import DuckDuckGoSearchAPIWrapper
+    from langchain_community.utilities import DuckDuckGoSearchAPIWrapper as _Wrapper
+
+    DuckDuckGoSearchAPIWrapper = _Wrapper
 except Exception:  # pragma: no cover - optional dependency
     DuckDuckGoSearchAPIWrapper = None
 
