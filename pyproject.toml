@@ -31,6 +31,7 @@ notebook = "^7.4.3"
 langchain-core = "^0.3.64"
 langgraph = "^0.4.8"
 duckduckgo-search = "^8.0.2"
+langserve = {version = "^0.3.1", extras = ["server"], optional = true}
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.4.0"
@@ -42,6 +43,9 @@ pre-commit = "^3.7.1"
 
 [tool.pytest.ini_options]
 pythonpath = ["riskgpt"]
+
+[tool.poetry.extras]
+serve = ["langserve"]
 
 [build-system]
 requires = ["poetry-core"]

@@ -38,7 +38,7 @@ def _redis_memory(settings: RiskGPTSettings) -> ConversationBufferMemory:
 
     if not settings.REDIS_URL:
         raise ValueError("REDIS_URL must be set for redis memory backend")
-    history = RedisChatMessageHistory(url=settings.REDIS_URL)
+    history = RedisChatMessageHistory(url=settings.REDIS_URL, session_id="default")
     return ConversationBufferMemory(chat_memory=history, return_messages=True)
 
 

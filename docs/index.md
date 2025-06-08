@@ -19,6 +19,13 @@ Install the latest release from [PyPI](https://pypi.org/project/riskgpt/):
 pip install riskgpt
 ```
 
+To try the LangServe playground:
+
+```bash
+pip install riskgpt[serve]
+python -m riskgpt.playground.langserve_app
+```
+
 ## Features
 
 - Extract risk categories from project descriptions
