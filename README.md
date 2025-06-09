@@ -58,11 +58,11 @@ RiskGPT implements a circuit breaker pattern for external API calls to handle se
 
 The circuit breaker is implemented for:
 - OpenAI API calls in the `BaseChain` class
-- DuckDuckGo search API calls in the external context enrichment workflow
+- Search API calls (DuckDuckGo, Google Custom Search, Wikipedia) in the external context enrichment workflow
 
 When the circuit is open (after multiple failures), the application will use fallback mechanisms:
 - For OpenAI: Returns a minimal valid response with an error message
-- For DuckDuckGo: Returns empty results and continues with other data sources
+- For search providers: Returns empty results and continues with other data sources
 
 The circuit breaker requires the `pybreaker` library. If not available, a fallback implementation is used that doesn't break the circuit.
 
@@ -77,6 +77,10 @@ RiskGPT loads configuration from environment variables using a `.env` file at th
 | `MEMORY_TYPE` | `buffer` | Conversation memory backend. Choose `none`, `buffer` or `redis`. |
 | `REDIS_URL` | – | Redis connection string. Needed when `MEMORY_TYPE` is set to `redis`. |
 | `DEFAULT_PROMPT_VERSION` | `v1` | Version identifier for prompts under `riskgpt/prompts`. |
+| `SEARCH_PROVIDER` | `duckduckgo` | Search provider for external context enrichment. Choose `duckduckgo`, `google`, or `wikipedia`. |
+| `INCLUDE_WIKIPEDIA` | `False` | Whether to include Wikipedia results in addition to the primary search provider. |
+| `GOOGLE_CSE_ID` | – | Google Custom Search Engine ID. Required when `SEARCH_PROVIDER` is set to `google`. |
+| `GOOGLE_API_KEY` | – | Google API key. Required when `SEARCH_PROVIDER` is set to `google`. |
 
 ## License
 

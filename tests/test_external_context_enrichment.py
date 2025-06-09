@@ -1,3 +1,5 @@
+import os
+
 import pydantic
 import pytest
 
@@ -40,3 +42,55 @@ def test_external_context_demo_company():
     )
     resp = external_context_enrichment(req)
     assert resp.sector_summary
+
+
+@pytest.mark.skipif(
+    not os.environ.get("GOOGLE_API_KEY")
+    or not os.environ.get("GOOGLE_CSE_ID")
+    or not os.environ.get("INCLUDE_WIKIPEDIA")
+    or os.environ.get("INCLUDE_WIKIPEDIA", "").lower() != "true",
+    reason="Google API key, CSE ID, or Wikipedia integration not set",
+)
+def test_external_context_with_google_and_wikipedia():
+    """Test the workflow with Google Custom Search API and Wikipedia."""
+    # Save original environment variables
+    original_provider = os.environ.get("SEARCH_PROVIDER")
+    original_include_wiki = os.environ.get("INCLUDE_WIKIPEDIA")
+
+    try:
+        # Set environment variables for this test
+        os.environ["SEARCH_PROVIDER"] = "google"
+        os.environ["INCLUDE_WIKIPEDIA"] = "true"
+
+        req = ExternalContextRequest(
+            project_name="Artificial Intelligence",
+            business_context="machine learning",
+            focus_keywords=["ethics", "regulation"],
+        )
+        resp = external_context_enrichment(req)
+
+        # Verify the response
+        assert resp.sector_summary
+        assert isinstance(resp.external_risks, list)
+        assert isinstance(resp.source_table, list)
+
+        # Check if we have both Google and Wikipedia results
+        has_wikipedia = False
+        for src in resp.source_table:
+            if "Wikipedia:" in src.get("title", ""):
+                has_wikipedia = True
+                break
+
+        assert has_wikipedia, "No Wikipedia results found in the response"
+
+    finally:
+        # Restore original environment variables
+        if original_provider:
+            os.environ["SEARCH_PROVIDER"] = original_provider
+        elif "SEARCH_PROVIDER" in os.environ:
+            del os.environ["SEARCH_PROVIDER"]
+
+        if original_include_wiki:
+            os.environ["INCLUDE_WIKIPEDIA"] = original_include_wiki
+        elif "INCLUDE_WIKIPEDIA" in os.environ:
+            del os.environ["INCLUDE_WIKIPEDIA"]

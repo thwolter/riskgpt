@@ -32,6 +32,8 @@ langchain-core = "^0.3.64"
 langgraph = "^0.4.8"
 duckduckgo-search = "^8.0.2"
 pybreaker = "^0.6.0"
+google-api-python-client = "^2.137.0"
+wikipedia = "^1.4.0"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.4.0"

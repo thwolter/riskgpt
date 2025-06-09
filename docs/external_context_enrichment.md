@@ -2,8 +2,17 @@
 
 The `external_context_enrichment` workflow collects recent external information about a project or sector and provides a short summary for workshop preparation.
 
-**Note**: The workflow relies on live DuckDuckGo searches. If network access is
-restricted the search steps will fail and the response may be empty.
+**Note**: The workflow relies on live searches using the configured search provider (DuckDuckGo, Google Custom Search API, or Wikipedia). If network access is
+restricted or the required API keys are missing, the search steps will fail and the response may be empty.
+
+## Configuration
+
+The search provider can be configured using environment variables:
+
+- `SEARCH_PROVIDER`: The search provider to use. Options are `duckduckgo` (default), `google`, or `wikipedia`.
+- `INCLUDE_WIKIPEDIA`: Whether to include Wikipedia results in addition to the primary search provider. Set to `true` or `false` (default).
+- `GOOGLE_CSE_ID`: Google Custom Search Engine ID. Required when `SEARCH_PROVIDER` is set to `google`.
+- `GOOGLE_API_KEY`: Google API key. Required when `SEARCH_PROVIDER` is set to `google`.
 
 ## Input
 

@@ -3291,6 +3291,20 @@ files = [
 tests = ["pytest"]
 
 [[package]]
+name = "pybreaker"
+version = "0.6.0"
+description = "Python implementation of the Circuit Breaker pattern"
+optional = false
+python-versions = "*"
+groups = ["main"]
+files = [
+    {file = "pybreaker-0.6.0.tar.gz", hash = "sha256:038c2808d4f845bf7e17819ad278aa5701c6512a5e389760bc4657be0a5364d3"},
+]
+
+[package.dependencies]
+six = "*"
+
+[[package]]
 name = "pycparser"
 version = "2.22"
 description = "C parser in Python"
@@ -5077,4 +5091,4 @@ cffi = ["cffi (>=1.11)"]
 [metadata]
 lock-version = "2.1"
 python-versions = "^3.12"
-content-hash = "bd76d7dc22131d9a3406b731f7aeb6e6a7de058eeb97e429afa4c0963eca03fa"
+content-hash = "42872491bc3e63f2e62ceef4e09d192f9ccb2e5e5d6c7504c22866c9e698597c"

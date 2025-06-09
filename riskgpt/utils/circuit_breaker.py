@@ -54,6 +54,16 @@ if PYBREAKER_AVAILABLE:
         fail_max=3,  # Number of failures before opening the circuit
         reset_timeout=30,  # Seconds before attempting to close the circuit
     )
+
+    google_search_breaker = pybreaker.CircuitBreaker(
+        fail_max=3,  # Number of failures before opening the circuit
+        reset_timeout=30,  # Seconds before attempting to close the circuit
+    )
+
+    wikipedia_breaker = pybreaker.CircuitBreaker(
+        fail_max=3,  # Number of failures before opening the circuit
+        reset_timeout=30,  # Seconds before attempting to close the circuit
+    )
 else:
     # Dummy circuit breakers that always allow calls
     class DummyBreaker:
@@ -62,6 +72,8 @@ else:
 
     openai_breaker = DummyBreaker()
     duckduckgo_breaker = DummyBreaker()
+    google_search_breaker = DummyBreaker()
+    wikipedia_breaker = DummyBreaker()
 
 # Add monitoring for circuit state changes
 if PYBREAKER_AVAILABLE:
@@ -78,6 +90,8 @@ if PYBREAKER_AVAILABLE:
     # Add the listener to the circuit breakers
     openai_breaker.add_listener(CircuitStateListener())
     duckduckgo_breaker.add_listener(CircuitStateListener())
+    google_search_breaker.add_listener(CircuitStateListener())
+    wikipedia_breaker.add_listener(CircuitStateListener())
 
 
 def with_fallback(

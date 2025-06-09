@@ -10,6 +10,8 @@ nav:
       - Get Drivers: get_drivers.md
       - Get Assessment: get_assessment.md
       - Get Mitigations: get_mitigations.md
+  - Workflows:
+      - External Context Enrichment: external_context_enrichment.md
 markdown_extensions:
   - toc:
       permalink: true

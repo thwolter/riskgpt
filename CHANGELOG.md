@@ -7,9 +7,12 @@ All notable changes to this project will be documented in this file.
 ### ✨ Features
 
 - Extend category and risk chains
-- Add circuit breaker pattern for external API calls (OpenAI, DuckDuckGo) to handle service outages gracefully
+- Add circuit breaker pattern for external API calls (OpenAI, DuckDuckGo, Google, Wikipedia) to handle service outages gracefully
 - Add fallback mechanisms for when external services are unavailable
 - Improve chain registry functionality
+- Add support for Google Custom Search API as an alternative to DuckDuckGo
+- Add support for Wikipedia API as an additional search source
+- Create unified search interface with configurable providers
 
 ### 🐛 Bug Fixes
 

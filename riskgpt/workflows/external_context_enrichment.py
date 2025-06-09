@@ -2,13 +2,12 @@ from __future__ import annotations
 
 from typing import Any, Dict, List, Tuple
 
-from riskgpt.logger import logger
 from riskgpt.models.schemas import (
     ExternalContextRequest,
     ExternalContextResponse,
     ResponseInfo,
 )
-from riskgpt.utils.circuit_breaker import duckduckgo_breaker, with_fallback
+from riskgpt.utils.search import search as perform_search
 
 END: Any
 StateGraph: Any
@@ -22,45 +21,10 @@ except Exception:  # pragma: no cover - optional dependency
     END = None
     StateGraph = None
 
-DuckDuckGoSearchAPIWrapper: Any
-try:
-    from langchain_community.utilities import DuckDuckGoSearchAPIWrapper as _Wrapper
 
-    DuckDuckGoSearchAPIWrapper = _Wrapper
-except Exception:  # pragma: no cover - optional dependency
-    DuckDuckGoSearchAPIWrapper = None
-
-
-def _search_fallback(query: str, source_type: str) -> Tuple[List[Dict[str, str]], bool]:
-    """Fallback function when DuckDuckGo search is unavailable."""
-    logger.warning("Circuit is open for DuckDuckGo search, using fallback")
-    return [], False
-
-
-@duckduckgo_breaker
-@with_fallback(_search_fallback)
 def _search(query: str, source_type: str) -> Tuple[List[Dict[str, str]], bool]:
-    """Perform a DuckDuckGo search and format results."""
-    results: List[Dict[str, str]] = []
-    if DuckDuckGoSearchAPIWrapper is None:
-        logger.warning("duckduckgo-search not available")
-        return results, False
-    try:
-        wrapper = DuckDuckGoSearchAPIWrapper()
-        for item in wrapper.results(query, max_results=3):
-            results.append(
-                {
-                    "title": item.get("title", ""),
-                    "url": item.get("link", ""),
-                    "date": item.get("date") or "",
-                    "type": source_type,
-                    "comment": item.get("snippet", ""),
-                }
-            )
-    except Exception as exc:  # pragma: no cover - search failure should not crash
-        logger.error("Search failed: %s", exc)
-        return results, False
-    return results, True
+    """Perform a search using the configured search provider and format results."""
+    return perform_search(query, source_type)
 
 
 def _build_graph(request: ExternalContextRequest):

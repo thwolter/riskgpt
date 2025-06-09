@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Literal, Optional
 
 from pydantic import Field, SecretStr, field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
@@ -16,6 +16,14 @@ class RiskGPTSettings(BaseSettings):
     TEMPERATURE: float = Field(default=0.7, ge=0.0, le=1.0)
     OPENAI_MODEL_NAME: str = Field(default="gpt-4.1-nano")
     DEFAULT_PROMPT_VERSION: str = Field(default="v1")
+
+    # Search provider settings
+    SEARCH_PROVIDER: Literal["duckduckgo", "google", "wikipedia"] = Field(
+        default="duckduckgo"
+    )
+    INCLUDE_WIKIPEDIA: bool = Field(default=False)
+    GOOGLE_CSE_ID: Optional[str] = None
+    GOOGLE_API_KEY: Optional[SecretStr] = None
 
     @field_validator("MEMORY_TYPE")
     @classmethod
