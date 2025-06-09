@@ -111,9 +111,9 @@ class BaseChain:
                 data: Dict[str, Any] = {}
                 for name, field in self.parser.pydantic_object.model_fields.items():
                     if field.is_required():
-                        if field.annotation is str:
+                        if field.annotation is str or typing.get_origin(field.annotation) is str:
                             data[name] = "Service temporarily unavailable"
-                        elif field.annotation is list:
+                        elif field.annotation is list or typing.get_origin(field.annotation) is list:
                             data[name] = []
                         else:
                             data[name] = None
