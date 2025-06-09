@@ -34,7 +34,7 @@ def _build_graph(request: ExternalContextRequest):
     graph = StateGraph(Dict[str, Any])
 
     def news_search(state: Dict[str, Any]) -> Dict[str, Any]:
-        query = f"{request.project_name} {request.business_context} news"
+        query = f"{request.business_context.project_description or request.business_context.project_id} {request.business_context.domain_knowledge or ''} news"
         if request.focus_keywords:
             query += " " + " ".join(request.focus_keywords)
         res, ok = _search(query, "news")
@@ -44,7 +44,7 @@ def _build_graph(request: ExternalContextRequest):
         return state
 
     def professional_search(state: Dict[str, Any]) -> Dict[str, Any]:
-        query = f"{request.project_name} {request.business_context} LinkedIn"
+        query = f"{request.business_context.project_description or request.business_context.project_id} {request.business_context.domain_knowledge or ''} LinkedIn"
         res, ok = _search(query, "social")
         state.setdefault("sources", []).extend(res)
         if not ok:
@@ -52,7 +52,7 @@ def _build_graph(request: ExternalContextRequest):
         return state
 
     def regulatory_search(state: Dict[str, Any]) -> Dict[str, Any]:
-        query = f"{request.business_context} regulation"
+        query = f"{request.business_context.domain_knowledge or request.business_context.project_description or request.business_context.project_id} regulation"
         res, ok = _search(query, "regulation")
         state.setdefault("sources", []).extend(res)
         if not ok:
@@ -60,7 +60,7 @@ def _build_graph(request: ExternalContextRequest):
         return state
 
     def peer_search(state: Dict[str, Any]) -> Dict[str, Any]:
-        query = f"{request.business_context} competitor incident"
+        query = f"{request.business_context.domain_knowledge or request.business_context.project_description or request.business_context.project_id} competitor incident"
         res, ok = _search(query, "peer")
         state.setdefault("sources", []).extend(res)
         if not ok:
@@ -77,9 +77,7 @@ def _build_graph(request: ExternalContextRequest):
             risks: List[str] = []
             recs: List[str] = []
         else:
-            summary = (
-                f"Collected {len(sources)} external sources for {request.project_name}."
-            )
+            summary = f"Collected {len(sources)} external sources for {request.business_context.project_description or request.business_context.project_id}."
             risks = [f"Potential issue: {s['title']}" for s in sources[:3]]
             recs = [f"Review source: {s['title']}" for s in sources[:2]]
         resp = ExternalContextResponse(
