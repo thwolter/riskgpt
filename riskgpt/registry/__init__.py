@@ -1,5 +1,17 @@
-"""Expose chain registry."""
+from riskgpt.registry.chain_registry import (
+    available,
+    chain_exists,
+    get,
+    get_chain_info,
+    get_chain_signature,
+    register,
+)
 
-from .chain_registry import available, get, register
-
-__all__ = ["register", "get", "available"]
+__all__ = [
+    "register",
+    "get",
+    "available",
+    "chain_exists",
+    "get_chain_info",
+    "get_chain_signature",
+]

@@ -4,6 +4,14 @@ All notable changes to this project will be documented in this file.
 
 ## [unreleased]
 
+### ✨ Features
+
+- Extend category and risk chains
+
+### ✨ Features
+
+- Improve chain registry functionality
+
 ### 🐛 Bug Fixes
 
 - Improve dummy responses for tests
