@@ -28,9 +28,13 @@ def get_correlation_tags_chain(
     )
 
     inputs = request.model_dump()
+    # Extract fields from business_context and add them directly to inputs
+    inputs["project_description"] = request.business_context.project_description
+    inputs["language"] = request.business_context.language
+
     inputs["domain_section"] = (
-        f"Domain knowledge: {request.domain_knowledge}"
-        if request.domain_knowledge
+        f"Domain knowledge: {request.business_context.domain_knowledge}"
+        if request.business_context.domain_knowledge
         else ""
     )
     inputs["system_prompt"] = system_prompt
@@ -54,9 +58,13 @@ async def async_get_correlation_tags_chain(
     )
 
     inputs = request.model_dump()
+    # Extract fields from business_context and add them directly to inputs
+    inputs["project_description"] = request.business_context.project_description
+    inputs["language"] = request.business_context.language
+
     inputs["domain_section"] = (
-        f"Domain knowledge: {request.domain_knowledge}"
-        if request.domain_knowledge
+        f"Domain knowledge: {request.business_context.domain_knowledge}"
+        if request.business_context.domain_knowledge
         else ""
     )
     inputs["system_prompt"] = system_prompt

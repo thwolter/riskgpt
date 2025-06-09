@@ -78,10 +78,8 @@ def _build_graph(request: PresentationRequest):
         logger.info("Identify risks for category '%s'", category)
         res = get_risks_chain(
             RiskRequest(
-                project_id=request.project_id,
-                project_description=request.project_description,
+                business_context=request.business_context,
                 category=category,
-                language=request.language,
             )
         )
         if res.response_info:
@@ -96,9 +94,8 @@ def _build_graph(request: PresentationRequest):
             logger.info("Assess risk '%s'", risk.title)
             assess = get_assessment_chain(
                 AssessmentRequest(
-                    project_id=request.project_id,
+                    business_context=request.business_context,
                     risk_description=risk.description,
-                    language=request.language,
                 )
             )
             if assess.response_info:
@@ -114,9 +111,8 @@ def _build_graph(request: PresentationRequest):
             logger.info("Get drivers for '%s'", risk.title)
             res = get_drivers_chain(
                 DriverRequest(
-                    project_id=request.project_id,
+                    business_context=request.business_context,
                     risk_description=risk.description,
-                    language=request.language,
                 )
             )
             if res.response_info:
@@ -132,10 +128,9 @@ def _build_graph(request: PresentationRequest):
             logger.info("Get mitigations for '%s'", risk.title)
             res = get_mitigations_chain(
                 MitigationRequest(
-                    project_id=request.project_id,
+                    business_context=request.business_context,
                     risk_description=risk.description,
                     drivers=drv,
-                    language=request.language,
                 )
             )
             if res.response_info:
@@ -151,10 +146,9 @@ def _build_graph(request: PresentationRequest):
         logger.info("Define correlation tags")
         res = get_correlation_tags_chain(
             CorrelationTagRequest(
-                project_description=request.project_description,
+                business_context=request.business_context,
                 risk_titles=titles,
                 known_drivers=known or None,
-                language=request.language,
             )
         )
         if res.response_info:
@@ -171,9 +165,8 @@ def _build_graph(request: PresentationRequest):
         text = "\n".join(lines)
         com = communicate_risks_chain(
             CommunicationRequest(
-                project_id=request.project_id,
+                business_context=request.business_context,
                 summary=text,
-                language=request.language,
             )
         )
         if com.response_info:

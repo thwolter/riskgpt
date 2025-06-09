@@ -77,62 +77,78 @@ def test_load_prompt_default_version(monkeypatch, tmp_path):
 
 def test_validate_category_request_valid():
     req = {
-        "project_id": "1",
-        "project_description": "Test project",
-        "domain_knowledge": "Domain",
-        "language": "en",
+        "business_context": {
+            "project_id": "1",
+            "project_description": "Test project",
+            "domain_knowledge": "Domain",
+            "language": "en",
+        }
     }
     result = validate_category_request(req)
-    assert result.project_id == "1"
-    assert result.language == "en"
+    assert result.business_context.project_id == "1"
+    assert result.business_context.language == "en"
 
 
 def test_validate_category_request_invalid():
-    req = {"project_description": "Test project"}
+    req = {"business_context": {}}  # Missing required project_id
     with pytest.raises(ValueError):
         validate_category_request(req)
 
 
 def test_validate_risk_request_valid():
     req = {
-        "project_id": "1",
-        "project_description": "Test project",
+        "business_context": {
+            "project_id": "1",
+            "project_description": "Test project",
+            "language": "en",
+        },
         "category": "tech",
-        "language": "en",
     }
     result = validate_risk_request(req)
     assert result.category == "tech"
+    assert result.business_context.project_id == "1"
 
 
 def test_validate_risk_request_invalid():
     with pytest.raises(ValueError):
-        validate_risk_request({"project_id": "1"})
+        validate_risk_request(
+            {"business_context": {"project_id": "1"}}
+        )  # Missing category
 
 
 def test_validate_mitigation_request_valid():
     req = {
-        "project_id": "1",
+        "business_context": {
+            "project_id": "1",
+        },
         "risk_description": "failure",
         "drivers": ["x"],
     }
     result = validate_mitigation_request(req)
     assert result.risk_description == "failure"
+    assert result.business_context.project_id == "1"
 
 
 def test_validate_mitigation_request_invalid():
     with pytest.raises(ValueError):
-        validate_mitigation_request({"project_id": "1"})
+        validate_mitigation_request(
+            {"business_context": {"project_id": "1"}}
+        )  # Missing risk_description
 
 
 def test_validate_assessment_request_valid():
     req = {
-        "project_id": "1",
+        "business_context": {
+            "project_id": "1",
+        },
         "risk_description": "something",
     }
     result = validate_assessment_request(req)
-    assert result.project_id == "1"
+    assert result.business_context.project_id == "1"
 
 
 def test_validate_assessment_request_invalid():
     with pytest.raises(ValueError):
-        validate_assessment_request({"risk_description": "foo"})
+        validate_assessment_request(
+            {"risk_description": "foo"}
+        )  # Missing business_context

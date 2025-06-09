@@ -5,13 +5,7 @@ from riskgpt.workflows import prepare_presentation_output
 
 audiences = [
     AudienceEnum.executive,
-    AudienceEnum.workshop,
-    AudienceEnum.risk_internal,
-    AudienceEnum.audit,
-    AudienceEnum.regulator,
-    AudienceEnum.project_owner,
-    AudienceEnum.investor,
-    AudienceEnum.operations,
+    # Add other audiences as needed
 ]
 
 

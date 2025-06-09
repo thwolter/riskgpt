@@ -1,14 +1,14 @@
-from riskgpt.models.schemas import AudienceEnum, PresentationRequest
+from riskgpt.models.schemas import AudienceEnum, BusinessContext, PresentationRequest
 from riskgpt.workflows import prepare_presentation_output
 
 
 def test_prepare_presentation_executive():
     request = PresentationRequest(
-        project_id="p1",
-        project_description="CRM rollout",
+        business_context=BusinessContext(
+            project_id="p1", project_description="CRM rollout", language="en"
+        ),
         audience=AudienceEnum.executive,
         focus_areas=["Technical"],
-        language="en",
     )
     resp = prepare_presentation_output(request)
     assert resp.executive_summary
@@ -20,11 +20,11 @@ def test_prepare_presentation_executive():
 
 def test_prepare_presentation_workshop():
     request = PresentationRequest(
-        project_id="p2",
-        project_description="ERP migration",
+        business_context=BusinessContext(
+            project_id="p2", project_description="ERP migration", language="en"
+        ),
         audience=AudienceEnum.workshop,
         focus_areas=["Technical"],
-        language="en",
     )
     resp = prepare_presentation_output(request)
     assert resp.mitigations is not None

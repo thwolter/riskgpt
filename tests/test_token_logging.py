@@ -1,6 +1,8 @@
 import logging
+import os
 from types import SimpleNamespace
 
+import pytest
 from langchain_core.output_parsers import BaseOutputParser
 
 from riskgpt.chains.base import BaseChain
@@ -16,6 +18,9 @@ class DummyParser(BaseOutputParser):
         return ""
 
 
+@pytest.mark.skipif(
+    not os.environ.get("OPENAI_API_KEY"), reason="OPENAI_API_KEY not set"
+)
 def test_token_logging(monkeypatch, caplog):
     caplog.set_level(logging.INFO, logger="riskgpt")
     configure_logging(level=logging.INFO)

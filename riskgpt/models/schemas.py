@@ -114,6 +114,21 @@ class DriverResponse(BaseModel):
     references: Optional[List[str]] = None
     response_info: Optional[ResponseInfo] = None
 
+    @classmethod
+    def model_validate(cls, obj, *args, **kwargs):
+        # Handle case where references are lists of strings instead of strings
+        if "references" in obj and isinstance(obj["references"], list):
+            # Flatten any nested lists in references
+            references = []
+            for ref in obj["references"]:
+                if isinstance(ref, list) and len(ref) > 0:
+                    # Join the list into a single string or take the first element
+                    references.append(ref[0])
+                else:
+                    references.append(ref)
+            obj["references"] = references
+        return super().model_validate(obj, *args, **kwargs)
+
 
 class AssessmentRequest(BaseModel):
     """Input model for assessing a risk's impact."""

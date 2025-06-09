@@ -25,5 +25,8 @@ def check_context_quality(request: ContextQualityRequest) -> ContextQualityRespo
     )
 
     inputs: Dict[str, str] = request.model_dump()
+    # Extract fields from business_context and add them directly to inputs
+    inputs["context_knowledge"] = request.business_context.domain_knowledge or ""
+    inputs["language"] = request.business_context.language or "en"
     inputs["system_prompt"] = system_prompt
     return chain.invoke(inputs)

@@ -1,5 +1,7 @@
 """Tests for the circuit breaker module."""
 
+import os
+
 import pytest
 
 from riskgpt.utils.circuit_breaker import (
@@ -38,6 +40,9 @@ def test_with_fallback_decorator():
     assert result == "Fallback response"
 
 
+@pytest.mark.skipif(
+    not os.environ.get("OPENAI_API_KEY"), reason="OPENAI_API_KEY not set"
+)
 def test_circuit_breaker_decorator():
     """Test that the circuit breaker decorator works correctly."""
     # This is a basic test that just ensures the decorator doesn't crash
@@ -51,6 +56,9 @@ def test_circuit_breaker_decorator():
     assert result == "Success"
 
 
+@pytest.mark.skipif(
+    not os.environ.get("OPENAI_API_KEY"), reason="OPENAI_API_KEY not set"
+)
 def test_fallback_with_circuit_breaker():
     """Test that the fallback works with the circuit breaker."""
     # Skip if pybreaker is not available

@@ -23,9 +23,13 @@ def get_assessment_chain(request: AssessmentRequest) -> AssessmentResponse:
     )
 
     inputs = request.model_dump()
+    # Extract fields from business_context and add them directly to inputs
+    inputs["project_description"] = request.business_context.project_description
+    inputs["language"] = request.business_context.language
+
     inputs["domain_section"] = (
-        f"Domain knowledge: {request.domain_knowledge}"
-        if request.domain_knowledge
+        f"Domain knowledge: {request.business_context.domain_knowledge}"
+        if request.business_context.domain_knowledge
         else ""
     )
 
@@ -48,9 +52,13 @@ async def async_get_assessment_chain(request: AssessmentRequest) -> AssessmentRe
     )
 
     inputs = request.model_dump()
+    # Extract fields from business_context and add them directly to inputs
+    inputs["project_description"] = request.business_context.project_description
+    inputs["language"] = request.business_context.language
+
     inputs["domain_section"] = (
-        f"Domain knowledge: {request.domain_knowledge}"
-        if request.domain_knowledge
+        f"Domain knowledge: {request.business_context.domain_knowledge}"
+        if request.business_context.domain_knowledge
         else ""
     )
 
