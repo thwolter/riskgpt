@@ -73,12 +73,23 @@ def _build_graph(request: PresentationRequest):
     settings = RiskGPTSettings()
     totals: Dict[str, float | int] = {"tokens": 0, "cost": 0.0}
 
+    def initialize_state(state: Dict[str, Any]) -> Dict[str, Any]:
+        """Initialize the state with the request if it exists in the input."""
+        if "request" in state and isinstance(state["request"], PresentationRequest):
+            # Use the request from the input state
+            pass
+        else:
+            # Use the request passed to _build_graph
+            state["request"] = request
+        return state
+
     def identify_risks(state: Dict[str, Any]) -> Dict[str, Any]:
-        category = (request.focus_areas or ["General"])[0]
+        req = state["request"]
+        category = (req.focus_areas or ["General"])[0]
         logger.info("Identify risks for category '%s'", category)
         res = get_risks_chain(
             RiskRequest(
-                business_context=request.business_context,
+                business_context=req.business_context,
                 category=category,
             )
         )
@@ -89,12 +100,13 @@ def _build_graph(request: PresentationRequest):
         return state
 
     def assess_risks(state: Dict[str, Any]) -> Dict[str, Any]:
+        req = state["request"]
         assessments = []
         for risk in state.get("risks", []):
             logger.info("Assess risk '%s'", risk.title)
             assess = get_assessment_chain(
                 AssessmentRequest(
-                    business_context=request.business_context,
+                    business_context=req.business_context,
                     risk_description=risk.description,
                 )
             )
@@ -106,12 +118,13 @@ def _build_graph(request: PresentationRequest):
         return state
 
     def drivers(state: Dict[str, Any]) -> Dict[str, Any]:
+        req = state["request"]
         driver_lists: List[List[str]] = []
         for risk in state.get("risks", []):
             logger.info("Get drivers for '%s'", risk.title)
             res = get_drivers_chain(
                 DriverRequest(
-                    business_context=request.business_context,
+                    business_context=req.business_context,
                     risk_description=risk.description,
                 )
             )
@@ -123,12 +136,13 @@ def _build_graph(request: PresentationRequest):
         return state
 
     def mitigations(state: Dict[str, Any]) -> Dict[str, Any]:
+        req = state["request"]
         mitigation_lists: List[List[str]] = []
         for risk, drv in zip(state.get("risks", []), state.get("drivers", [])):
             logger.info("Get mitigations for '%s'", risk.title)
             res = get_mitigations_chain(
                 MitigationRequest(
-                    business_context=request.business_context,
+                    business_context=req.business_context,
                     risk_description=risk.description,
                     drivers=drv,
                 )
@@ -141,12 +155,13 @@ def _build_graph(request: PresentationRequest):
         return state
 
     def correlation(state: Dict[str, Any]) -> Dict[str, Any]:
+        req = state["request"]
         titles = [r.title for r in state.get("risks", [])]
         known = [d for lst in state.get("drivers", []) for d in lst]
         logger.info("Define correlation tags")
         res = get_correlation_tags_chain(
             CorrelationTagRequest(
-                business_context=request.business_context,
+                business_context=req.business_context,
                 risk_titles=titles,
                 known_drivers=known or None,
             )
@@ -158,6 +173,7 @@ def _build_graph(request: PresentationRequest):
         return state
 
     def summary(state: Dict[str, Any]) -> Dict[str, Any]:
+        req = state["request"]
         lines = []
         for risk, assess in zip(state.get("risks", []), state.get("assessments", [])):
             line = f"{risk.title}: P={assess.probability or 'n/a'}, I={assess.impact or 'n/a'}"
@@ -165,7 +181,7 @@ def _build_graph(request: PresentationRequest):
         text = "\n".join(lines)
         com = communicate_risks_chain(
             CommunicationRequest(
-                business_context=request.business_context,
+                business_context=req.business_context,
                 summary=text,
             )
         )
@@ -189,9 +205,10 @@ def _build_graph(request: PresentationRequest):
             prompt_name="prepare_presentation_output",
             model_name=settings.OPENAI_MODEL_NAME,
         )
-        state["response"] = apply_audience_formatting(resp, request.audience)
+        state["response"] = apply_audience_formatting(resp, req.audience)
         return state
 
+    graph.add_node("initialize", initialize_state)
     graph.add_node("identify_risks", identify_risks)
     graph.add_node("assess_risks", assess_risks)
     graph.add_node("drivers", drivers)
@@ -199,7 +216,8 @@ def _build_graph(request: PresentationRequest):
     graph.add_node("correlation", correlation)
     graph.add_node("summary", summary)
 
-    graph.set_entry_point("identify_risks")
+    graph.set_entry_point("initialize")
+    graph.add_edge("initialize", "identify_risks")
     graph.add_edge("identify_risks", "assess_risks")
     graph.add_edge("assess_risks", "drivers")
     graph.add_edge("drivers", "mitigations")
@@ -214,5 +232,5 @@ def prepare_presentation_output(request: PresentationRequest) -> PresentationRes
     """Run the presentation workflow and return a structured response."""
 
     app = _build_graph(request)
-    result = app.invoke({})
+    result = app.invoke({"request": request})
     return result["response"]

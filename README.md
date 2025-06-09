@@ -17,7 +17,7 @@ from riskgpt import configure_logging
 configure_logging()
 ```
 
-See the `docs/` directory for detailed documentation. An example Jupyter notebook is available in `notebooks/playground.ipynb` for an interactive playground.
+See the `docs/` directory for detailed documentation.
 
 Validation helpers such as `validate_risk_request()` are available in `riskgpt.processors.input_validator` to convert dictionaries into request objects.
 

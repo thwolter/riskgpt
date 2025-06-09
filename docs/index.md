@@ -19,7 +19,6 @@ Install the latest release from [PyPI](https://pypi.org/project/riskgpt/):
 pip install riskgpt
 ```
 
-An interactive example notebook is available in `notebooks/playground.ipynb`.
 
 
 ## Features
@@ -64,5 +63,3 @@ for validating dictionaries against the request models. These helpers raise a
 For information on environment variables and configuration see the
 [Environment Variables](../README.md#environment-variables) section in the
 README.
-
-
