@@ -29,16 +29,13 @@ def check_definition_chain(request: DefinitionCheckRequest) -> DefinitionCheckRe
     )
 
     inputs = request.model_dump()
-    inputs["domain_section"] = (
-        f"Domain knowledge: {request.domain_knowledge}"
-        if request.domain_knowledge
-        else ""
-    )
+    inputs["domain_section"] = request.business_context.get_domain_section()
 
     response = chain.invoke(inputs)
     bias_res = bias_check_chain(
         BiasCheckRequest(
-            risk_description=response.revised_description, language=request.language
+            risk_description=response.revised_description,
+            language=request.business_context.language,
         )
     )
 
@@ -71,16 +68,13 @@ async def async_check_definition_chain(
     )
 
     inputs = request.model_dump()
-    inputs["domain_section"] = (
-        f"Domain knowledge: {request.domain_knowledge}"
-        if request.domain_knowledge
-        else ""
-    )
+    inputs["domain_section"] = request.business_context.get_domain_section()
 
     response = await chain.invoke_async(inputs)
     bias_res = bias_check_chain(
         BiasCheckRequest(
-            risk_description=response.revised_description, language=request.language
+            risk_description=response.revised_description,
+            language=request.business_context.language,
         )
     )
 

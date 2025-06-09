@@ -1,6 +1,11 @@
 import pytest
 
-from riskgpt.models.schemas import AudienceEnum, BusinessContext, PresentationRequest
+from riskgpt.models.schemas import (
+    AudienceEnum,
+    BusinessContext,
+    LanguageEnum,
+    PresentationRequest,
+)
 from riskgpt.workflows import prepare_presentation_output
 
 audiences = [
@@ -13,7 +18,9 @@ audiences = [
 def test_prepare_presentation_all_audiences(audience):
     request = PresentationRequest(
         business_context=BusinessContext(
-            project_id="p1", project_description="CRM rollout", language="en"
+            project_id="p1",
+            project_description="CRM rollout",
+            language=LanguageEnum.english,
         ),
         audience=audience,
         focus_areas=["Technical"],

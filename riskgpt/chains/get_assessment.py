@@ -27,11 +27,7 @@ def get_assessment_chain(request: AssessmentRequest) -> AssessmentResponse:
     inputs["project_description"] = request.business_context.project_description
     inputs["language"] = request.business_context.language
 
-    inputs["domain_section"] = (
-        f"Domain knowledge: {request.business_context.domain_knowledge}"
-        if request.business_context.domain_knowledge
-        else ""
-    )
+    inputs["domain_section"] = request.business_context.get_domain_section()
 
     inputs["system_prompt"] = system_prompt
     return chain.invoke(inputs)
@@ -56,11 +52,7 @@ async def async_get_assessment_chain(request: AssessmentRequest) -> AssessmentRe
     inputs["project_description"] = request.business_context.project_description
     inputs["language"] = request.business_context.language
 
-    inputs["domain_section"] = (
-        f"Domain knowledge: {request.business_context.domain_knowledge}"
-        if request.business_context.domain_knowledge
-        else ""
-    )
+    inputs["domain_section"] = request.business_context.get_domain_section()
 
     inputs["system_prompt"] = system_prompt
     return await chain.invoke_async(inputs)
