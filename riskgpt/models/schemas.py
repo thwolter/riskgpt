@@ -1,7 +1,7 @@
 from enum import Enum
 from typing import Dict, List, Optional
 
-from pydantic import BaseModel, Field, validator
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 
 class Prompt(BaseModel):
@@ -113,8 +113,8 @@ class Dist(BaseModel):
         default=None, description="Tag for correlation analysis"
     )
 
-    class Config:
-        schema_extra = {
+    model_config = ConfigDict(
+        json_schema_extra={
             "example": {
                 "name": "normal",
                 "parameters": {"mean": 100.0, "std": 10.0},
@@ -122,6 +122,7 @@ class Dist(BaseModel):
                 "correlation_tag": "market_volatility",
             }
         }
+    )
 
 
 class CategoryRequest(BaseModel):
@@ -134,8 +135,8 @@ class CategoryRequest(BaseModel):
         default=None, description="List of existing categories to consider"
     )
 
-    class Config:
-        schema_extra = {
+    model_config = ConfigDict(
+        json_schema_extra={
             "example": {
                 "business_context": {
                     "project_id": "CRM-2023",
@@ -145,6 +146,7 @@ class CategoryRequest(BaseModel):
                 "existing_categories": ["Technical", "Organizational"],
             }
         }
+    )
 
 
 class CategoryResponse(BaseResponse):
@@ -155,8 +157,8 @@ class CategoryResponse(BaseResponse):
         default=None, description="Explanation for the identified categories"
     )
 
-    class Config:
-        schema_extra = {
+    model_config = ConfigDict(
+        json_schema_extra={
             "example": {
                 "categories": ["Technical", "Organizational", "Financial", "Legal"],
                 "rationale": "These categories cover the main risk areas for a CRM implementation project.",
@@ -169,6 +171,7 @@ class CategoryResponse(BaseResponse):
                 },
             }
         }
+    )
 
 
 class RiskRequest(BaseModel):
@@ -185,14 +188,15 @@ class RiskRequest(BaseModel):
         default=None, description="List of existing risks to consider"
     )
 
-    @validator("max_risks")
+    @field_validator("max_risks")
+    @classmethod
     def validate_max_risks(cls, v):
         if v is not None and (v < 1 or v > 20):
             raise ValueError("max_risks must be between 1 and 20")
         return v
 
-    class Config:
-        schema_extra = {
+    model_config = ConfigDict(
+        json_schema_extra={
             "example": {
                 "business_context": {
                     "project_id": "CRM-2023",
@@ -204,6 +208,7 @@ class RiskRequest(BaseModel):
                 "existing_risks": ["Data migration failure"],
             }
         }
+    )
 
 
 class Risk(BaseModel):
@@ -213,14 +218,15 @@ class Risk(BaseModel):
     description: str = Field(description="Detailed description of the risk")
     category: str = Field(description="Category the risk belongs to")
 
-    class Config:
-        schema_extra = {
+    model_config = ConfigDict(
+        json_schema_extra={
             "example": {
                 "title": "Data Migration Failure",
                 "description": "Risk of losing critical customer data during migration to the new CRM system",
                 "category": "Technical",
             }
         }
+    )
 
 
 class RiskResponse(BaseResponse):
@@ -231,8 +237,8 @@ class RiskResponse(BaseResponse):
         default=None, description="References used for risk identification"
     )
 
-    class Config:
-        schema_extra = {
+    model_config = ConfigDict(
+        json_schema_extra={
             "example": {
                 "risks": [
                     {
@@ -259,6 +265,7 @@ class RiskResponse(BaseResponse):
                 },
             }
         }
+    )
 
 
 class DefinitionCheckRequest(BaseModel):
@@ -269,8 +276,8 @@ class DefinitionCheckRequest(BaseModel):
     )
     risk_description: str = Field(description="Risk description to check and revise")
 
-    class Config:
-        schema_extra = {
+    model_config = ConfigDict(
+        json_schema_extra={
             "example": {
                 "business_context": {
                     "project_id": "CRM-2023",
@@ -280,6 +287,7 @@ class DefinitionCheckRequest(BaseModel):
                 "risk_description": "The project may fail due to technical issues.",
             }
         }
+    )
 
 
 class DefinitionCheckResponse(BaseResponse):
@@ -293,8 +301,8 @@ class DefinitionCheckResponse(BaseResponse):
         default=None, description="Rationale for the revisions made"
     )
 
-    class Config:
-        schema_extra = {
+    model_config = ConfigDict(
+        json_schema_extra={
             "example": {
                 "revised_description": "There is a 30% probability that the CRM implementation will experience critical technical failures within the first 3 months of deployment.",
                 "biases": ["ambiguous wording", "missing quantifiers"],
@@ -308,6 +316,7 @@ class DefinitionCheckResponse(BaseResponse):
                 },
             }
         }
+    )
 
 
 class DriverRequest(BaseModel):
@@ -320,8 +329,8 @@ class DriverRequest(BaseModel):
         description="Risk description to identify drivers for"
     )
 
-    class Config:
-        schema_extra = {
+    model_config = ConfigDict(
+        json_schema_extra={
             "example": {
                 "business_context": {
                     "project_id": "CRM-2023",
@@ -331,6 +340,7 @@ class DriverRequest(BaseModel):
                 "risk_description": "There is a 30% probability that the CRM implementation will experience critical technical failures within the first 3 months of deployment.",
             }
         }
+    )
 
 
 class DriverResponse(BaseResponse):
@@ -356,8 +366,8 @@ class DriverResponse(BaseResponse):
             obj["references"] = references
         return super().model_validate(obj, *args, **kwargs)
 
-    class Config:
-        schema_extra = {
+    model_config = ConfigDict(
+        json_schema_extra={
             "example": {
                 "drivers": [
                     "Inadequate testing before deployment",
@@ -377,6 +387,7 @@ class DriverResponse(BaseResponse):
                 },
             }
         }
+    )
 
 
 class AssessmentRequest(BaseModel):
@@ -387,8 +398,8 @@ class AssessmentRequest(BaseModel):
     )
     risk_description: str = Field(description="Risk description to assess")
 
-    class Config:
-        schema_extra = {
+    model_config = ConfigDict(
+        json_schema_extra={
             "example": {
                 "business_context": {
                     "project_id": "CRM-2023",
@@ -398,6 +409,7 @@ class AssessmentRequest(BaseModel):
                 "risk_description": "There is a 30% probability that the CRM implementation will experience critical technical failures within the first 3 months of deployment.",
             }
         }
+    )
 
 
 class QuantitativeAssessment(BaseModel):
@@ -419,8 +431,8 @@ class QuantitativeAssessment(BaseModel):
         default=None, description="Fitted distribution parameters"
     )
 
-    class Config:
-        schema_extra = {
+    model_config = ConfigDict(
+        json_schema_extra={
             "example": {
                 "minimum": 50000.0,
                 "most_likely": 100000.0,
@@ -432,6 +444,7 @@ class QuantitativeAssessment(BaseModel):
                 },
             }
         }
+    )
 
 
 class AssessmentResponse(BaseResponse):
@@ -453,8 +466,8 @@ class AssessmentResponse(BaseResponse):
         default=None, description="References used for the assessment"
     )
 
-    class Config:
-        schema_extra = {
+    model_config = ConfigDict(
+        json_schema_extra={
             "example": {
                 "quantitative": {
                     "minimum": 50000.0,
@@ -478,6 +491,7 @@ class AssessmentResponse(BaseResponse):
                 },
             }
         }
+    )
 
 
 class MitigationRequest(BaseModel):

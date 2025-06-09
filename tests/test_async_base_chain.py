@@ -42,7 +42,9 @@ def test_async_invoke(monkeypatch, caplog):
             pass
 
     monkeypatch.setattr(chain, "chain", SimpleNamespace(ainvoke=fake_ainvoke))
-    monkeypatch.setattr("riskgpt.chains.base.get_openai_callback", lambda: DummyCB())
+    monkeypatch.setattr(
+        "langchain_community.callbacks.get_openai_callback", lambda: DummyCB()
+    )
 
     asyncio.run(chain.invoke_async({}))
 

@@ -62,6 +62,7 @@ def test_external_context_demo_company():
 )
 def test_external_context_with_google_and_wikipedia():
     """Test the workflow with Google Custom Search API and Wikipedia."""
+
     # Save original environment variables
     original_provider = os.environ.get("SEARCH_PROVIDER")
     original_include_wiki = os.environ.get("INCLUDE_WIKIPEDIA")

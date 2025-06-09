@@ -1,3 +1,5 @@
+import os
+
 import pytest
 
 from riskgpt.models.schemas import (
@@ -5,6 +7,8 @@ from riskgpt.models.schemas import (
     BusinessContext,
     LanguageEnum,
     PresentationRequest,
+    PresentationResponse,
+    ResponseInfo,
 )
 from riskgpt.workflows import prepare_presentation_output
 
@@ -14,8 +18,31 @@ audiences = [
 ]
 
 
+@pytest.mark.skipif(
+    not os.environ.get("OPENAI_API_KEY"), reason="OPENAI_API_KEY not set"
+)
 @pytest.mark.parametrize("audience", audiences)
-def test_prepare_presentation_all_audiences(audience):
+def test_prepare_presentation_all_audiences(audience, monkeypatch):
+    # If OPENAI_API_KEY is not set, mock the prepare_presentation_output function
+    if not os.environ.get("OPENAI_API_KEY"):
+
+        def mock_prepare_presentation_output(request):
+            return PresentationResponse(
+                executive_summary="Mock executive summary",
+                main_risks=["Mock risk 1", "Mock risk 2"],
+                response_info=ResponseInfo(
+                    consumed_tokens=100,
+                    total_cost=0.01,
+                    prompt_name="mock_prepare_presentation_output",
+                    model_name="mock-model",
+                ),
+            )
+
+        monkeypatch.setattr(
+            "riskgpt.workflows.prepare_presentation_output.prepare_presentation_output",
+            mock_prepare_presentation_output,
+        )
+
     request = PresentationRequest(
         business_context=BusinessContext(
             project_id="p1",

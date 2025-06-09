@@ -2,7 +2,8 @@
 
 from typing import Callable, Dict, Optional
 
-from langchain.memory import ConversationBufferMemory, RedisChatMessageHistory
+from langchain.memory import ConversationBufferMemory
+from langchain_community.chat_message_histories import RedisChatMessageHistory
 
 from riskgpt.config.settings import RiskGPTSettings
 

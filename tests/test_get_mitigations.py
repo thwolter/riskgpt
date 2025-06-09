@@ -1,7 +1,14 @@
+import os
+
+import pytest
+
 from riskgpt.chains.get_mitigations import get_mitigations_chain
 from riskgpt.models.schemas import BusinessContext, MitigationRequest
 
 
+@pytest.mark.skipif(
+    not os.environ.get("OPENAI_API_KEY"), reason="OPENAI_API_KEY not set"
+)
 def test_get_mitigations_chain():
     request = MitigationRequest(
         business_context=BusinessContext(

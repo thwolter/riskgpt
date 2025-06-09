@@ -30,18 +30,31 @@ except ImportError:  # pragma: no cover - optional dependency
     logger.warning("duckduckgo-search not available")
 
 try:
-    from langchain_community.utilities import GoogleSearchAPIWrapper as _GoogleWrapper
+    from langchain_google_community import GoogleSearchAPIWrapper as _GoogleWrapper
 
     GoogleSearchAPIWrapper = _GoogleWrapper
 except ImportError:  # pragma: no cover - optional dependency
-    logger.warning("google-api-python-client not available")
+    logger.warning("langchain-google-community not available")
 
 try:
-    from langchain_community.utilities import WikipediaAPIWrapper as _WikipediaWrapper
 
-    WikipediaAPIWrapper = _WikipediaWrapper
+    # try to import the wrapper
+    try:
+        from langchain_community.utilities import (
+            WikipediaAPIWrapper as _WikipediaWrapper,
+        )
+
+        WikipediaAPIWrapper = _WikipediaWrapper
+    except ImportError:  # pragma: no cover - optional dependency
+        logger.warning(
+            "langchain_community.utilities.WikipediaAPIWrapper not available"
+        )
+        WikipediaAPIWrapper = None
 except ImportError:  # pragma: no cover - optional dependency
-    logger.warning("wikipedia not available")
+    logger.warning(
+        "wikipedia package not available, please install with 'pip install wikipedia'"
+    )
+    WikipediaAPIWrapper = None
 
 
 def _search_fallback(query: str, source_type: str) -> Tuple[List[Dict[str, str]], bool]:
@@ -84,7 +97,7 @@ def _google_search(query: str, source_type: str) -> Tuple[List[Dict[str, str]], 
     """Perform a Google Custom Search and format results."""
     results: List[Dict[str, str]] = []
     if GoogleSearchAPIWrapper is None:
-        logger.warning("google-api-python-client not available")
+        logger.warning("langchain-google-community not available")
         return results, False
 
     settings = RiskGPTSettings()
@@ -93,15 +106,31 @@ def _google_search(query: str, source_type: str) -> Tuple[List[Dict[str, str]], 
         return results, False
 
     try:
+        # Extract the API key from SecretStr
+        api_key = (
+            settings.GOOGLE_API_KEY.get_secret_value()
+            if settings.GOOGLE_API_KEY
+            else None
+        )
+
+        # Create the wrapper with the extracted API key
         wrapper = GoogleSearchAPIWrapper(
-            google_api_key=(
-                settings.GOOGLE_API_KEY.get_secret_value()
-                if settings.GOOGLE_API_KEY
-                else None
-            ),
+            google_api_key=api_key,
             google_cse_id=settings.GOOGLE_CSE_ID,
         )
-        for item in wrapper.results(query, num_results=3):
+
+        # Get search results
+        search_results = wrapper.results(query, num_results=3)
+
+        # Check if we got valid results
+        if not search_results or (
+            len(search_results) == 1 and "Result" in search_results[0]
+        ):
+            logger.warning("No valid search results returned")
+            return results, False
+
+        # Process the results
+        for item in search_results:
             results.append(
                 {
                     "title": item.get("title", ""),
@@ -111,10 +140,12 @@ def _google_search(query: str, source_type: str) -> Tuple[List[Dict[str, str]], 
                     "comment": item.get("snippet", ""),
                 }
             )
+
+        # Return success only if we have results
+        return results, bool(results)
     except Exception as exc:  # pragma: no cover - search failure should not crash
         logger.error("Google search failed: %s", exc)
         return results, False
-    return results, True
 
 
 @wikipedia_breaker

@@ -1,7 +1,14 @@
+import os
+
+import pytest
+
 from riskgpt.chains.get_categories import get_categories_chain
 from riskgpt.models.schemas import BusinessContext, CategoryRequest
 
 
+@pytest.mark.skipif(
+    not os.environ.get("OPENAI_API_KEY"), reason="OPENAI_API_KEY not set"
+)
 def test_get_categories_chain():
     request = CategoryRequest(
         business_context=BusinessContext(

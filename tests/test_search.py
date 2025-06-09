@@ -36,6 +36,7 @@ def test_google_search():
 )
 def test_wikipedia_search():
     """Test Wikipedia search."""
+
     query = "artificial intelligence"
     source_type = "test"
     results, success = _wikipedia_search(query, source_type)
@@ -59,6 +60,7 @@ def test_wikipedia_search():
 )
 def test_combined_search():
     """Test combined search with Google and Wikipedia."""
+
     # Temporarily set the environment variables for this test
     os.environ["SEARCH_PROVIDER"] = "google"
     os.environ["INCLUDE_WIKIPEDIA"] = "true"

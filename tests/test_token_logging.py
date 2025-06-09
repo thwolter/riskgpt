@@ -41,7 +41,9 @@ def test_token_logging(monkeypatch, caplog):
             pass
 
     monkeypatch.setattr(chain, "chain", SimpleNamespace(invoke=fake_invoke))
-    monkeypatch.setattr("riskgpt.chains.base.get_openai_callback", lambda: DummyCB())
+    monkeypatch.setattr(
+        "langchain_community.callbacks.get_openai_callback", lambda: DummyCB()
+    )
 
     chain.invoke({})
 

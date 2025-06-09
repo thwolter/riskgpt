@@ -1,9 +1,15 @@
 import asyncio
+import os
+
+import pytest
 
 from riskgpt.chains.get_categories import async_get_categories_chain
 from riskgpt.models.schemas import BusinessContext, CategoryRequest, LanguageEnum
 
 
+@pytest.mark.skipif(
+    not os.environ.get("OPENAI_API_KEY"), reason="OPENAI_API_KEY not set"
+)
 def test_async_get_categories_chain():
     request = CategoryRequest(
         business_context=BusinessContext(
