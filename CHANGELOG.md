@@ -7,6 +7,8 @@ All notable changes to this project will be documented in this file.
 ### ✨ Features
 
 - Extend category and risk chains
+- Add circuit breaker pattern for external API calls (OpenAI, DuckDuckGo) to handle service outages gracefully
+- Add fallback mechanisms for when external services are unavailable
 
 ### ✨ Features
 

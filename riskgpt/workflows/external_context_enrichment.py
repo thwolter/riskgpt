@@ -8,6 +8,7 @@ from riskgpt.models.schemas import (
     ExternalContextResponse,
     ResponseInfo,
 )
+from riskgpt.utils.circuit_breaker import duckduckgo_breaker, with_fallback
 
 END: Any
 StateGraph: Any
@@ -30,6 +31,14 @@ except Exception:  # pragma: no cover - optional dependency
     DuckDuckGoSearchAPIWrapper = None
 
 
+def _search_fallback(query: str, source_type: str) -> Tuple[List[Dict[str, str]], bool]:
+    """Fallback function when DuckDuckGo search is unavailable."""
+    logger.warning("Circuit is open for DuckDuckGo search, using fallback")
+    return [], False
+
+
+@duckduckgo_breaker
+@with_fallback(_search_fallback)
 def _search(query: str, source_type: str) -> Tuple[List[Dict[str, str]], bool]:
     """Perform a DuckDuckGo search and format results."""
     results: List[Dict[str, str]] = []

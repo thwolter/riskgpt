@@ -52,6 +52,20 @@ Run the full test suite locally with:
 pytest --cov=riskgpt
 ```
 
+## Circuit Breaker Pattern
+
+RiskGPT implements a circuit breaker pattern for external API calls to handle service outages gracefully. The circuit breaker prevents sending requests to services that are likely to fail, reducing latency and conserving resources. It also allows the application to degrade gracefully when external services are unavailable.
+
+The circuit breaker is implemented for:
+- OpenAI API calls in the `BaseChain` class
+- DuckDuckGo search API calls in the external context enrichment workflow
+
+When the circuit is open (after multiple failures), the application will use fallback mechanisms:
+- For OpenAI: Returns a minimal valid response with an error message
+- For DuckDuckGo: Returns empty results and continues with other data sources
+
+The circuit breaker requires the `pybreaker` library. If not available, a fallback implementation is used that doesn't break the circuit.
+
 ## Environment Variables
 
 RiskGPT loads configuration from environment variables using a `.env` file at the project root or the regular environment. The following variables are available:

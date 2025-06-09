@@ -13,6 +13,7 @@ from pydantic import BaseModel
 from riskgpt.config.settings import RiskGPTSettings
 from riskgpt.logger import logger
 from riskgpt.models.schemas import ResponseInfo
+from riskgpt.utils.circuit_breaker import openai_breaker, with_fallback
 from riskgpt.utils.memory_factory import get_memory
 
 
@@ -96,6 +97,47 @@ class BaseChain:
         fmt = fmt.replace("{", "{{").replace("}", "}}")
         return {"format_instructions": fmt}
 
+    def _fallback_response(self, inputs: Dict[str, Any]):
+        """Fallback response when the circuit is open."""
+        logger.warning(
+            "Circuit is open for OpenAI API, using fallback response for '%s'",
+            self.prompt_name or "prompt",
+        )
+
+        # If we have a parser with a pydantic object, create a minimal valid response
+        if hasattr(self.parser, "pydantic_object"):
+            try:
+                # Create a minimal valid instance of the pydantic object
+                data: Dict[str, Any] = {}
+                for name, field in self.parser.pydantic_object.model_fields.items():
+                    if field.is_required():
+                        if field.annotation is str:
+                            data[name] = "Service temporarily unavailable"
+                        elif field.annotation is list:
+                            data[name] = []
+                        else:
+                            data[name] = None
+
+                result = self.parser.pydantic_object.model_validate(data)
+
+                # Add response info if supported
+                if hasattr(result, "response_info"):
+                    result.response_info = ResponseInfo(
+                        consumed_tokens=0,
+                        total_cost=0.0,
+                        prompt_name=self.prompt_name,
+                        model_name=self.settings.OPENAI_MODEL_NAME,
+                        error="Service temporarily unavailable",
+                    )
+                return result
+            except Exception as e:
+                logger.error("Failed to create fallback response: %s", e)
+
+        # If we can't create a valid pydantic object, return a simple dict
+        return {"error": "Service temporarily unavailable"}
+
+    @openai_breaker
+    @with_fallback(_fallback_response)
     def invoke(self, inputs: Dict[str, Any]):
         with get_openai_callback() as cb:
             result = self.chain.invoke(inputs, memory=self.memory)
@@ -115,6 +157,13 @@ class BaseChain:
             )
         return result
 
+    async def _async_fallback_response(self, inputs: Dict[str, Any]):
+        """Async fallback response when the circuit is open."""
+        # Reuse the same logic as the sync fallback
+        return self._fallback_response(inputs)
+
+    @openai_breaker
+    @with_fallback(_async_fallback_response)
     async def invoke_async(self, inputs: Dict[str, Any]):
         """Asynchronously invoke the underlying chain."""
         with get_openai_callback() as cb:

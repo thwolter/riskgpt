@@ -15,6 +15,7 @@ class ResponseInfo(BaseModel):
     total_cost: float
     prompt_name: str
     model_name: str
+    error: Optional[str] = None
 
 
 class Dist(BaseModel):
