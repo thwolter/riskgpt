@@ -1,7 +1,7 @@
 from enum import Enum
 from typing import Dict, List, Optional
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 
 class Prompt(BaseModel):
@@ -18,6 +18,27 @@ class ResponseInfo(BaseModel):
     error: Optional[str] = None
 
 
+class BusinessContext(BaseModel):
+    """Standardized schema for business context information."""
+
+    project_id: str = Field(description="Unique identifier for the project")
+    project_description: Optional[str] = Field(
+        default=None, description="Detailed description of the project"
+    )
+    domain_knowledge: Optional[str] = Field(
+        default=None, description="Specific domain knowledge relevant to the project"
+    )
+    business_area: Optional[str] = Field(
+        default=None, description="Business area or department the project belongs to"
+    )
+    industry_sector: Optional[str] = Field(
+        default=None, description="Industry sector the project operates in"
+    )
+    language: Optional[str] = Field(
+        default="en", description="Language for the response"
+    )
+
+
 class Dist(BaseModel):
     """Generic distribution model."""
 
@@ -28,11 +49,8 @@ class Dist(BaseModel):
 
 
 class CategoryRequest(BaseModel):
-    project_id: str
-    project_description: str
-    domain_knowledge: Optional[str] = None
+    business_context: BusinessContext
     existing_categories: Optional[List[str]] = None
-    language: Optional[str] = "en"
 
 
 class CategoryResponse(BaseModel):
@@ -44,13 +62,10 @@ class CategoryResponse(BaseModel):
 class RiskRequest(BaseModel):
     """Input model for risk identification."""
 
-    project_id: str
-    project_description: str
+    business_context: BusinessContext
     category: str
     max_risks: Optional[int] = 5
-    domain_knowledge: Optional[str] = None
     existing_risks: Optional[List[str]] = None
-    language: Optional[str] = "en"
 
 
 class Risk(BaseModel):
@@ -72,10 +87,8 @@ class RiskResponse(BaseModel):
 class DefinitionCheckRequest(BaseModel):
     """Input model for checking and revising a risk definition."""
 
-    project_id: str
+    business_context: BusinessContext
     risk_description: str
-    domain_knowledge: Optional[str] = None
-    language: Optional[str] = "en"
 
 
 class DefinitionCheckResponse(BaseModel):
@@ -90,10 +103,8 @@ class DefinitionCheckResponse(BaseModel):
 class DriverRequest(BaseModel):
     """Input model for risk driver identification."""
 
-    project_id: str
+    business_context: BusinessContext
     risk_description: str
-    domain_knowledge: Optional[str] = None
-    language: Optional[str] = "en"
 
 
 class DriverResponse(BaseModel):
@@ -107,10 +118,8 @@ class DriverResponse(BaseModel):
 class AssessmentRequest(BaseModel):
     """Input model for assessing a risk's impact."""
 
-    project_id: str
+    business_context: BusinessContext
     risk_description: str
-    domain_knowledge: Optional[str] = None
-    language: Optional[str] = "en"
 
 
 class AssessmentResponse(BaseModel):
@@ -131,11 +140,9 @@ class AssessmentResponse(BaseModel):
 class MitigationRequest(BaseModel):
     """Input model for risk mitigation measures."""
 
-    project_id: str
+    business_context: BusinessContext
     risk_description: str
     drivers: Optional[List[str]] = None
-    domain_knowledge: Optional[str] = None
-    language: Optional[str] = "en"
 
 
 class MitigationResponse(BaseModel):
@@ -149,10 +156,8 @@ class MitigationResponse(BaseModel):
 class PrioritizationRequest(BaseModel):
     """Input model for prioritizing risks."""
 
-    project_id: str
+    business_context: BusinessContext
     risks: List[str]
-    domain_knowledge: Optional[str] = None
-    language: Optional[str] = "en"
 
 
 class PrioritizationResponse(BaseModel):
@@ -166,11 +171,9 @@ class PrioritizationResponse(BaseModel):
 class CostBenefitRequest(BaseModel):
     """Input for cost-benefit analysis of mitigations."""
 
-    project_id: str
+    business_context: BusinessContext
     risk_description: str
     mitigations: List[str]
-    domain_knowledge: Optional[str] = None
-    language: Optional[str] = "en"
 
 
 class CostBenefit(BaseModel):
@@ -188,10 +191,8 @@ class CostBenefitResponse(BaseModel):
 class MonitoringRequest(BaseModel):
     """Input for deriving monitoring indicators."""
 
-    project_id: str
+    business_context: BusinessContext
     risk_description: str
-    domain_knowledge: Optional[str] = None
-    language: Optional[str] = "en"
 
 
 class MonitoringResponse(BaseModel):
@@ -203,10 +204,8 @@ class MonitoringResponse(BaseModel):
 class OpportunityRequest(BaseModel):
     """Input for identifying opportunities."""
 
-    project_id: str
+    business_context: BusinessContext
     risks: List[str]
-    domain_knowledge: Optional[str] = None
-    language: Optional[str] = "en"
 
 
 class OpportunityResponse(BaseModel):
@@ -218,10 +217,8 @@ class OpportunityResponse(BaseModel):
 class CommunicationRequest(BaseModel):
     """Input for summarising risks for stakeholders."""
 
-    project_id: str
+    business_context: BusinessContext
     summary: str
-    domain_knowledge: Optional[str] = None
-    language: Optional[str] = "en"
 
 
 class CommunicationResponse(BaseModel):
@@ -233,8 +230,8 @@ class CommunicationResponse(BaseModel):
 class BiasCheckRequest(BaseModel):
     """Input for checking risk description biases."""
 
+    business_context: Optional[BusinessContext] = None
     risk_description: str
-    language: Optional[str] = "en"
 
 
 class BiasCheckResponse(BaseModel):
@@ -246,11 +243,9 @@ class BiasCheckResponse(BaseModel):
 class CorrelationTagRequest(BaseModel):
     """Input model for defining correlation tags."""
 
-    project_description: str
+    business_context: BusinessContext
     risk_titles: List[str]
     known_drivers: Optional[List[str]] = None
-    domain_knowledge: Optional[str] = None
-    language: Optional[str] = "en"
 
 
 class CorrelationTagResponse(BaseModel):
@@ -275,11 +270,9 @@ class AudienceEnum(str, Enum):
 class PresentationRequest(BaseModel):
     """Input model for presentation-oriented summaries."""
 
-    project_id: str
-    project_description: str
+    business_context: BusinessContext
     audience: AudienceEnum
     focus_areas: Optional[List[str]] = None
-    language: Optional[str] = "en"
 
 
 class PresentationResponse(BaseModel):
@@ -310,11 +303,9 @@ class SourceEntry(BaseModel):
 class ExternalContextRequest(BaseModel):
     """Input model for external context enrichment."""
 
-    project_name: str
-    business_context: str
+    business_context: BusinessContext
     focus_keywords: Optional[List[str]] = None
     time_horizon_months: Optional[int] = 12
-    language: Optional[str] = "en"
 
 
 class ExternalContextResponse(BaseModel):
@@ -331,9 +322,8 @@ class ExternalContextResponse(BaseModel):
 class ContextQualityRequest(BaseModel):
     """Input model for evaluating context knowledge."""
 
-    context_knowledge: str
+    business_context: BusinessContext
     project_type: Optional[str] = None
-    language: Optional[str] = "en"
 
 
 class ContextQualityResponse(BaseModel):

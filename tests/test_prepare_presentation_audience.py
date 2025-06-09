@@ -1,6 +1,6 @@
 import pytest
 
-from riskgpt.models.schemas import AudienceEnum, PresentationRequest
+from riskgpt.models.schemas import AudienceEnum, BusinessContext, PresentationRequest
 from riskgpt.workflows import prepare_presentation_output
 
 audiences = [
@@ -18,11 +18,11 @@ audiences = [
 @pytest.mark.parametrize("audience", audiences)
 def test_prepare_presentation_all_audiences(audience):
     request = PresentationRequest(
-        project_id="p1",
-        project_description="CRM rollout",
+        business_context=BusinessContext(
+            project_id="p1", project_description="CRM rollout", language="en"
+        ),
         audience=audience,
         focus_areas=["Technical"],
-        language="en",
     )
     resp = prepare_presentation_output(request)
     assert resp.executive_summary

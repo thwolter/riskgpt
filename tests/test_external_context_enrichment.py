@@ -3,14 +3,17 @@ import os
 import pydantic
 import pytest
 
-from riskgpt.models.schemas import ExternalContextRequest
+from riskgpt.models.schemas import BusinessContext, ExternalContextRequest
 from riskgpt.workflows import external_context_enrichment
 
 
 def test_external_context_enrichment_basic():
     req = ExternalContextRequest(
-        project_name="Test Project",
-        business_context="infrastructure",
+        business_context=BusinessContext(
+            project_id="test_basic",
+            project_description="Test Project",
+            domain_knowledge="infrastructure",
+        ),
         focus_keywords=["supply"],
     )
     resp = external_context_enrichment(req)
@@ -26,8 +29,11 @@ def test_external_context_enrichment_missing_param():
 
 def test_external_context_sources_have_url():
     req = ExternalContextRequest(
-        project_name="Demo",
-        business_context="tech",
+        business_context=BusinessContext(
+            project_id="test_sources",
+            project_description="Demo",
+            domain_knowledge="tech",
+        ),
     )
     resp = external_context_enrichment(req)
     for src in resp.source_table:
@@ -36,8 +42,11 @@ def test_external_context_sources_have_url():
 
 def test_external_context_demo_company():
     req = ExternalContextRequest(
-        project_name="Energy Company",
-        business_context="fiber optic infrastructure",
+        business_context=BusinessContext(
+            project_id="test_demo",
+            project_description="Energy Company",
+            domain_knowledge="fiber optic infrastructure",
+        ),
         focus_keywords=["cyber"],
     )
     resp = external_context_enrichment(req)
@@ -63,8 +72,11 @@ def test_external_context_with_google_and_wikipedia():
         os.environ["INCLUDE_WIKIPEDIA"] = "true"
 
         req = ExternalContextRequest(
-            project_name="Artificial Intelligence",
-            business_context="machine learning",
+            business_context=BusinessContext(
+                project_id="test_ai",
+                project_description="Artificial Intelligence",
+                domain_knowledge="machine learning",
+            ),
             focus_keywords=["ethics", "regulation"],
         )
         resp = external_context_enrichment(req)

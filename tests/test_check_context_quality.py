@@ -1,10 +1,12 @@
-from riskgpt.models.schemas import ContextQualityRequest
+from riskgpt.models.schemas import BusinessContext, ContextQualityRequest
 from riskgpt.workflows import check_context_quality
 
 
 def test_check_context_quality_incomplete():
     req = ContextQualityRequest(
-        context_knowledge="CRM update.",
+        business_context=BusinessContext(
+            project_id="test_incomplete", domain_knowledge="CRM update."
+        ),
         project_type="IT",
     )
     resp = check_context_quality(req)
@@ -14,7 +16,10 @@ def test_check_context_quality_incomplete():
 
 def test_check_context_quality_complete():
     req = ContextQualityRequest(
-        context_knowledge="Our company plans a comprehensive CRM modernization including data migration and user training.",
+        business_context=BusinessContext(
+            project_id="test_complete",
+            domain_knowledge="Our company plans a comprehensive CRM modernization including data migration and user training.",
+        ),
         project_type="IT",
     )
     resp = check_context_quality(req)
