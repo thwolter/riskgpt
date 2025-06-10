@@ -29,9 +29,14 @@ def _prepare_cost_benefit_chain(
     inputs = request.model_dump()
     inputs["mitigations"] = ", ".join(request.mitigations)
     inputs["domain_section"] = (
-        f"Domain knowledge: {request.domain_knowledge}"
-        if request.domain_knowledge
+        f"Domain knowledge: {request.business_context.domain_knowledge}"
+        if request.business_context.domain_knowledge
         else ""
+    )
+    inputs["language"] = (
+        request.business_context.language.value
+        if request.business_context.language
+        else "en"
     )
     inputs["system_prompt"] = system_prompt
 
@@ -40,12 +45,47 @@ def _prepare_cost_benefit_chain(
 
 @register("cost_benefit")
 def cost_benefit_chain(request: CostBenefitRequest) -> CostBenefitResponse:
-    """Perform cost-benefit analysis on mitigations."""
+    """Perform cost-benefit analysis on mitigations.
+
+    This function analyzes the costs and benefits of each mitigation strategy
+    provided in the request. It uses a language model to generate an assessment
+    of the potential costs and benefits associated with implementing each mitigation.
+
+    Args:
+        request: A CostBenefitRequest object containing:
+            - business_context: Information about the project and organization
+            - risk_description: Description of the risk being mitigated
+            - mitigations: List of mitigation strategies to analyze
+
+    Returns:
+        A CostBenefitResponse object containing:
+            - analyses: List of CostBenefit objects with mitigation, cost, and benefit fields
+            - references: Optional list of references used in the analysis
+            - response_info: Optional metadata about the response processing
+    """
     chain, inputs = _prepare_cost_benefit_chain(request)
     return chain.invoke(inputs)
 
 
 async def async_cost_benefit_chain(request: CostBenefitRequest) -> CostBenefitResponse:
-    """Asynchronous wrapper around :func:`cost_benefit_chain`."""
+    """Asynchronous version of the cost-benefit analysis on mitigations.
+
+    This function is the asynchronous counterpart to :func:`cost_benefit_chain`.
+    It analyzes the costs and benefits of each mitigation strategy provided in the request,
+    using a language model to generate an assessment of the potential costs and benefits
+    associated with implementing each mitigation.
+
+    Args:
+        request: A CostBenefitRequest object containing:
+            - business_context: Information about the project and organization
+            - risk_description: Description of the risk being mitigated
+            - mitigations: List of mitigation strategies to analyze
+
+    Returns:
+        A CostBenefitResponse object containing:
+            - analyses: List of CostBenefit objects with mitigation, cost, and benefit fields
+            - references: Optional list of references used in the analysis
+            - response_info: Optional metadata about the response processing
+    """
     chain, inputs = _prepare_cost_benefit_chain(request)
     return await chain.invoke_async(inputs)
