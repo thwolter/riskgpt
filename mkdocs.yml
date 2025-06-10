@@ -10,11 +10,21 @@ nav:
       - Get Drivers: get_drivers.md
       - Get Assessment: get_assessment.md
       - Get Mitigations: get_mitigations.md
+      - Get Monitoring: get_monitoring.md
+      - Get Opportunities: get_opportunities.md
+      - Get Risks: get_risks.md
+      - Prioritize Risks: prioritize_risks.md
+      - Cost Benefit: cost_benefit.md
+      - Communicate Risks: communicate_risks.md
   - Workflows:
       - Risk Workflow: risk_workflow.md
       - Prepare Presentation Output: prepare_presentation_output.md
       - External Context Enrichment: external_context_enrichment.md
       - Check Context Quality: check_context_quality.md
+      - Publishing: publishing.md
+  - Design:
+      - Audience Output: design/audience_output.md
+      - Prepare Presentation Output: design/prepare_presentation_output.md
   - Schemas:
       - Base Models: schemas_base.md
       - Risk Models: schemas_risk.md

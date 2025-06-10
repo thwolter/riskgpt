@@ -62,5 +62,4 @@ for validating dictionaries against the request models. These helpers raise a
 - `validate_mitigation_request`
 
 For information on environment variables and configuration see the
-[Environment Variables](../README.md#environment-variables) section in the
-README.
+<!-- The following link was removed because README.md is not part of the documentation build -->
