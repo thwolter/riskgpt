@@ -52,8 +52,21 @@ Run the full test suite locally with:
 pytest --cov=riskgpt
 ```
 
-Integration tests that require real external services are marked with
-`integration`. Run them explicitly with:
+Unit tests run by default when executing `pytest`:
+
+```bash
+pytest
+```
+
+Integration tests require real external services and valid API keys. Set the
+environment variables first, for example:
+
+```bash
+export OPENAI_API_KEY=sk-test-123
+export DOCUMENT_SERVICE_URL=https://example.com
+```
+
+Then run the integration suite explicitly:
 
 ```bash
 pytest -m integration
