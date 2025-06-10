@@ -1,5 +1,6 @@
 import os
 
+from unittest.mock import patch
 import pytest
 
 from riskgpt.config.settings import RiskGPTSettings
@@ -115,3 +116,30 @@ def test_search_provider_selection():
             os.environ["SEARCH_PROVIDER"] = original_provider
         elif "SEARCH_PROVIDER" in os.environ:
             del os.environ["SEARCH_PROVIDER"]
+
+from unittest.mock import patch
+
+
+def test_search_google_with_mock(monkeypatch):
+    """Search using mocked Google provider."""
+    os.environ["SEARCH_PROVIDER"] = "google"
+    with patch("riskgpt.utils.search._google_search", return_value=([{"title": "G", "url": "u", "date": "", "type": "news", "comment": "c"}], True)):
+        results, success = search("q", "news")
+        assert success is True
+        assert results[0]["title"] == "G"
+
+
+def test_search_duckduckgo_with_mock(monkeypatch):
+    os.environ["SEARCH_PROVIDER"] = "duckduckgo"
+    with patch("riskgpt.utils.search._duckduckgo_search", return_value=([{"title": "D", "url": "u", "date": "", "type": "news", "comment": "c"}], True)):
+        results, success = search("q", "news")
+        assert success is True
+        assert results[0]["title"] == "D"
+
+
+def test_search_wikipedia_with_mock(monkeypatch):
+    os.environ["SEARCH_PROVIDER"] = "wikipedia"
+    with patch("riskgpt.utils.search._wikipedia_search", return_value=([{"title": "W", "url": "u", "date": "", "type": "news", "comment": "c"}], True)):
+        results, success = search("q", "news")
+        assert success is True
+        assert results[0]["title"].startswith("W")

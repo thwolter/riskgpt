@@ -2,6 +2,7 @@ import os
 
 import pydantic
 import pytest
+from unittest.mock import patch
 
 from riskgpt.models.schemas import BusinessContext, ExternalContextRequest
 from riskgpt.workflows import external_context_enrichment
@@ -111,3 +112,16 @@ def test_external_context_with_google_and_wikipedia():
             os.environ["INCLUDE_WIKIPEDIA"] = original_include_wiki
         elif "INCLUDE_WIKIPEDIA" in os.environ:
             del os.environ["INCLUDE_WIKIPEDIA"]
+
+from unittest.mock import patch
+
+
+def test_external_context_enrichment_with_mock():
+    req = ExternalContextRequest(
+        business_context=BusinessContext(project_id="mock", project_description="demo", domain_knowledge="it"),
+        focus_keywords=["keyword"],
+    )
+    mocked_result = ([{"title": "T", "url": "u", "date": "", "type": "news", "comment": "c"}], True)
+    with patch("riskgpt.workflows.external_context_enrichment.search_context", return_value=mocked_result):
+        resp = external_context_enrichment(req)
+        assert resp.source_table[0]["title"] == "T"

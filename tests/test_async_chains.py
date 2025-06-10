@@ -2,6 +2,8 @@ import asyncio
 import os
 
 import pytest
+from unittest.mock import patch
+from riskgpt.models.schemas import CategoryResponse, ResponseInfo
 
 from riskgpt.chains.get_categories import async_get_categories_chain
 from riskgpt.models.schemas import BusinessContext, CategoryRequest, LanguageEnum
@@ -22,3 +24,30 @@ def test_async_get_categories_chain():
     )
     response = asyncio.run(async_get_categories_chain(request))
     assert isinstance(response.categories, list)
+
+from unittest.mock import patch
+from riskgpt.models.schemas import CategoryResponse, ResponseInfo
+
+
+@pytest.mark.asyncio
+def test_async_get_categories_chain_with_mock():
+    """Async categories chain with mocked invoke_async."""
+    request = CategoryRequest(
+        business_context=BusinessContext(project_id="mock", language=LanguageEnum.english),
+    )
+    expected = CategoryResponse(
+        categories=["Technical"],
+        response_info=ResponseInfo(
+            consumed_tokens=5,
+            total_cost=0.0,
+            prompt_name="get_categories",
+            model_name="mock-model",
+        ),
+    )
+
+    async def mock_invoke_async(*args, **kwargs):
+        return expected
+
+    with patch("riskgpt.chains.base.BaseChain.invoke_async", mock_invoke_async):
+        resp = await async_get_categories_chain(request)
+        assert resp.categories == expected.categories
