@@ -87,8 +87,14 @@ async def test_async_risk_workflow():
 @pytest.mark.skipif(
     not os.environ.get("OPENAI_API_KEY"), reason="OPENAI_API_KEY not set"
 )
-def test_fetch_relevant_documents():
-    """Test the placeholder function for fetching relevant documents."""
+@patch("riskgpt.workflows.risk_workflow.requests.post")
+def test_fetch_relevant_documents(mock_post):
+    """Test fetching documents via the HTTP service."""
+    mock_post.return_value.status_code = 200
+    mock_post.return_value.json.return_value = {
+        "documents": ["doc-uuid-001", "doc-uuid-002"]
+    }
+
     context = BusinessContext(
         project_id="123",
         project_description="A new IT project to implement a CRM system.",
@@ -96,11 +102,9 @@ def test_fetch_relevant_documents():
         language=LanguageEnum.english,
     )
 
-    # The function should return a list of document UUIDs
     docs = fetch_relevant_documents(context)
-    assert isinstance(docs, list)
-    assert len(docs) > 0
-    assert isinstance(docs[0], str)
+    assert docs == ["doc-uuid-001", "doc-uuid-002"]
+    mock_post.assert_called_once()
 
 
 @pytest.mark.skipif(

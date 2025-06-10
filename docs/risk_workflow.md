@@ -92,7 +92,7 @@ The search query is constructed from the business context and risk category, and
 
 ## Document Microservice Integration
 
-The workflow includes integration with a document microservice that provides relevant documents based on the business context. This integration is currently implemented as a placeholder that will be replaced with actual API calls in the future.
+The workflow integrates with a document microservice that exposes a `/search` endpoint. The service URL is configured via the `DOCUMENT_SERVICE_URL` environment variable. When set, `fetch_relevant_documents` sends the business context to this endpoint and returns the list of document IDs. If the service is unavailable, the circuit breaker returns an empty list.
 
 ```python
 from riskgpt.workflows import fetch_relevant_documents
