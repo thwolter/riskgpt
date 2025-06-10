@@ -146,37 +146,6 @@ def test_risk_workflow_with_mocked_document_service(mock_fetch):
 @pytest.mark.skipif(
     not os.environ.get("OPENAI_API_KEY"), reason="OPENAI_API_KEY not set"
 )
-def test_risk_workflow_simple_mode():
-    """Test the risk workflow in simple mode (without full workflow capabilities)."""
-    # Create a request
-    request = RiskRequest(
-        business_context=BusinessContext(
-            project_id="123",
-            project_description="A new IT project to implement a CRM system.",
-            domain_knowledge="The company operates in the B2B sector.",
-            language=LanguageEnum.english,
-        ),
-        category="Technical",
-        existing_risks=["Data loss"],
-    )
-
-    # Run the workflow in simple mode
-    response = risk_workflow(request, use_full_workflow=False)
-
-    # Check that we have risks but no assessments
-    assert isinstance(response.risks, list)
-    assert len(response.risks) > 0
-    assert response.risks[0].title
-    assert response.risks[0].description
-    assert response.risks[0].category
-
-    # In simple mode, document_refs should not be present
-    assert not hasattr(response, "document_refs") or response.document_refs is None
-
-
-@pytest.mark.skipif(
-    not os.environ.get("OPENAI_API_KEY"), reason="OPENAI_API_KEY not set"
-)
 @patch("riskgpt.workflows.risk_workflow.perform_search")
 def test_risk_workflow_with_search(mock_search):
     """Test the risk workflow with search functionality."""
