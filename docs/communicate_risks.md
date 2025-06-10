@@ -5,10 +5,8 @@ The `communicate_risks` chain generates concise summaries or slide text for stak
 ## Input
 
 `CommunicationRequest`
-- `project_id` (`str`): unique identifier of the project.
+- `business_context` (`BusinessContext`): project information and language.
 - `summary` (`str`): text to summarise.
-- `domain_knowledge` (`str`, optional): additional domain-specific context.
-- `language` (`str`, optional, default `"en"`): language for the response.
 
 ## Output
 
@@ -20,12 +18,14 @@ The `communicate_risks` chain generates concise summaries or slide text for stak
 
 ```python
 from riskgpt.chains.communicate_risks import communicate_risks_chain
-from riskgpt.models.schemas import CommunicationRequest
+from riskgpt.models.schemas import BusinessContext, CommunicationRequest
 
 request = CommunicationRequest(
-    project_id="123",
-    summary="Key CRM project risks were identified and assessed.",
-    language="de"
+    business_context=BusinessContext(
+        project_id="123",
+        language="de",
+    ),
+    summary="Key CRM project risks were identified and assessed."
 )
 
 response = communicate_risks_chain(request)

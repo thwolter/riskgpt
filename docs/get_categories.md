@@ -5,11 +5,8 @@ The `get_categories` chain identifies relevant risk categories for a project des
 ## Input
 
 `CategoryRequest`
-- `project_id` (`str`): unique identifier of the project.
-- `project_description` (`str`): description of the project.
-- `domain_knowledge` (`str`, optional): additional domain-specific context.
+- `business_context` (`BusinessContext`): project description, language and other context.
 - `existing_categories` (`List[str]`, optional): predefined categories to extend.
-- `language` (`str`, optional, default `"en"`): language for the response.
 
 ## Output
 
@@ -22,14 +19,16 @@ The `get_categories` chain identifies relevant risk categories for a project des
 
 ```python
 from riskgpt.chains.get_categories import get_categories_chain
-from riskgpt.models.schemas import CategoryRequest
+from riskgpt.models.schemas import BusinessContext, CategoryRequest
 
 request = CategoryRequest(
-    project_id="123",
-    project_description="An IT project to introduce a new CRM system.",
-    domain_knowledge="The company operates in the B2B market.",
+    business_context=BusinessContext(
+        project_id="123",
+        project_description="An IT project to introduce a new CRM system.",
+        domain_knowledge="The company operates in the B2B market.",
+        language="de",
+    ),
     existing_categories=["technical", "strategic"],
-    language="de"
 )
 
 response = get_categories_chain(request)

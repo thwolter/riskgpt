@@ -5,10 +5,8 @@ The `get_monitoring` chain derives indicators for ongoing risk monitoring.
 ## Input
 
 `MonitoringRequest`
-- `project_id` (`str`): unique identifier of the project.
+- `business_context` (`BusinessContext`): project information and language.
 - `risk_description` (`str`): description of the risk.
-- `domain_knowledge` (`str`, optional): additional domain-specific context.
-- `language` (`str`, optional, default `"en"`): language for the response.
 
 ## Output
 
@@ -21,12 +19,14 @@ The `get_monitoring` chain derives indicators for ongoing risk monitoring.
 
 ```python
 from riskgpt.chains.get_monitoring import get_monitoring_chain
-from riskgpt.models.schemas import MonitoringRequest
+from riskgpt.models.schemas import BusinessContext, MonitoringRequest
 
 request = MonitoringRequest(
-    project_id="123",
+    business_context=BusinessContext(
+        project_id="123",
+        language="de",
+    ),
     risk_description="Systemausfall durch mangelnde Wartung",
-    language="de"
 )
 
 response = get_monitoring_chain(request)

@@ -5,10 +5,9 @@ The `get_assessment` chain evaluates the potential impact of a risk. It either r
 ## Input
 
 `AssessmentRequest`
-- `project_id` (`str`): unique identifier of the project.
+- `business_context` (`BusinessContext`): project information and language.
 - `risk_description` (`str`): description of the risk.
-- `domain_knowledge` (`str`, optional): additional domain-specific context.
-- `language` (`str`, optional, default `"en"`): language for the response.
+- `document_refs` (`List[str]`, optional): document IDs from the microservice.
 
 ## Output
 
@@ -27,12 +26,14 @@ The `get_assessment` chain evaluates the potential impact of a risk. It either r
 
 ```python
 from riskgpt.chains.get_assessment import get_assessment_chain
-from riskgpt.models.schemas import AssessmentRequest
+from riskgpt.models.schemas import AssessmentRequest, BusinessContext
 
 request = AssessmentRequest(
-    project_id="123",
+    business_context=BusinessContext(
+        project_id="123",
+        language="de",
+    ),
     risk_description="Systemausfall durch mangelnde Wartung kann zu Produktionsstopps führen.",
-    language="de"
 )
 
 response = get_assessment_chain(request)

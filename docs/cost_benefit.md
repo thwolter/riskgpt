@@ -5,11 +5,9 @@ The `cost_benefit` chain estimates the effort or cost of mitigations relative to
 ## Input
 
 `CostBenefitRequest`
-- `project_id` (`str`): unique identifier of the project.
+- `business_context` (`BusinessContext`): project information and language.
 - `risk_description` (`str`): description of the risk.
 - `mitigations` (`List[str]`): proposed mitigation measures.
-- `domain_knowledge` (`str`, optional): additional domain-specific context.
-- `language` (`str`, optional, default `"en"`): language for the response.
 
 ## Output
 
@@ -22,13 +20,15 @@ The `cost_benefit` chain estimates the effort or cost of mitigations relative to
 
 ```python
 from riskgpt.chains.cost_benefit import cost_benefit_chain
-from riskgpt.models.schemas import CostBenefitRequest
+from riskgpt.models.schemas import BusinessContext, CostBenefitRequest
 
 request = CostBenefitRequest(
-    project_id="123",
+    business_context=BusinessContext(
+        project_id="123",
+        language="de",
+    ),
     risk_description="Systemausfall durch mangelnde Wartung",
     mitigations=["regelmäßige Wartung", "Backup-System"],
-    language="de"
 )
 
 response = cost_benefit_chain(request)

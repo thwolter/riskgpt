@@ -5,10 +5,8 @@ The `get_opportunities` chain identifies potential positive developments based o
 ## Input
 
 `OpportunityRequest`
-- `project_id` (`str`): unique identifier of the project.
+- `business_context` (`BusinessContext`): project information and language.
 - `risks` (`List[str]`): list of risks to analyse for opportunities.
-- `domain_knowledge` (`str`, optional): additional domain-specific context.
-- `language` (`str`, optional, default `"en"`): language for the response.
 
 ## Output
 
@@ -21,12 +19,14 @@ The `get_opportunities` chain identifies potential positive developments based o
 
 ```python
 from riskgpt.chains.get_opportunities import get_opportunities_chain
-from riskgpt.models.schemas import OpportunityRequest
+from riskgpt.models.schemas import BusinessContext, OpportunityRequest
 
 request = OpportunityRequest(
-    project_id="123",
+    business_context=BusinessContext(
+        project_id="123",
+        language="de",
+    ),
     risks=["Systemausfall", "Lieferverzögerung"],
-    language="de"
 )
 
 response = get_opportunities_chain(request)
