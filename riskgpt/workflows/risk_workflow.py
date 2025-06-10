@@ -4,12 +4,11 @@ from __future__ import annotations
 
 from typing import Any, Dict, List
 
-from langchain_core.output_parsers import PydanticOutputParser
+from chains import get_risks_chain
 
 from riskgpt.chains import (
     get_assessment_chain,
 )
-from riskgpt.chains.base import BaseChain
 from riskgpt.config.settings import RiskGPTSettings
 from riskgpt.logger import logger
 from riskgpt.models.schemas import (
@@ -19,7 +18,6 @@ from riskgpt.models.schemas import (
     RiskRequest,
     RiskResponse,
 )
-from riskgpt.utils.prompt_loader import load_prompt, load_system_prompt
 from riskgpt.utils.search import search as perform_search
 
 # Import LangGraph components
@@ -58,46 +56,15 @@ def fetch_relevant_documents(context: BusinessContext) -> List[str]:
     return ["doc-uuid-001", "doc-uuid-002"]
 
 
-def _identify_risks_directly(request: RiskRequest) -> RiskResponse:
-    """
-    Direct implementation of risk identification without using get_risks_chain.
-
-    This avoids the circular dependency where get_risks_chain suggests using risk_workflow.
-    """
-    settings = RiskGPTSettings()
-    prompt_data = load_prompt("get_risks")
-    system_prompt = load_system_prompt()
-
-    parser = PydanticOutputParser(pydantic_object=RiskResponse)
-    chain = BaseChain(
-        prompt_template=prompt_data["template"],
-        parser=parser,
-        settings=settings,
-        prompt_name="get_risks",
-    )
-
-    inputs = request.model_dump()
-    # Extract fields from business_context and add them directly to inputs
-    inputs["project_description"] = request.business_context.project_description
-    inputs["language"] = request.business_context.language
-
-    inputs["domain_section"] = (
-        f"Domain knowledge: {request.business_context.domain_knowledge}"
-        if request.business_context.domain_knowledge
-        else ""
-    )
-    inputs["existing_risks_section"] = (
-        f"Existing risks: {', '.join(request.existing_risks)}"
-        if request.existing_risks
-        else ""
-    )
-    inputs["system_prompt"] = system_prompt
-
-    return chain.invoke(inputs)
-
 
 def _build_risk_workflow_graph(request: RiskRequest, use_full_workflow: bool = True):
-    """Build and compile the risk workflow graph."""
+    """
+    Build and compile the risk workflow graph.
+
+    Args:
+        request: The risk request containing business context and category
+    """
+
     if StateGraph is None:
         raise ImportError("langgraph is required for this workflow")
 
@@ -115,16 +82,10 @@ def _build_risk_workflow_graph(request: RiskRequest, use_full_workflow: bool = T
             # Use the request passed to _build_graph
             state["request"] = request
 
-        # Store whether we're using the full workflow
-        state["use_full_workflow"] = use_full_workflow
         return state
 
     def search_for_context(state: Dict[str, Any]) -> Dict[str, Any]:
         """Search for relevant context using the search provider."""
-        if not state.get("use_full_workflow", True):
-            # Skip this step if not using full workflow
-            return state
-
         req = state["request"]
         logger.info("Searching for context related to '%s'", req.category)
 
@@ -149,10 +110,6 @@ def _build_risk_workflow_graph(request: RiskRequest, use_full_workflow: bool = T
 
     def fetch_documents(state: Dict[str, Any]) -> Dict[str, Any]:
         """Fetch relevant documents for the business context."""
-        if not state.get("use_full_workflow", True):
-            # Skip this step if not using full workflow
-            return state
-
         req = state["request"]
         logger.info(
             "Fetching documents for project '%s'", req.business_context.project_id
@@ -182,8 +139,7 @@ def _build_risk_workflow_graph(request: RiskRequest, use_full_workflow: bool = T
         if "document_refs" in state and state["document_refs"]:
             risk_request.document_refs = state["document_refs"]
 
-        # Use direct implementation instead of get_risks_chain to avoid circular dependency
-        res = _identify_risks_directly(risk_request)
+        res = get_risks_chain(risk_request)
 
         if res.response_info:
             totals["tokens"] += res.response_info.consumed_tokens
@@ -207,11 +163,6 @@ def _build_risk_workflow_graph(request: RiskRequest, use_full_workflow: bool = T
 
     def assess_risks(state: Dict[str, Any]) -> Dict[str, Any]:
         """Assess each identified risk using the get_assessment_chain."""
-        if not state.get("use_full_workflow", True):
-            # Skip risk assessment if not using full workflow
-            # Just return the state with the identified risks
-            return state
-
         req = state["request"]
         assessments = []
 
@@ -299,26 +250,21 @@ def _build_risk_workflow_graph(request: RiskRequest, use_full_workflow: bool = T
     # Set the entry point
     graph.set_entry_point("initialize")
 
-    # Add edges to define the flow
-    if use_full_workflow:
-        # Full workflow with search and document integration
-        graph.add_edge("initialize", "search_for_context")
-        graph.add_edge("search_for_context", "fetch_documents")
-        graph.add_edge("fetch_documents", "identify_risks")
-        graph.add_edge("identify_risks", "assess_risks")
-        graph.add_edge("assess_risks", "prepare_response")
-    else:
-        # Simple workflow similar to legacy chains
-        graph.add_edge("initialize", "identify_risks")
-        graph.add_edge("identify_risks", "prepare_response")
+    # Add edges to define the flow (always full workflow)
+    graph.add_edge("initialize", "search_for_context")
+    graph.add_edge("search_for_context", "fetch_documents")
+    graph.add_edge("fetch_documents", "identify_risks")
+    graph.add_edge("identify_risks", "assess_risks")
+    graph.add_edge("assess_risks", "prepare_response")
 
     graph.add_edge("prepare_response", END)
 
     return graph.compile()
 
 
-def risk_workflow(request: RiskRequest, use_full_workflow: bool = True) -> RiskResponse:
-    """Run the risk workflow and return a structured response.
+def risk_workflow(request: RiskRequest) -> RiskResponse:
+    """
+    Run the risk workflow and return a structured response.
 
     This workflow orchestrates:
     1. Web search for relevant context
@@ -332,15 +278,14 @@ def risk_workflow(request: RiskRequest, use_full_workflow: bool = True) -> RiskR
     Returns:
         A risk response containing identified risks and document references
     """
-    app = _build_risk_workflow_graph(request, use_full_workflow)
+    app = _build_risk_workflow_graph(request)
     result = app.invoke({"request": request})
     return result["response"]
 
 
-async def async_risk_workflow(
-    request: RiskRequest, use_full_workflow: bool = True
-) -> RiskResponse:
-    """Asynchronous version of the risk workflow.
+async def async_risk_workflow(request: RiskRequest) -> RiskResponse:
+    """
+    Asynchronous version of the risk workflow.
 
     Args:
         request: The risk request containing business context and category
@@ -348,6 +293,6 @@ async def async_risk_workflow(
     Returns:
         A risk response containing identified risks and document references
     """
-    app = _build_risk_workflow_graph(request, use_full_workflow)
+    app = _build_risk_workflow_graph(request)
     result = await app.ainvoke({"request": request})
     return result["response"]

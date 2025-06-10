@@ -11,6 +11,7 @@ The Risk Workflow combines multiple steps into a single workflow:
 3. Risk identification (using direct implementation to avoid circular dependency)
 4. Risk assessment
 
+
 This workflow is designed to replace the individual chains with a more integrated approach that can leverage web search results and document references.
 
 ## Usage
@@ -79,6 +80,7 @@ The workflow includes integration with web search providers to find relevant con
 
 ```python
 # The search is performed automatically
+
 response = risk_workflow(request)
 
 # Access search references in the response

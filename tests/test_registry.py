@@ -3,15 +3,18 @@ import sys
 
 from riskgpt.registry.chain_registry import available, get
 
-# Force reload of the chains module to ensure decorators are applied
-if "riskgpt.chains" in sys.modules:
-    del sys.modules["riskgpt.chains"]
 
-# Import chains package to trigger registration via decorators
-importlib.import_module("riskgpt.chains")
+def _reload_chains():
+    """Reload chain modules so decorators register functions."""
+    if "riskgpt.chains" in sys.modules:
+        del sys.modules["riskgpt.chains"]
+        for mod in [m for m in list(sys.modules) if m.startswith("riskgpt.chains.")]:
+            del sys.modules[mod]
+    importlib.import_module("riskgpt.chains")
 
 
 def test_registry_contains_get_categories():
+    _reload_chains()
     assert "get_categories" in available()
     func = get("get_categories")
     assert callable(func)

@@ -204,6 +204,7 @@ request = RiskRequest(
 )
 
 # Run the workflow (includes assessment)
+
 response = risk_workflow(request)
 
 # The assessments are performed internally in the workflow
