@@ -6,6 +6,9 @@ on:
     paths:
       - 'riskgpt/**'  # Only trigger when changes are made to the main package
 
+permissions:
+  contents: write
+
 jobs:
   publish:
     runs-on: ubuntu-latest
@@ -62,9 +65,12 @@ jobs:
           skip-existing: true
 
       - name: Commit version update
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           git config --global user.name "GitHub Actions"
           git config --global user.email "actions@github.com"
           git add pyproject.toml
           git commit -m "Bump version to ${{ steps.version.outputs.new_version }}"
+          git remote set-url origin https://x-access-token:${GITHUB_TOKEN}@github.com/${{ github.repository }}.git
           git push
