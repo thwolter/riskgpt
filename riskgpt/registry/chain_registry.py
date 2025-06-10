@@ -49,7 +49,46 @@ def get(name: str) -> Callable:
 
 
 def available() -> List[str]:
-    """Return a sorted list of available chain names."""
+    """Return a sorted list of available chain names.
+
+    If the registry is empty, this function attempts to reload the
+    ``riskgpt.chains`` package to ensure that all decorators run and
+    populate the registry. This helps when tests or applications clear
+    the registry but expect ``available()`` to repopulate it automatically.
+    """
+
+    if not _CHAIN_REGISTRY:
+        try:  # pragma: no cover - reload is best effort
+            import importlib
+            import sys
+
+            import riskgpt.chains
+
+            importlib.reload(riskgpt.chains)
+            modules = [
+                "riskgpt.chains.get_categories",
+                "riskgpt.chains.get_risks",
+                "riskgpt.chains.check_definition",
+                "riskgpt.chains.get_drivers",
+                "riskgpt.chains.get_assessment",
+                "riskgpt.chains.get_mitigations",
+                "riskgpt.chains.prioritize_risks",
+                "riskgpt.chains.cost_benefit",
+                "riskgpt.chains.get_monitoring",
+                "riskgpt.chains.get_opportunities",
+                "riskgpt.chains.communicate_risks",
+                "riskgpt.chains.bias_check",
+                "riskgpt.chains.get_correlation_tags",
+            ]
+
+            for mod in modules:
+                if mod in sys.modules:
+                    importlib.reload(sys.modules[mod])
+                else:
+                    importlib.import_module(mod)
+        except Exception:  # pragma: no cover - optional dependency
+            pass
+
     return sorted(_CHAIN_REGISTRY)
 
 

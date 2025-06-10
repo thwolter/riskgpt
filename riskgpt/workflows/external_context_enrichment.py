@@ -2,12 +2,12 @@ from __future__ import annotations
 
 from typing import Any, Dict, List
 
+from riskgpt.api import search_context
 from riskgpt.models.schemas import (
     ExternalContextRequest,
     ExternalContextResponse,
     ResponseInfo,
 )
-from riskgpt.utils.search import search as perform_search
 
 END: Any
 StateGraph: Any
@@ -32,7 +32,7 @@ def _build_graph(request: ExternalContextRequest):
         query = f"{request.business_context.project_description or request.business_context.project_id} {request.business_context.domain_knowledge or ''} news"
         if request.focus_keywords:
             query += " " + " ".join(request.focus_keywords)
-        res, ok = perform_search(query, "news")
+        res, ok = search_context(query, "news")
         state.setdefault("sources", []).extend(res)
         if not ok:
             state["search_failed"] = True
@@ -40,7 +40,7 @@ def _build_graph(request: ExternalContextRequest):
 
     def professional_search(state: Dict[str, Any]) -> Dict[str, Any]:
         query = f"{request.business_context.project_description or request.business_context.project_id} {request.business_context.domain_knowledge or ''} LinkedIn"
-        res, ok = perform_search(query, "social")
+        res, ok = search_context(query, "social")
         state.setdefault("sources", []).extend(res)
         if not ok:
             state["search_failed"] = True
@@ -48,7 +48,7 @@ def _build_graph(request: ExternalContextRequest):
 
     def regulatory_search(state: Dict[str, Any]) -> Dict[str, Any]:
         query = f"{request.business_context.domain_knowledge or request.business_context.project_description or request.business_context.project_id} regulation"
-        res, ok = perform_search(query, "regulation")
+        res, ok = search_context(query, "regulation")
         state.setdefault("sources", []).extend(res)
         if not ok:
             state["search_failed"] = True
@@ -56,7 +56,7 @@ def _build_graph(request: ExternalContextRequest):
 
     def peer_search(state: Dict[str, Any]) -> Dict[str, Any]:
         query = f"{request.business_context.domain_knowledge or request.business_context.project_description or request.business_context.project_id} competitor incident"
-        res, ok = perform_search(query, "peer")
+        res, ok = search_context(query, "peer")
         state.setdefault("sources", []).extend(res)
         if not ok:
             state["search_failed"] = True

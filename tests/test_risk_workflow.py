@@ -3,12 +3,9 @@ from unittest.mock import patch
 
 import pytest
 
+from riskgpt.api import fetch_documents
 from riskgpt.models.schemas import BusinessContext, LanguageEnum, RiskRequest
-from riskgpt.workflows import (
-    async_risk_workflow,
-    fetch_relevant_documents,
-    risk_workflow,
-)
+from riskgpt.workflows import async_risk_workflow, risk_workflow
 
 
 @pytest.mark.skipif(
@@ -87,8 +84,8 @@ async def test_async_risk_workflow():
 @pytest.mark.skipif(
     not os.environ.get("OPENAI_API_KEY"), reason="OPENAI_API_KEY not set"
 )
-def test_fetch_relevant_documents():
-    """Test the placeholder function for fetching relevant documents."""
+def test_fetch_documents():
+    """Test the placeholder function for fetching documents."""
     context = BusinessContext(
         project_id="123",
         project_description="A new IT project to implement a CRM system.",
@@ -97,7 +94,7 @@ def test_fetch_relevant_documents():
     )
 
     # The function should return a list of document UUIDs
-    docs = fetch_relevant_documents(context)
+    docs = fetch_documents(context)
     assert isinstance(docs, list)
     assert len(docs) > 0
     assert isinstance(docs[0], str)
@@ -106,7 +103,7 @@ def test_fetch_relevant_documents():
 @pytest.mark.skipif(
     not os.environ.get("OPENAI_API_KEY"), reason="OPENAI_API_KEY not set"
 )
-@patch("riskgpt.workflows.risk_workflow.fetch_relevant_documents")
+@patch("riskgpt.api.fetch_documents")
 def test_risk_workflow_with_mocked_document_service(mock_fetch):
     """Test the risk workflow with a mocked document service."""
     # Mock the document service to return specific UUIDs
@@ -173,7 +170,7 @@ def test_risk_workflow_simple_mode():
 @pytest.mark.skipif(
     not os.environ.get("OPENAI_API_KEY"), reason="OPENAI_API_KEY not set"
 )
-@patch("riskgpt.workflows.risk_workflow.perform_search")
+@patch("riskgpt.api.search_context")
 def test_risk_workflow_with_search(mock_search):
     """Test the risk workflow with search functionality."""
     # Mock the search function to return specific results

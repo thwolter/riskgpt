@@ -82,6 +82,23 @@ RiskGPT loads configuration from environment variables using a `.env` file at th
 | `GOOGLE_CSE_ID` | – | Google Custom Search Engine ID. Required when `SEARCH_PROVIDER` is set to `google`. |
 | `GOOGLE_API_KEY` | – | Google API key. Required when `SEARCH_PROVIDER` is set to `google`. |
 
+## Programmatic API
+
+RiskGPT exposes helper functions to access search and document services directly.
+
+```python
+from riskgpt.api import search_context, fetch_documents
+from riskgpt.models.schemas import BusinessContext
+
+# Search recent news
+results, ok = search_context("ACME Corp cybersecurity", "news")
+
+# Retrieve project documents
+docs = fetch_documents(BusinessContext(project_id="ACME-1"))
+```
+
+These helpers are used by the workflows but can also be invoked in isolation.
+
 ## License
 
 RiskGPT is distributed under the terms of the MIT license. See the [LICENSE](LICENSE) file for details.
