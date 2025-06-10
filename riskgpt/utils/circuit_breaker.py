@@ -64,6 +64,11 @@ if PYBREAKER_AVAILABLE:
         fail_max=3,  # Number of failures before opening the circuit
         reset_timeout=30,  # Seconds before attempting to close the circuit
     )
+
+    document_service_breaker = pybreaker.CircuitBreaker(
+        fail_max=3,
+        reset_timeout=30,
+    )
 else:
     # Dummy circuit breakers that always allow calls
     class DummyBreaker:
@@ -74,6 +79,7 @@ else:
     duckduckgo_breaker = DummyBreaker()
     google_search_breaker = DummyBreaker()
     wikipedia_breaker = DummyBreaker()
+    document_service_breaker = DummyBreaker()
 
 # Add monitoring for circuit state changes
 if PYBREAKER_AVAILABLE:
@@ -92,10 +98,11 @@ if PYBREAKER_AVAILABLE:
     duckduckgo_breaker.add_listener(CircuitStateListener())
     google_search_breaker.add_listener(CircuitStateListener())
     wikipedia_breaker.add_listener(CircuitStateListener())
+    document_service_breaker.add_listener(CircuitStateListener())
 
 
 def with_fallback(
-    fallback_func: Callable[..., T]
+    fallback_func: Callable[..., T],
 ) -> Callable[[Callable[..., T]], Callable[..., T]]:
     """Decorator that provides a fallback function when the circuit is open.
 

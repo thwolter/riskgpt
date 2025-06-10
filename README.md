@@ -81,6 +81,7 @@ RiskGPT loads configuration from environment variables using a `.env` file at th
 | `INCLUDE_WIKIPEDIA` | `False` | Whether to include Wikipedia results in addition to the primary search provider. |
 | `GOOGLE_CSE_ID` | – | Google Custom Search Engine ID. Required when `SEARCH_PROVIDER` is set to `google`. |
 | `GOOGLE_API_KEY` | – | Google API key. Required when `SEARCH_PROVIDER` is set to `google`. |
+| `DOCUMENT_SERVICE_URL` | – | Base URL of the document microservice used to retrieve relevant documents in the risk workflow. |
 
 ## Programmatic API
 
