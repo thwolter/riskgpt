@@ -2,21 +2,22 @@
 
 from __future__ import annotations
 
-from typing import Any, Dict, List
+from typing import Any, Dict
 
 import requests
 from langchain_core.output_parsers import PydanticOutputParser
 from chains import get_risks_chain
 
 
-from riskgpt.chains import (
-    get_assessment_chain,
-)
+
+from riskgpt.api import fetch_documents, search_context
+from riskgpt.chains import get_assessment_chain
+from riskgpt.chains.base import BaseChain
+
 from riskgpt.config.settings import RiskGPTSettings
 from riskgpt.logger import logger
 from riskgpt.models.schemas import (
     AssessmentRequest,
-    BusinessContext,
     ResponseInfo,
     RiskRequest,
     RiskResponse,
@@ -25,7 +26,6 @@ from riskgpt.models.schemas import (
 from riskgpt.utils.circuit_breaker import document_service_breaker, with_fallback
 from riskgpt.utils.prompt_loader import load_prompt, load_system_prompt
 
-from riskgpt.utils.search import search as perform_search
 
 # Import LangGraph components
 END: Any
@@ -120,7 +120,7 @@ def _build_risk_workflow_graph(request: RiskRequest, use_full_workflow: bool = T
         query = f"{req.business_context.project_description or req.business_context.project_id} {req.business_context.domain_knowledge or ''} {req.category} risks"
 
         # Perform search
-        search_results, success = perform_search(query, "risk_context")
+        search_results, success = search_context(query, "risk_context")
         if success and search_results:
             state["search_results"] = search_results
             logger.info("Found %d search results", len(search_results))
@@ -135,15 +135,15 @@ def _build_risk_workflow_graph(request: RiskRequest, use_full_workflow: bool = T
 
         return state
 
-    def fetch_documents(state: Dict[str, Any]) -> Dict[str, Any]:
+    def fetch_documents_step(state: Dict[str, Any]) -> Dict[str, Any]:
         """Fetch relevant documents for the business context."""
         req = state["request"]
         logger.info(
             "Fetching documents for project '%s'", req.business_context.project_id
         )
 
-        # Call the placeholder function that will eventually integrate with the document microservice
-        document_refs = fetch_relevant_documents(req.business_context)
+        # Call the API helper that integrates with the document service
+        document_refs = fetch_documents(req.business_context)
         state["document_refs"] = document_refs
 
         logger.info("Found %d relevant documents", len(document_refs))
@@ -269,7 +269,7 @@ def _build_risk_workflow_graph(request: RiskRequest, use_full_workflow: bool = T
     # Add nodes to the graph
     graph.add_node("initialize", initialize_state)
     graph.add_node("search_for_context", search_for_context)
-    graph.add_node("fetch_documents", fetch_documents)
+    graph.add_node("fetch_documents", fetch_documents_step)
     graph.add_node("identify_risks", identify_risks)
     graph.add_node("assess_risks", assess_risks)
     graph.add_node("prepare_response", prepare_response)

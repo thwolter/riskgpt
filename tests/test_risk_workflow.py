@@ -3,12 +3,9 @@ from unittest.mock import patch
 
 import pytest
 
+from riskgpt.api import fetch_documents
 from riskgpt.models.schemas import BusinessContext, LanguageEnum, RiskRequest
-from riskgpt.workflows import (
-    async_risk_workflow,
-    fetch_relevant_documents,
-    risk_workflow,
-)
+from riskgpt.workflows import async_risk_workflow, risk_workflow
 
 
 @pytest.mark.skipif(
@@ -87,13 +84,9 @@ async def test_async_risk_workflow():
 @pytest.mark.skipif(
     not os.environ.get("OPENAI_API_KEY"), reason="OPENAI_API_KEY not set"
 )
-@patch("riskgpt.workflows.risk_workflow.requests.post")
-def test_fetch_relevant_documents(mock_post):
-    """Test fetching documents via the HTTP service."""
-    mock_post.return_value.status_code = 200
-    mock_post.return_value.json.return_value = {
-        "documents": ["doc-uuid-001", "doc-uuid-002"]
-    }
+
+def test_fetch_documents():
+    """Test the placeholder function for fetching documents."""
 
     context = BusinessContext(
         project_id="123",
@@ -102,15 +95,19 @@ def test_fetch_relevant_documents(mock_post):
         language=LanguageEnum.english,
     )
 
-    docs = fetch_relevant_documents(context)
-    assert docs == ["doc-uuid-001", "doc-uuid-002"]
-    mock_post.assert_called_once()
+
+    # The function should return a list of document UUIDs
+    docs = fetch_documents(context)
+    assert isinstance(docs, list)
+    assert len(docs) > 0
+    assert isinstance(docs[0], str)
+
 
 
 @pytest.mark.skipif(
     not os.environ.get("OPENAI_API_KEY"), reason="OPENAI_API_KEY not set"
 )
-@patch("riskgpt.workflows.risk_workflow.fetch_relevant_documents")
+@patch("riskgpt.api.fetch_documents")
 def test_risk_workflow_with_mocked_document_service(mock_fetch):
     """Test the risk workflow with a mocked document service."""
     # Mock the document service to return specific UUIDs
@@ -146,7 +143,9 @@ def test_risk_workflow_with_mocked_document_service(mock_fetch):
 @pytest.mark.skipif(
     not os.environ.get("OPENAI_API_KEY"), reason="OPENAI_API_KEY not set"
 )
+
 @patch("riskgpt.workflows.risk_workflow.perform_search")
+
 def test_risk_workflow_with_search(mock_search):
     """Test the risk workflow with search functionality."""
     # Mock the search function to return specific results

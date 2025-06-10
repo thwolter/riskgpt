@@ -96,10 +96,10 @@ The search query is constructed from the business context and risk category, and
 The workflow includes integration with a document microservice that provides relevant documents based on the business context. This integration is currently implemented as a placeholder that will be replaced with actual API calls in the future. Set the `DOCUMENT_SERVICE_URL` environment variable to the base URL of this microservice.
 
 ```python
-from riskgpt.workflows import fetch_relevant_documents
+from riskgpt.api import fetch_documents
 
 # Fetch relevant documents for a business context
-document_refs = fetch_relevant_documents(business_context)
+document_refs = fetch_documents(business_context)
 ```
 
 ## Schema Updates
