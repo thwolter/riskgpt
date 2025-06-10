@@ -33,6 +33,13 @@ def _prepare_check_definition_chain(
 
     inputs = request.model_dump()
     inputs["domain_section"] = request.business_context.get_domain_section()
+    # Handle missing language in BusinessContext
+    language = (
+        request.business_context.language.value
+        if request.business_context.language is not None
+        else "en"
+    )
+    inputs["language"] = language
 
     return chain, inputs
 
@@ -42,18 +49,23 @@ def _process_response(
 ) -> DefinitionCheckResponse:
     """Helper function to process the response for both sync and async versions."""
     bias_res = bias_check_chain(
-        BiasCheckRequest(
-            risk_description=response.revised_description,
-            language=request.business_context.language,
-        )
+        BiasCheckRequest(risk_description=response.revised_description)
     )
 
     extras: List[str] = []
     desc = response.revised_description.lower()
+    original_desc = request.risk_description.lower()
+
+    # Check both original and revised descriptions for biases
     if re.search(r"\bmay\b|\bcould\b|\bpossibly\b", desc):
         extras.append("ambiguous wording")
-    if re.search(r"\b(is|was|were|be|been|being|are)\b\s+\w+ed\b", desc):
+
+    # Check both original and revised descriptions for passive voice
+    if re.search(r"\b(is|was|were|be|been|being|are)\b\s+\w+ed\b", desc) or re.search(
+        r"\b(is|was|were|be|been|being|are)\b\s+\w+ed\b", original_desc
+    ):
         extras.append("passive voice")
+
     if not re.search(r"\d", desc):
         extras.append("missing quantifiers")
 
