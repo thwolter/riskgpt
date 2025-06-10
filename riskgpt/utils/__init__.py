@@ -1,6 +1,7 @@
 """Utility modules for RiskGPT."""
 
 from riskgpt.utils.circuit_breaker import (
+    document_service_breaker,
     duckduckgo_breaker,
     openai_breaker,
     with_fallback,
@@ -13,6 +14,7 @@ __all__ = [
     "get_memory",
     "load_prompt",
     "load_system_prompt",
+    "document_service_breaker",
     "openai_breaker",
     "register_memory_backend",
     "with_fallback",

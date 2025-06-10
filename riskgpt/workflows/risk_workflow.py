@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from typing import Any, Dict, List
 
+import requests
 from langchain_core.output_parsers import PydanticOutputParser
 
 from riskgpt.chains import (
@@ -19,6 +20,7 @@ from riskgpt.models.schemas import (
     RiskRequest,
     RiskResponse,
 )
+from riskgpt.utils.circuit_breaker import document_service_breaker, with_fallback
 from riskgpt.utils.prompt_loader import load_prompt, load_system_prompt
 from riskgpt.utils.search import search as perform_search
 
@@ -36,26 +38,46 @@ except Exception:  # pragma: no cover - optional dependency
     StateGraph = None
 
 
+def _documents_fallback(context: BusinessContext) -> List[str]:
+    """Fallback when the document service is unavailable."""
+    logger.warning("Document service unavailable, returning empty list")
+    return []
+
+
+@document_service_breaker
+@with_fallback(_documents_fallback)
 def fetch_relevant_documents(context: BusinessContext) -> List[str]:
-    """
-    Placeholder for future document microservice integration.
-
-    This function will call the document microservice to fetch relevant document UUIDs
-    based on the business context. In the future, it will make an API call to the
-    /search endpoint of the document microservice.
-
-    Args:
-        context: The business context containing project information
-
-    Returns:
-        A list of document UUIDs relevant to the business context
-    """
-    # This is a placeholder that will be replaced with actual API calls
-    # to the document microservice in the future
+    """Fetch relevant document UUIDs from the document service."""
     logger.info("Fetching relevant documents for project %s", context.project_id)
+    settings = RiskGPTSettings()
+    if not settings.DOCUMENT_SERVICE_URL:
+        logger.warning("DOCUMENT_SERVICE_URL not configured")
+        return []
 
-    # Mock response for now - in the future this will be real UUIDs from the microservice
-    return ["doc-uuid-001", "doc-uuid-002"]
+    url = f"{settings.DOCUMENT_SERVICE_URL.rstrip('/')}/search"
+    try:
+        resp = requests.post(url, json=context.model_dump(), timeout=10)
+        resp.raise_for_status()
+    except Exception as exc:
+        logger.error("Document service request failed: %s", exc)
+        raise
+
+    try:
+        data = resp.json()
+    except Exception:
+        logger.warning("Invalid JSON response from document service")
+        return []
+
+    if isinstance(data, dict):
+        docs = data.get("documents")
+    else:
+        docs = data
+
+    if not isinstance(docs, list):
+        logger.warning("Unexpected document service response format")
+        return []
+
+    return [str(d) for d in docs]
 
 
 def _identify_risks_directly(request: RiskRequest) -> RiskResponse:
