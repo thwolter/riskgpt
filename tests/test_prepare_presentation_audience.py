@@ -22,6 +22,7 @@ audiences = [
     not os.environ.get("OPENAI_API_KEY"), reason="OPENAI_API_KEY not set"
 )
 @pytest.mark.parametrize("audience", audiences)
+@pytest.mark.integration
 def test_prepare_presentation_all_audiences(audience, monkeypatch):
     # If OPENAI_API_KEY is not set, mock the prepare_presentation_output function
     if not os.environ.get("OPENAI_API_KEY"):

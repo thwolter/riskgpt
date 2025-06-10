@@ -9,6 +9,7 @@ from riskgpt.models.schemas import BusinessContext, MitigationRequest
 @pytest.mark.skipif(
     not os.environ.get("OPENAI_API_KEY"), reason="OPENAI_API_KEY not set"
 )
+@pytest.mark.integration
 def test_get_mitigations_chain():
     request = MitigationRequest(
         business_context=BusinessContext(

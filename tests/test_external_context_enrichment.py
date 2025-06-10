@@ -7,6 +7,7 @@ from riskgpt.models.schemas import BusinessContext, ExternalContextRequest
 from riskgpt.workflows import external_context_enrichment
 
 
+@pytest.mark.integration
 def test_external_context_enrichment_basic():
     req = ExternalContextRequest(
         business_context=BusinessContext(
@@ -27,6 +28,7 @@ def test_external_context_enrichment_missing_param():
         ExternalContextRequest()
 
 
+@pytest.mark.integration
 def test_external_context_sources_have_url():
     req = ExternalContextRequest(
         business_context=BusinessContext(
@@ -40,6 +42,7 @@ def test_external_context_sources_have_url():
         assert src.get("url")
 
 
+@pytest.mark.integration
 def test_external_context_demo_company():
     req = ExternalContextRequest(
         business_context=BusinessContext(
@@ -60,6 +63,7 @@ def test_external_context_demo_company():
     or os.environ.get("INCLUDE_WIKIPEDIA", "").lower() != "true",
     reason="Google API key, CSE ID, or Wikipedia integration not set",
 )
+@pytest.mark.integration
 def test_external_context_with_google_and_wikipedia():
     """Test the workflow with Google Custom Search API and Wikipedia."""
 
