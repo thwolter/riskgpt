@@ -6,6 +6,9 @@ on:
     paths:
       - 'riskgpt/**'  # Only trigger when changes are made to the main package
 
+permissions:
+  contents: write
+
 jobs:
   publish:
     runs-on: ubuntu-latest
