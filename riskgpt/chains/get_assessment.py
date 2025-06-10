@@ -10,6 +10,20 @@ from .base import BaseChain
 
 @register("get_assessment")
 def get_assessment_chain(request: AssessmentRequest) -> AssessmentResponse:
+    """
+    Legacy chain for risk assessment.
+
+    .. deprecated:: 1.0.0
+       Use :func:`riskgpt.workflows.risk_workflow.risk_workflow` instead.
+    """
+    import warnings
+
+    warnings.warn(
+        "get_assessment_chain is deprecated. Use risk_workflow instead.",
+        DeprecationWarning,
+        stacklevel=2,
+    )
+
     settings = RiskGPTSettings()
     prompt_data = load_prompt("get_assessment")
     system_prompt = load_system_prompt()
@@ -34,7 +48,20 @@ def get_assessment_chain(request: AssessmentRequest) -> AssessmentResponse:
 
 
 async def async_get_assessment_chain(request: AssessmentRequest) -> AssessmentResponse:
-    """Asynchronous wrapper around :func:`get_assessment_chain`."""
+    """
+    Asynchronous wrapper around :func:`get_assessment_chain`.
+
+    .. deprecated:: 1.0.0
+       Use :func:`riskgpt.workflows.risk_workflow.async_risk_workflow` instead.
+    """
+    import warnings
+
+    warnings.warn(
+        "async_get_assessment_chain is deprecated. Use async_risk_workflow instead.",
+        DeprecationWarning,
+        stacklevel=2,
+    )
+
     settings = RiskGPTSettings()
     prompt_data = load_prompt("get_assessment")
     system_prompt = load_system_prompt()

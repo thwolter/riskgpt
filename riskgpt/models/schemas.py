@@ -89,6 +89,10 @@ class BusinessContext(BaseModel):
     language: Optional[LanguageEnum] = Field(
         default=LanguageEnum.english, description="Language for the response"
     )
+    document_refs: Optional[List[str]] = Field(
+        default=None,
+        description="References to document UUIDs from the document microservice",
+    )
 
     def get_domain_section(self) -> str:
         """Return formatted domain knowledge section if available."""
@@ -175,7 +179,11 @@ class CategoryResponse(BaseResponse):
 
 
 class RiskRequest(BaseModel):
-    """Input model for risk identification."""
+    """
+    Input model for risk identification.
+
+    Can include document_refs to reference relevant documents from the document microservice.
+    """
 
     business_context: BusinessContext = Field(
         description="Business context information"
@@ -186,6 +194,10 @@ class RiskRequest(BaseModel):
     )
     existing_risks: Optional[List[str]] = Field(
         default=None, description="List of existing risks to consider"
+    )
+    document_refs: Optional[List[str]] = Field(
+        default=None,
+        description="References to document UUIDs from the document microservice",
     )
 
     @field_validator("max_risks")
@@ -212,11 +224,20 @@ class RiskRequest(BaseModel):
 
 
 class Risk(BaseModel):
-    """Representation of a single risk."""
+    """
+    Representation of a single risk.
+
+    A risk can be linked to relevant documents via document_refs field,
+    which contains UUIDs of documents from the document microservice.
+    """
 
     title: str = Field(description="Short title of the risk")
     description: str = Field(description="Detailed description of the risk")
     category: str = Field(description="Category the risk belongs to")
+    document_refs: Optional[List[str]] = Field(
+        default=None,
+        description="References to document UUIDs from the document microservice",
+    )
 
     model_config = ConfigDict(
         json_schema_extra={
@@ -230,11 +251,20 @@ class Risk(BaseModel):
 
 
 class RiskResponse(BaseResponse):
-    """Output model for identified risks."""
+    """
+    Output model for identified risks.
+
+    Can include document_refs to reference relevant documents from the document microservice.
+    The legacy references field is maintained for backward compatibility.
+    """
 
     risks: List[Risk] = Field(description="List of identified risks")
     references: Optional[List[str]] = Field(
         default=None, description="References used for risk identification"
+    )
+    document_refs: Optional[List[str]] = Field(
+        default=None,
+        description="References to document UUIDs from the document microservice",
     )
 
     model_config = ConfigDict(
@@ -391,12 +421,20 @@ class DriverResponse(BaseResponse):
 
 
 class AssessmentRequest(BaseModel):
-    """Input model for assessing a risk's impact."""
+    """
+    Input model for assessing a risk's impact.
+
+    Can include document_refs to reference relevant documents from the document microservice.
+    """
 
     business_context: BusinessContext = Field(
         description="Business context information"
     )
     risk_description: str = Field(description="Risk description to assess")
+    document_refs: Optional[List[str]] = Field(
+        default=None,
+        description="References to document UUIDs from the document microservice",
+    )
 
     model_config = ConfigDict(
         json_schema_extra={
@@ -448,7 +486,12 @@ class QuantitativeAssessment(BaseModel):
 
 
 class AssessmentResponse(BaseResponse):
-    """Output model for a risk impact assessment."""
+    """
+    Output model for a risk impact assessment.
+
+    Can include document_refs to reference relevant documents from the document microservice.
+    The legacy references field is maintained for backward compatibility.
+    """
 
     quantitative: Optional[QuantitativeAssessment] = Field(
         default=None, description="Quantitative assessment details"
@@ -464,6 +507,10 @@ class AssessmentResponse(BaseResponse):
     )
     references: Optional[List[str]] = Field(
         default=None, description="References used for the assessment"
+    )
+    document_refs: Optional[List[str]] = Field(
+        default=None,
+        description="References to document UUIDs from the document microservice",
     )
 
     model_config = ConfigDict(

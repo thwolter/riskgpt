@@ -10,6 +10,20 @@ from .base import BaseChain
 
 @register("get_risks")
 def get_risks_chain(request: RiskRequest) -> RiskResponse:
+    """
+    Legacy chain for risk identification.
+
+    .. deprecated:: 1.0.0
+       Use :func:`riskgpt.workflows.risk_workflow.risk_workflow` instead.
+    """
+    import warnings
+
+    warnings.warn(
+        "get_risks_chain is deprecated. Use risk_workflow instead.",
+        DeprecationWarning,
+        stacklevel=2,
+    )
+
     settings = RiskGPTSettings()
     prompt_data = load_prompt("get_risks")
     system_prompt = load_system_prompt()
@@ -43,7 +57,20 @@ def get_risks_chain(request: RiskRequest) -> RiskResponse:
 
 
 async def async_get_risks_chain(request: RiskRequest) -> RiskResponse:
-    """Asynchronous wrapper around :func:`get_risks_chain`."""
+    """
+    Asynchronous wrapper around :func:`get_risks_chain`.
+
+    .. deprecated:: 1.0.0
+       Use :func:`riskgpt.workflows.risk_workflow.async_risk_workflow` instead.
+    """
+    import warnings
+
+    warnings.warn(
+        "async_get_risks_chain is deprecated. Use async_risk_workflow instead.",
+        DeprecationWarning,
+        stacklevel=2,
+    )
+
     settings = RiskGPTSettings()
     prompt_data = load_prompt("get_risks")
     system_prompt = load_system_prompt()

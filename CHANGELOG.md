@@ -2,6 +2,25 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.1.4] - 2025-06-15
+
+### ✨ Features
+
+- Add new Risk Workflow to orchestrate risk identification and assessment
+- Add document microservice integration with placeholder methods
+- Extend schema models to include document UUID references
+- Add tests for the new Risk Workflow
+
+### 🔄 Changes
+
+- Deprecate get_risks_chain and get_assessment_chain in favor of the new Risk Workflow
+- Mark legacy chains with deprecation warnings
+
+### 📚 Documentation
+
+- Add documentation for the new Risk Workflow
+- Update main documentation to reflect deprecated chains
+
 ## [0.1.3] - 2025-06-09
 
 ### ✨ Features
