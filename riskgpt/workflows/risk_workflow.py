@@ -4,12 +4,11 @@ from __future__ import annotations
 
 from typing import Any, Dict, List
 
-from langchain_core.output_parsers import PydanticOutputParser
+from chains import get_risks_chain
 
 from riskgpt.chains import (
     get_assessment_chain,
 )
-from riskgpt.chains.base import BaseChain
 from riskgpt.config.settings import RiskGPTSettings
 from riskgpt.logger import logger
 from riskgpt.models.schemas import (
@@ -19,7 +18,6 @@ from riskgpt.models.schemas import (
     RiskRequest,
     RiskResponse,
 )
-from riskgpt.utils.prompt_loader import load_prompt, load_system_prompt
 from riskgpt.utils.search import search as perform_search
 
 # Import LangGraph components
@@ -58,45 +56,8 @@ def fetch_relevant_documents(context: BusinessContext) -> List[str]:
     return ["doc-uuid-001", "doc-uuid-002"]
 
 
-def _identify_risks_directly(request: RiskRequest) -> RiskResponse:
-    """
-    Direct implementation of risk identification without using get_risks_chain.
 
-    This avoids the circular dependency where get_risks_chain suggests using risk_workflow.
-    """
-    settings = RiskGPTSettings()
-    prompt_data = load_prompt("get_risks")
-    system_prompt = load_system_prompt()
-
-    parser = PydanticOutputParser(pydantic_object=RiskResponse)
-    chain = BaseChain(
-        prompt_template=prompt_data["template"],
-        parser=parser,
-        settings=settings,
-        prompt_name="get_risks",
-    )
-
-    inputs = request.model_dump()
-    # Extract fields from business_context and add them directly to inputs
-    inputs["project_description"] = request.business_context.project_description
-    inputs["language"] = request.business_context.language
-
-    inputs["domain_section"] = (
-        f"Domain knowledge: {request.business_context.domain_knowledge}"
-        if request.business_context.domain_knowledge
-        else ""
-    )
-    inputs["existing_risks_section"] = (
-        f"Existing risks: {', '.join(request.existing_risks)}"
-        if request.existing_risks
-        else ""
-    )
-    inputs["system_prompt"] = system_prompt
-
-    return chain.invoke(inputs)
-
-
-def _build_risk_workflow_graph(request: RiskRequest):
+def _build_risk_workflow_graph(request: RiskRequest, use_full_workflow: bool = True):
     """
     Build and compile the risk workflow graph.
 
@@ -177,8 +138,7 @@ def _build_risk_workflow_graph(request: RiskRequest):
         if "document_refs" in state and state["document_refs"]:
             risk_request.document_refs = state["document_refs"]
 
-        # Use direct implementation instead of get_risks_chain to avoid circular dependency
-        res = _identify_risks_directly(risk_request)
+        res = get_risks_chain(risk_request)
 
         if res.response_info:
             totals["tokens"] += res.response_info.consumed_tokens
@@ -310,6 +270,7 @@ def risk_workflow(request: RiskRequest) -> RiskResponse:
     2. Document retrieval from the document microservice
     3. Risk identification (using direct implementation to avoid circular dependency)
     4. Risk assessment
+
 
     Args:
         request: The risk request containing business context and category
