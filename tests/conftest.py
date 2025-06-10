@@ -1,6 +1,7 @@
 import sys
 from pathlib import Path
 
+import pytest
 from dotenv import load_dotenv
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -11,3 +12,12 @@ if str(ROOT) not in sys.path:
 dotenv_path = ROOT / ".env"
 if dotenv_path.exists():
     load_dotenv(dotenv_path=dotenv_path)
+
+
+@pytest.fixture(autouse=True)
+def set_max_tokens_for_tests(monkeypatch):
+    """Set MAX_TOKENS to a small value for all tests."""
+    # Set the MAX_TOKENS environment variable for tests
+    # Using 400 instead of 10 to ensure the model can generate a valid response
+    # with all required fields for all risks while still limiting token usage
+    monkeypatch.setenv("MAX_TOKENS", "400")

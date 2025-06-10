@@ -101,23 +101,3 @@ from riskgpt.api import fetch_documents
 # Fetch relevant documents for a business context
 document_refs = fetch_documents(business_context)
 ```
-
-## Schema Updates
-
-The following schema models have been updated to include document references:
-
-- `BusinessContext`: Added `document_refs` field to reference documents
-- `Risk`: Added `document_refs` field to link risks to relevant documents
-- `RiskRequest`: Added `document_refs` field for input document references
-- `RiskResponse`: Added `document_refs` field for output document references
-- `AssessmentRequest`: Added `document_refs` field for input document references
-- `AssessmentResponse`: Added `document_refs` field for output document references
-
-## Deprecation Notice
-
-The following chains have been deprecated in favor of the Risk Workflow:
-
-- `get_risks_chain` and `async_get_risks_chain`: Use `risk_workflow` and `async_risk_workflow` instead
-- `get_assessment_chain` and `async_get_assessment_chain`: Use `risk_workflow` and `async_risk_workflow` instead
-
-These chains will continue to work but will issue deprecation warnings.

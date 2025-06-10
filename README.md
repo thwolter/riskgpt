@@ -74,6 +74,7 @@ RiskGPT loads configuration from environment variables using a `.env` file at th
 |----------|---------|-------------|
 | `OPENAI_API_KEY` | – | API key for the OpenAI service. Required to use the real model; otherwise a dummy model is used. |
 | `OPENAI_MODEL_NAME` | `gpt-4.1-mini` | Name of the OpenAI chat model. |
+| `MAX_TOKENS` | – | Maximum number of tokens in the model's response. This value might be adjusted depending on the model being used. |
 | `MEMORY_TYPE` | `buffer` | Conversation memory backend. Choose `none`, `buffer` or `redis`. |
 | `REDIS_URL` | – | Redis connection string. Needed when `MEMORY_TYPE` is set to `redis`. |
 | `DEFAULT_PROMPT_VERSION` | `v1` | Version identifier for prompts under `riskgpt/prompts`. |

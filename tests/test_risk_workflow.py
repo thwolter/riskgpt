@@ -104,7 +104,7 @@ def test_fetch_documents():
 @pytest.mark.skipif(
     not os.environ.get("OPENAI_API_KEY"), reason="OPENAI_API_KEY not set"
 )
-@patch("riskgpt.api.fetch_documents")
+@patch("riskgpt.workflows.risk_workflow.fetch_documents")
 def test_risk_workflow_with_mocked_document_service(mock_fetch):
     """Test the risk workflow with a mocked document service."""
     # Mock the document service to return specific UUIDs
@@ -140,7 +140,7 @@ def test_risk_workflow_with_mocked_document_service(mock_fetch):
 @pytest.mark.skipif(
     not os.environ.get("OPENAI_API_KEY"), reason="OPENAI_API_KEY not set"
 )
-@patch("riskgpt.workflows.risk_workflow.perform_search")
+@patch("riskgpt.workflows.risk_workflow.search_context")
 def test_risk_workflow_with_search(mock_search):
     """Test the risk workflow with search functionality."""
     # Mock the search function to return specific results

@@ -124,7 +124,11 @@ def with_fallback(
                         "Circuit is open for %s, using fallback", func.__name__
                     )
                     return fallback_func(*args, **kwargs)
-                raise
+                # Also use fallback for any other exception
+                logger.warning(
+                    "Exception in %s, using fallback: %s", func.__name__, str(e)
+                )
+                return fallback_func(*args, **kwargs)
 
         return wrapper
 

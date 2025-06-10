@@ -42,6 +42,7 @@ class BaseChain:
                 api_key=self.settings.OPENAI_API_KEY,
                 temperature=self.settings.TEMPERATURE,
                 model=self.settings.OPENAI_MODEL_NAME,
+                max_tokens=self.settings.MAX_TOKENS,  # type: ignore
             )
         else:
             if hasattr(self.parser, "pydantic_object"):
