@@ -76,7 +76,6 @@ def fetch_relevant_documents(context: BusinessContext) -> List[str]:
     return [str(d) for d in docs]
 
 
-
 def _build_risk_workflow_graph(request: RiskRequest, use_full_workflow: bool = True):
     """
     Build and compile the risk workflow graph.

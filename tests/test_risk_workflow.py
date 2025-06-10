@@ -84,7 +84,6 @@ async def test_async_risk_workflow():
 @pytest.mark.skipif(
     not os.environ.get("OPENAI_API_KEY"), reason="OPENAI_API_KEY not set"
 )
-
 def test_fetch_documents():
     """Test the placeholder function for fetching documents."""
 
@@ -95,13 +94,11 @@ def test_fetch_documents():
         language=LanguageEnum.english,
     )
 
-
     # The function should return a list of document UUIDs
     docs = fetch_documents(context)
     assert isinstance(docs, list)
     assert len(docs) > 0
     assert isinstance(docs[0], str)
-
 
 
 @pytest.mark.skipif(
@@ -143,9 +140,7 @@ def test_risk_workflow_with_mocked_document_service(mock_fetch):
 @pytest.mark.skipif(
     not os.environ.get("OPENAI_API_KEY"), reason="OPENAI_API_KEY not set"
 )
-
 @patch("riskgpt.workflows.risk_workflow.perform_search")
-
 def test_risk_workflow_with_search(mock_search):
     """Test the risk workflow with search functionality."""
     # Mock the search function to return specific results
