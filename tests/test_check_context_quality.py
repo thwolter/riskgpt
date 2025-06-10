@@ -1,7 +1,10 @@
+import pytest
+
 from riskgpt.models.schemas import BusinessContext, ContextQualityRequest
 from riskgpt.workflows import check_context_quality
 
 
+@pytest.mark.integration
 def test_check_context_quality_incomplete():
     req = ContextQualityRequest(
         business_context=BusinessContext(
@@ -14,6 +17,7 @@ def test_check_context_quality_incomplete():
     assert isinstance(resp.suggested_improvements, str)
 
 
+@pytest.mark.integration
 def test_check_context_quality_complete():
     req = ContextQualityRequest(
         business_context=BusinessContext(

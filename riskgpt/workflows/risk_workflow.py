@@ -5,10 +5,9 @@ from __future__ import annotations
 from typing import Any, Dict, List
 
 import requests
-from chains import get_risks_chain
 
 from riskgpt.api import fetch_documents, search_context
-from riskgpt.chains import get_assessment_chain
+from riskgpt.chains import get_assessment_chain, get_risks_chain
 from riskgpt.config.settings import RiskGPTSettings
 from riskgpt.logger import logger
 from riskgpt.models.schemas import (
