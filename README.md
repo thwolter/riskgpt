@@ -52,6 +52,15 @@ Run the full test suite locally with:
 pytest --cov=riskgpt
 ```
 
+Integration tests that require real external services are marked with
+`integration`. Run them explicitly with:
+
+```bash
+pytest -m integration
+```
+
+Unit tests run without this marker.
+
 ## Circuit Breaker Pattern
 
 RiskGPT implements a circuit breaker pattern for external API calls to handle service outages gracefully. The circuit breaker prevents sending requests to services that are likely to fail, reducing latency and conserving resources. It also allows the application to degrade gracefully when external services are unavailable.

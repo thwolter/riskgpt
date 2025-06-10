@@ -21,6 +21,7 @@ from riskgpt.models.schemas import (
 @pytest.mark.skipif(
     not os.environ.get("OPENAI_API_KEY"), reason="OPENAI_API_KEY not set"
 )
+@pytest.mark.integration
 def test_cost_benefit_chain():
     """Test the cost_benefit_chain function."""
     request = CostBenefitRequest(
@@ -46,6 +47,7 @@ def test_cost_benefit_chain():
 @pytest.mark.skipif(
     not os.environ.get("OPENAI_API_KEY"), reason="OPENAI_API_KEY not set"
 )
+@pytest.mark.integration
 def test_async_cost_benefit_chain():
     """Test the async_cost_benefit_chain function."""
     request = CostBenefitRequest(

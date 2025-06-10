@@ -14,6 +14,7 @@ from riskgpt.utils.search import (
     not os.environ.get("GOOGLE_API_KEY") or not os.environ.get("GOOGLE_CSE_ID"),
     reason="Google API key or CSE ID not set",
 )
+@pytest.mark.integration
 def test_google_search():
     """Test Google Custom Search API."""
     query = "artificial intelligence"
@@ -34,6 +35,7 @@ def test_google_search():
     or os.environ.get("INCLUDE_WIKIPEDIA", "").lower() != "true",
     reason="Wikipedia integration not enabled",
 )
+@pytest.mark.integration
 def test_wikipedia_search():
     """Test Wikipedia search."""
 
@@ -58,6 +60,7 @@ def test_wikipedia_search():
     or os.environ.get("INCLUDE_WIKIPEDIA", "").lower() != "true",
     reason="Google API key, CSE ID, or Wikipedia integration not set",
 )
+@pytest.mark.integration
 def test_combined_search():
     """Test combined search with Google and Wikipedia."""
 

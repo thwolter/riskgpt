@@ -11,6 +11,7 @@ from riskgpt.workflows import async_risk_workflow, risk_workflow
 @pytest.mark.skipif(
     not os.environ.get("OPENAI_API_KEY"), reason="OPENAI_API_KEY not set"
 )
+@pytest.mark.integration
 def test_risk_workflow_basic():
     """Test the basic functionality of the risk workflow."""
     request = RiskRequest(
@@ -34,6 +35,7 @@ def test_risk_workflow_basic():
 @pytest.mark.skipif(
     not os.environ.get("OPENAI_API_KEY"), reason="OPENAI_API_KEY not set"
 )
+@pytest.mark.integration
 def test_risk_workflow_with_document_refs():
     """Test the risk workflow with document references."""
     # Create a request with document_refs
@@ -64,6 +66,7 @@ def test_risk_workflow_with_document_refs():
     not os.environ.get("OPENAI_API_KEY"), reason="OPENAI_API_KEY not set"
 )
 @pytest.mark.asyncio
+@pytest.mark.integration
 async def test_async_risk_workflow():
     """Test the async version of the risk workflow."""
     request = RiskRequest(
@@ -84,6 +87,7 @@ async def test_async_risk_workflow():
 @pytest.mark.skipif(
     not os.environ.get("OPENAI_API_KEY"), reason="OPENAI_API_KEY not set"
 )
+@pytest.mark.integration
 def test_fetch_documents():
     """Test the placeholder function for fetching documents."""
 
@@ -105,6 +109,7 @@ def test_fetch_documents():
     not os.environ.get("OPENAI_API_KEY"), reason="OPENAI_API_KEY not set"
 )
 @patch("riskgpt.workflows.risk_workflow.fetch_documents")
+@pytest.mark.integration
 def test_risk_workflow_with_mocked_document_service(mock_fetch):
     """Test the risk workflow with a mocked document service."""
     # Mock the document service to return specific UUIDs
@@ -141,6 +146,7 @@ def test_risk_workflow_with_mocked_document_service(mock_fetch):
     not os.environ.get("OPENAI_API_KEY"), reason="OPENAI_API_KEY not set"
 )
 @patch("riskgpt.workflows.risk_workflow.search_context")
+@pytest.mark.integration
 def test_risk_workflow_with_search(mock_search):
     """Test the risk workflow with search functionality."""
     # Mock the search function to return specific results
