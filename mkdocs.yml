@@ -11,7 +11,19 @@ nav:
       - Get Assessment: get_assessment.md
       - Get Mitigations: get_mitigations.md
   - Workflows:
+      - Risk Workflow: risk_workflow.md
+      - Prepare Presentation Output: prepare_presentation_output.md
       - External Context Enrichment: external_context_enrichment.md
+      - Check Context Quality: check_context_quality.md
+  - Schemas:
+      - Base Models: schemas_base.md
+      - Risk Models: schemas_risk.md
+      - Assessment Models: schemas_assessment.md
+      - Driver Models: schemas_driver.md
+      - Category Models: schemas_category.md
+      - Presentation Models: schemas_presentation.md
+      - External Context Models: schemas_external_context.md
+      - Context Quality Models: schemas_context_quality.md
 markdown_extensions:
   - toc:
       permalink: true
