@@ -186,7 +186,7 @@ if response.quantitative:
 
 ### Assessment in Risk Workflow
 
-The assessment models are also used in the risk workflow when `use_full_workflow=True`:
+The assessment models are also used in the risk workflow:
 
 ```python
 from riskgpt.models.schemas import BusinessContext, RiskRequest
@@ -203,8 +203,8 @@ request = RiskRequest(
     max_risks=5,
 )
 
-# Run the workflow with full capabilities (includes assessment)
-response = risk_workflow(request, use_full_workflow=True)
+# Run the workflow (includes assessment)
+response = risk_workflow(request)
 
 # The assessments are performed internally in the workflow
 # but are not directly accessible in the response

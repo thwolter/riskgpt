@@ -97,14 +97,7 @@ def _identify_risks_directly(request: RiskRequest) -> RiskResponse:
 
 
 def _build_risk_workflow_graph(request: RiskRequest, use_full_workflow: bool = True):
-    """
-    Build and compile the risk workflow graph.
-
-    Args:
-        request: The risk request containing business context and category
-        use_full_workflow: Whether to use the full workflow capabilities (search, document integration)
-                          or a simpler version similar to the legacy chains
-    """
+    """Build and compile the risk workflow graph."""
     if StateGraph is None:
         raise ImportError("langgraph is required for this workflow")
 
@@ -325,19 +318,16 @@ def _build_risk_workflow_graph(request: RiskRequest, use_full_workflow: bool = T
 
 
 def risk_workflow(request: RiskRequest, use_full_workflow: bool = True) -> RiskResponse:
-    """
-    Run the risk workflow and return a structured response.
+    """Run the risk workflow and return a structured response.
 
     This workflow orchestrates:
-    1. Web search for relevant context (if use_full_workflow=True)
-    2. Document retrieval from the document microservice (if use_full_workflow=True)
+    1. Web search for relevant context
+    2. Document retrieval from the document microservice
     3. Risk identification (using direct implementation to avoid circular dependency)
-    4. Risk assessment (if use_full_workflow=True)
+    4. Risk assessment
 
     Args:
         request: The risk request containing business context and category
-        use_full_workflow: Whether to use the full workflow capabilities (search, document integration)
-                          or a simpler version similar to the legacy chains. Default is True.
 
     Returns:
         A risk response containing identified risks and document references
@@ -350,13 +340,10 @@ def risk_workflow(request: RiskRequest, use_full_workflow: bool = True) -> RiskR
 async def async_risk_workflow(
     request: RiskRequest, use_full_workflow: bool = True
 ) -> RiskResponse:
-    """
-    Asynchronous version of the risk workflow.
+    """Asynchronous version of the risk workflow.
 
     Args:
         request: The risk request containing business context and category
-        use_full_workflow: Whether to use the full workflow capabilities (search, document integration)
-                          or a simpler version similar to the legacy chains. Default is True.
 
     Returns:
         A risk response containing identified risks and document references

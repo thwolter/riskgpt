@@ -142,8 +142,8 @@ def test_risk_workflow_with_mocked_document_service(mock_fetch):
 @pytest.mark.skipif(
     not os.environ.get("OPENAI_API_KEY"), reason="OPENAI_API_KEY not set"
 )
-def test_risk_workflow_simple_mode():
-    """Test the risk workflow in simple mode (without full workflow capabilities)."""
+def test_risk_workflow_basic():
+    """Test the risk workflow with additional features disabled."""
     # Create a request
     request = RiskRequest(
         business_context=BusinessContext(
@@ -156,7 +156,7 @@ def test_risk_workflow_simple_mode():
         existing_risks=["Data loss"],
     )
 
-    # Run the workflow in simple mode
+    # Run the workflow with features disabled
     response = risk_workflow(request, use_full_workflow=False)
 
     # Check that we have risks but no assessments
@@ -166,7 +166,7 @@ def test_risk_workflow_simple_mode():
     assert response.risks[0].description
     assert response.risks[0].category
 
-    # In simple mode, document_refs should not be present
+    # Document references should not be present when features are disabled
     assert not hasattr(response, "document_refs") or response.document_refs is None
 
 
