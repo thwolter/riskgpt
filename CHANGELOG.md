@@ -2,7 +2,7 @@
 
 All notable changes to this project will be documented in this file.
 
-## [0.1.4] - 2025-06-15
+## [0.1.4] - 2025-06-10
 
 ### ✨ Features
 
@@ -15,6 +15,7 @@ All notable changes to this project will be documented in this file.
 
 - Deprecate get_risks_chain and get_assessment_chain in favor of the new Risk Workflow
 - Mark legacy chains with deprecation warnings
+- Remove simple mode from the risk workflow and always run full workflow
 
 ### 📚 Documentation
 

@@ -25,6 +25,9 @@ class RiskGPTSettings(BaseSettings):
     GOOGLE_CSE_ID: Optional[str] = None
     GOOGLE_API_KEY: Optional[SecretStr] = None
 
+    # Document service settings
+    DOCUMENT_SERVICE_URL: Optional[str] = None
+
     @field_validator("MEMORY_TYPE")
     @classmethod
     def validate_memory_type(cls, v: str) -> str:

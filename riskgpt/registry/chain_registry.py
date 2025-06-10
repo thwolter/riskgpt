@@ -50,6 +50,19 @@ def get(name: str) -> Callable:
 
 def available() -> List[str]:
     """Return a sorted list of available chain names."""
+    if not _CHAIN_REGISTRY:
+        try:  # Lazy import to populate registry
+            import importlib
+            import sys
+
+            pkg = importlib.import_module("riskgpt.chains")
+            importlib.reload(pkg)
+
+            for name in list(sys.modules):
+                if name.startswith("riskgpt.chains."):
+                    importlib.reload(sys.modules[name])
+        except Exception:
+            pass
     return sorted(_CHAIN_REGISTRY)
 
 

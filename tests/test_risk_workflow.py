@@ -87,8 +87,14 @@ async def test_async_risk_workflow():
 @pytest.mark.skipif(
     not os.environ.get("OPENAI_API_KEY"), reason="OPENAI_API_KEY not set"
 )
-def test_fetch_relevant_documents():
-    """Test the placeholder function for fetching relevant documents."""
+@patch("riskgpt.workflows.risk_workflow.requests.post")
+def test_fetch_relevant_documents(mock_post):
+    """Test fetching documents via the HTTP service."""
+    mock_post.return_value.status_code = 200
+    mock_post.return_value.json.return_value = {
+        "documents": ["doc-uuid-001", "doc-uuid-002"]
+    }
+
     context = BusinessContext(
         project_id="123",
         project_description="A new IT project to implement a CRM system.",
@@ -96,11 +102,9 @@ def test_fetch_relevant_documents():
         language=LanguageEnum.english,
     )
 
-    # The function should return a list of document UUIDs
     docs = fetch_relevant_documents(context)
-    assert isinstance(docs, list)
-    assert len(docs) > 0
-    assert isinstance(docs[0], str)
+    assert docs == ["doc-uuid-001", "doc-uuid-002"]
+    mock_post.assert_called_once()
 
 
 @pytest.mark.skipif(
@@ -137,37 +141,6 @@ def test_risk_workflow_with_mocked_document_service(mock_fetch):
     assert "mock-doc-001" in response.document_refs
     assert "mock-doc-002" in response.document_refs
     assert "mock-doc-003" in response.document_refs
-
-
-@pytest.mark.skipif(
-    not os.environ.get("OPENAI_API_KEY"), reason="OPENAI_API_KEY not set"
-)
-def test_risk_workflow_simple_mode():
-    """Test the risk workflow in simple mode (without full workflow capabilities)."""
-    # Create a request
-    request = RiskRequest(
-        business_context=BusinessContext(
-            project_id="123",
-            project_description="A new IT project to implement a CRM system.",
-            domain_knowledge="The company operates in the B2B sector.",
-            language=LanguageEnum.english,
-        ),
-        category="Technical",
-        existing_risks=["Data loss"],
-    )
-
-    # Run the workflow in simple mode
-    response = risk_workflow(request, use_full_workflow=False)
-
-    # Check that we have risks but no assessments
-    assert isinstance(response.risks, list)
-    assert len(response.risks) > 0
-    assert response.risks[0].title
-    assert response.risks[0].description
-    assert response.risks[0].category
-
-    # In simple mode, document_refs should not be present
-    assert not hasattr(response, "document_refs") or response.document_refs is None
 
 
 @pytest.mark.skipif(
