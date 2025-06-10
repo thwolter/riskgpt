@@ -3,6 +3,7 @@ from unittest.mock import patch
 
 import pytest
 
+from riskgpt.models.schemas import RiskResponse, Risk, AssessmentResponse, ResponseInfo
 from riskgpt.api import fetch_documents
 from riskgpt.models.schemas import BusinessContext, LanguageEnum, RiskRequest
 from riskgpt.workflows import async_risk_workflow, risk_workflow
@@ -194,3 +195,59 @@ def test_risk_workflow_with_search(mock_search):
         "Common Technical Risks in IT Projects" in response.references
         or "CRM Implementation Challenges" in response.references
     )
+
+from riskgpt.models.schemas import RiskResponse, Risk, AssessmentResponse, ResponseInfo
+
+
+def test_risk_workflow_with_mock(monkeypatch):
+    """Run workflow with all external calls patched."""
+    request = RiskRequest(
+        business_context=BusinessContext(project_id="mock", language=LanguageEnum.english),
+        category="Technical",
+        max_risks=1,
+    )
+    risk_res = RiskResponse(
+        risks=[Risk(title="Mock Risk", description="desc", category="Technical")],
+        references=["SearchRef"],
+        response_info=ResponseInfo(consumed_tokens=1, total_cost=0.0, prompt_name="get_risks", model_name="mock"),
+    )
+    assess_res = AssessmentResponse(
+        impact=0.5,
+        probability=0.1,
+        evidence="evidence",
+        response_info=ResponseInfo(consumed_tokens=1, total_cost=0.0, prompt_name="get_assessment", model_name="mock"),
+    )
+    with patch("riskgpt.api.search_context", return_value=([{"title": "SearchRef", "url": "u", "date": "", "type": "risk_context", "comment": ""}], True)), \
+         patch("riskgpt.api.fetch_documents", return_value=["doc1"]), \
+         patch("riskgpt.chains.base.BaseChain.invoke", side_effect=[risk_res, assess_res]):
+        resp = risk_workflow(request)
+        assert resp.risks[0].title == "Mock Risk"
+        assert resp.document_refs == ["doc1"]
+        assert resp.references == ["SearchRef"]
+
+
+@pytest.mark.asyncio
+def test_async_risk_workflow_with_mock(monkeypatch):
+    request = RiskRequest(
+        business_context=BusinessContext(project_id="mock", language=LanguageEnum.english),
+        category="Technical",
+        max_risks=1,
+    )
+    risk_res = RiskResponse(
+        risks=[Risk(title="Mock Risk", description="desc", category="Technical")],
+        references=["SearchRef"],
+        response_info=ResponseInfo(consumed_tokens=1, total_cost=0.0, prompt_name="get_risks", model_name="mock"),
+    )
+    assess_res = AssessmentResponse(
+        impact=0.5,
+        probability=0.1,
+        evidence="evidence",
+        response_info=ResponseInfo(consumed_tokens=1, total_cost=0.0, prompt_name="get_assessment", model_name="mock"),
+    )
+    with patch("riskgpt.api.search_context", return_value=([{"title": "SearchRef", "url": "u", "date": "", "type": "risk_context", "comment": ""}], True)), \
+         patch("riskgpt.api.fetch_documents", return_value=["doc1"]), \
+         patch("riskgpt.chains.base.BaseChain.invoke", side_effect=[risk_res, assess_res]):
+        resp = asyncio.run(async_risk_workflow(request))
+        assert resp.risks[0].title == "Mock Risk"
+        assert resp.document_refs == ["doc1"]
+        assert resp.references == ["SearchRef"]
