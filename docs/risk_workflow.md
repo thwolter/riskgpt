@@ -6,12 +6,12 @@ The Risk Workflow orchestrates the risk identification and assessment process, i
 
 The Risk Workflow combines multiple steps into a single workflow:
 
-1. Web search for relevant context (when using full workflow)
-2. Document retrieval from the document microservice (when using full workflow)
+1. Web search for relevant context
+2. Document retrieval from the document microservice
 3. Risk identification (using direct implementation to avoid circular dependency)
 4. Risk assessment (when using full workflow)
 
-This workflow is designed to replace the individual chains with a more integrated approach that can leverage web search results and document references. It also provides a simpler mode that skips the search, document integration, and assessment steps for faster processing.
+This workflow replaces the individual chains with a single graph that leverages web search results and document references for improved context.
 
 ## Usage
 
@@ -33,11 +33,8 @@ request = RiskRequest(
     existing_risks=["Data migration failure"],
 )
 
-# Run the workflow with full capabilities (default)
+# Run the workflow
 response = risk_workflow(request)
-
-# Or run in simple mode (faster, no search or assessment)
-simple_response = risk_workflow(request, use_full_workflow=False)
 
 # Access the results
 for risk in response.risks:
@@ -67,11 +64,8 @@ async def main():
     # Create a request (same as above)
     # ...
 
-    # Run the workflow asynchronously with full capabilities
+    # Run the workflow asynchronously
     response = await async_risk_workflow(request)
-
-    # Or run in simple mode (faster, no search or assessment)
-    simple_response = await async_risk_workflow(request, use_full_workflow=False)
 
     # Access the results (same as above)
     # ...
@@ -84,8 +78,8 @@ asyncio.run(main())
 The workflow includes integration with web search providers to find relevant context for risk identification. This uses the same search functionality as the external_context_enrichment workflow.
 
 ```python
-# The search is performed automatically when using the full workflow
-response = risk_workflow(request, use_full_workflow=True)
+# The search is performed automatically by the workflow
+response = risk_workflow(request)
 
 # Access search references in the response
 if response.references:

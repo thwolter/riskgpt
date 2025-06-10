@@ -56,14 +56,13 @@ def fetch_relevant_documents(context: BusinessContext) -> List[str]:
     return ["doc-uuid-001", "doc-uuid-002"]
 
 
+
 def _build_risk_workflow_graph(request: RiskRequest, use_full_workflow: bool = True):
     """
     Build and compile the risk workflow graph.
 
     Args:
         request: The risk request containing business context and category
-        use_full_workflow: Whether to use the full workflow capabilities (search, document integration)
-                          or a simpler version similar to the legacy chains
     """
     if StateGraph is None:
         raise ImportError("langgraph is required for this workflow")
@@ -82,16 +81,10 @@ def _build_risk_workflow_graph(request: RiskRequest, use_full_workflow: bool = T
             # Use the request passed to _build_graph
             state["request"] = request
 
-        # Store whether we're using the full workflow
-        state["use_full_workflow"] = use_full_workflow
         return state
 
     def search_for_context(state: Dict[str, Any]) -> Dict[str, Any]:
         """Search for relevant context using the search provider."""
-        if not state.get("use_full_workflow", True):
-            # Skip this step if not using full workflow
-            return state
-
         req = state["request"]
         logger.info("Searching for context related to '%s'", req.category)
 
@@ -116,10 +109,6 @@ def _build_risk_workflow_graph(request: RiskRequest, use_full_workflow: bool = T
 
     def fetch_documents(state: Dict[str, Any]) -> Dict[str, Any]:
         """Fetch relevant documents for the business context."""
-        if not state.get("use_full_workflow", True):
-            # Skip this step if not using full workflow
-            return state
-
         req = state["request"]
         logger.info(
             "Fetching documents for project '%s'", req.business_context.project_id
@@ -173,11 +162,6 @@ def _build_risk_workflow_graph(request: RiskRequest, use_full_workflow: bool = T
 
     def assess_risks(state: Dict[str, Any]) -> Dict[str, Any]:
         """Assess each identified risk using the get_assessment_chain."""
-        if not state.get("use_full_workflow", True):
-            # Skip risk assessment if not using full workflow
-            # Just return the state with the identified risks
-            return state
-
         req = state["request"]
         assessments = []
 
@@ -265,61 +249,50 @@ def _build_risk_workflow_graph(request: RiskRequest, use_full_workflow: bool = T
     # Set the entry point
     graph.set_entry_point("initialize")
 
-    # Add edges to define the flow
-    if use_full_workflow:
-        # Full workflow with search and document integration
-        graph.add_edge("initialize", "search_for_context")
-        graph.add_edge("search_for_context", "fetch_documents")
-        graph.add_edge("fetch_documents", "identify_risks")
-        graph.add_edge("identify_risks", "assess_risks")
-        graph.add_edge("assess_risks", "prepare_response")
-    else:
-        # Simple workflow similar to legacy chains
-        graph.add_edge("initialize", "identify_risks")
-        graph.add_edge("identify_risks", "prepare_response")
+    # Add edges to define the flow (always full workflow)
+    graph.add_edge("initialize", "search_for_context")
+    graph.add_edge("search_for_context", "fetch_documents")
+    graph.add_edge("fetch_documents", "identify_risks")
+    graph.add_edge("identify_risks", "assess_risks")
+    graph.add_edge("assess_risks", "prepare_response")
 
     graph.add_edge("prepare_response", END)
 
     return graph.compile()
 
 
-def risk_workflow(request: RiskRequest, use_full_workflow: bool = True) -> RiskResponse:
+def risk_workflow(request: RiskRequest) -> RiskResponse:
     """
     Run the risk workflow and return a structured response.
 
     This workflow orchestrates:
-    1. Web search for relevant context (if use_full_workflow=True)
-    2. Document retrieval from the document microservice (if use_full_workflow=True)
-    3. Risk identification
-    4. Risk assessment (if use_full_workflow=True)
+    1. Web search for relevant context
+    2. Document retrieval from the document microservice
+    3. Risk identification (using direct implementation to avoid circular dependency)
+    4. Risk assessment
+
 
     Args:
         request: The risk request containing business context and category
-        use_full_workflow: Whether to use the full workflow capabilities (search, document integration)
-                          or a simpler version similar to the legacy chains. Default is True.
 
     Returns:
         A risk response containing identified risks and document references
     """
-    app = _build_risk_workflow_graph(request, use_full_workflow)
+    app = _build_risk_workflow_graph(request)
     result = app.invoke({"request": request})
     return result["response"]
 
 
-async def async_risk_workflow(
-    request: RiskRequest, use_full_workflow: bool = True
-) -> RiskResponse:
+async def async_risk_workflow(request: RiskRequest) -> RiskResponse:
     """
     Asynchronous version of the risk workflow.
 
     Args:
         request: The risk request containing business context and category
-        use_full_workflow: Whether to use the full workflow capabilities (search, document integration)
-                          or a simpler version similar to the legacy chains. Default is True.
 
     Returns:
         A risk response containing identified risks and document references
     """
-    app = _build_risk_workflow_graph(request, use_full_workflow)
+    app = _build_risk_workflow_graph(request)
     result = await app.ainvoke({"request": request})
     return result["response"]
