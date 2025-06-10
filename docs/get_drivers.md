@@ -7,10 +7,8 @@ reference sources the model is confident actually exist.
 ## Input
 
 `DriverRequest`
-- `project_id` (`str`): unique identifier of the project.
+- `business_context` (`BusinessContext`): project information and language.
 - `risk_description` (`str`): description of the risk.
-- `domain_knowledge` (`str`, optional): additional domain-specific context.
-- `language` (`str`, optional, default `"en"`): language for the response.
 
 ## Output
 
@@ -23,12 +21,14 @@ reference sources the model is confident actually exist.
 
 ```python
 from riskgpt.chains.get_drivers import get_drivers_chain
-from riskgpt.models.schemas import DriverRequest
+from riskgpt.models.schemas import BusinessContext, DriverRequest
 
 request = DriverRequest(
-    project_id="123",
+    business_context=BusinessContext(
+        project_id="123",
+        language="de",
+    ),
     risk_description="Systemausfall durch mangelnde Wartung kann zu Produktionsstopps führen.",
-    language="de"
 )
 
 response = get_drivers_chain(request)

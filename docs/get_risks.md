@@ -5,13 +5,11 @@ The `get_risks` chain identifies specific risks for a given risk category.
 ## Input
 
 `RiskRequest`
-- `project_id` (`str`): unique identifier of the project.
-- `project_description` (`str`): description of the project.
+- `business_context` (`BusinessContext`): project description, language and other context.
 - `category` (`str`): the risk category to analyse.
 - `max_risks` (`int`, optional, default `5`): maximum number of risks to return.
-- `domain_knowledge` (`str`, optional): additional domain-specific context.
 - `existing_risks` (`List[str]`, optional): already identified risks to exclude.
-- `language` (`str`, optional, default `"en"`): language for the response.
+- `document_refs` (`List[str]`, optional): document IDs from the microservice.
 
 ## Output
 
@@ -24,16 +22,18 @@ The `get_risks` chain identifies specific risks for a given risk category.
 
 ```python
 from riskgpt.chains.get_risks import get_risks_chain
-from riskgpt.models.schemas import RiskRequest
+from riskgpt.models.schemas import BusinessContext, RiskRequest
 
 request = RiskRequest(
-    project_id="123",
-    project_description="An IT project to introduce a new CRM system.",
+    business_context=BusinessContext(
+        project_id="123",
+        project_description="An IT project to introduce a new CRM system.",
+        domain_knowledge="The company operates in the B2B market.",
+        language="de",
+    ),
     category="Technical",
     max_risks=5,
-    domain_knowledge="The company operates in the B2B market.",
     existing_risks=["Data loss"],
-    language="de"
 )
 
 response = get_risks_chain(request)

@@ -5,10 +5,8 @@ The `check_definition` chain validates and revises a risk description so that it
 ## Input
 
 `DefinitionCheckRequest`
-- `project_id` (`str`): unique identifier of the project.
+- `business_context` (`BusinessContext`): project information and language.
 - `risk_description` (`str`): risk definition provided by the user.
-- `domain_knowledge` (`str`, optional): additional domain-specific context.
-- `language` (`str`, optional, default `"en"`): language for the response.
 
 ## Output
 
@@ -21,12 +19,14 @@ The `check_definition` chain validates and revises a risk description so that it
 
 ```python
 from riskgpt.chains.check_definition import check_definition_chain
-from riskgpt.models.schemas import DefinitionCheckRequest
+from riskgpt.models.schemas import BusinessContext, DefinitionCheckRequest
 
 request = DefinitionCheckRequest(
-    project_id="123",
+    business_context=BusinessContext(
+        project_id="123",
+        language="de",
+    ),
     risk_description="Systemausfall durch mangelnde Wartung kann zu Produktionsstopps führen.",
-    language="de"
 )
 
 response = check_definition_chain(request)

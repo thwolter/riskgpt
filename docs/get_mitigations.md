@@ -7,11 +7,9 @@ is reasonably sure of a real source.
 ## Input
 
 `MitigationRequest`
-- `project_id` (`str`): unique identifier of the project.
+- `business_context` (`BusinessContext`): project information and language.
 - `risk_description` (`str`): description of the risk.
 - `drivers` (`List[str]`, optional): identified drivers for this risk.
-- `domain_knowledge` (`str`, optional): additional domain-specific context.
-- `language` (`str`, optional, default `"en"`): language for the response.
 
 ## Output
 
@@ -24,13 +22,15 @@ is reasonably sure of a real source.
 
 ```python
 from riskgpt.chains.get_mitigations import get_mitigations_chain
-from riskgpt.models.schemas import MitigationRequest
+from riskgpt.models.schemas import BusinessContext, MitigationRequest
 
 request = MitigationRequest(
-    project_id="123",
+    business_context=BusinessContext(
+        project_id="123",
+        language="de",
+    ),
     risk_description="Systemausfall durch mangelnde Wartung kann zu Produktionsstopps führen.",
     drivers=["veraltete Hardware"],
-    language="de"
 )
 
 response = get_mitigations_chain(request)

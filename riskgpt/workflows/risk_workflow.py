@@ -2,30 +2,23 @@
 
 from __future__ import annotations
 
-from typing import Any, Dict
+from typing import Any, Dict, List
 
 import requests
-from langchain_core.output_parsers import PydanticOutputParser
 from chains import get_risks_chain
-
-
 
 from riskgpt.api import fetch_documents, search_context
 from riskgpt.chains import get_assessment_chain
-from riskgpt.chains.base import BaseChain
-
 from riskgpt.config.settings import RiskGPTSettings
 from riskgpt.logger import logger
 from riskgpt.models.schemas import (
     AssessmentRequest,
+    BusinessContext,
     ResponseInfo,
     RiskRequest,
     RiskResponse,
 )
-
 from riskgpt.utils.circuit_breaker import document_service_breaker, with_fallback
-from riskgpt.utils.prompt_loader import load_prompt, load_system_prompt
-
 
 # Import LangGraph components
 END: Any

@@ -5,10 +5,8 @@ The `prioritize_risks` chain ranks identified risks by urgency or expected impac
 ## Input
 
 `PrioritizationRequest`
-- `project_id` (`str`): unique identifier of the project.
+- `business_context` (`BusinessContext`): project information and language.
 - `risks` (`List[str]`): risk descriptions to rank.
-- `domain_knowledge` (`str`, optional): additional domain-specific context.
-- `language` (`str`, optional, default `"en"`): language for the response.
 
 ## Output
 
@@ -21,12 +19,14 @@ The `prioritize_risks` chain ranks identified risks by urgency or expected impac
 
 ```python
 from riskgpt.chains.prioritize_risks import prioritize_risks_chain
-from riskgpt.models.schemas import PrioritizationRequest
+from riskgpt.models.schemas import BusinessContext, PrioritizationRequest
 
 request = PrioritizationRequest(
-    project_id="123",
+    business_context=BusinessContext(
+        project_id="123",
+        language="de",
+    ),
     risks=["Delayed delivery", "Budget overrun"],
-    language="de"
 )
 
 response = prioritize_risks_chain(request)
