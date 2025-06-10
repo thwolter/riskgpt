@@ -64,6 +64,7 @@ def _build_risk_workflow_graph(request: RiskRequest, use_full_workflow: bool = T
     Args:
         request: The risk request containing business context and category
     """
+
     if StateGraph is None:
         raise ImportError("langgraph is required for this workflow")
 
@@ -270,7 +271,6 @@ def risk_workflow(request: RiskRequest) -> RiskResponse:
     2. Document retrieval from the document microservice
     3. Risk identification (using direct implementation to avoid circular dependency)
     4. Risk assessment
-
 
     Args:
         request: The risk request containing business context and category

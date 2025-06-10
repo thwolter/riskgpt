@@ -9,9 +9,10 @@ The Risk Workflow combines multiple steps into a single workflow:
 1. Web search for relevant context
 2. Document retrieval from the document microservice
 3. Risk identification (using direct implementation to avoid circular dependency)
-4. Risk assessment (when using full workflow)
+4. Risk assessment
 
-This workflow replaces the individual chains with a single graph that leverages web search results and document references for improved context.
+
+This workflow is designed to replace the individual chains with a more integrated approach that can leverage web search results and document references.
 
 ## Usage
 
@@ -45,11 +46,11 @@ for risk in response.risks:
         print(f"Document References: {risk.document_refs}")
     print("---")
 
-# Access document references in the response (only available in full workflow mode)
+# Access document references in the response
 if response.document_refs:
     print(f"Document References: {response.document_refs}")
 
-# Access search references in the response (only available in full workflow mode)
+# Access search references in the response
 if response.references:
     print(f"Search References: {response.references}")
 ```
@@ -78,7 +79,8 @@ asyncio.run(main())
 The workflow includes integration with web search providers to find relevant context for risk identification. This uses the same search functionality as the external_context_enrichment workflow.
 
 ```python
-# The search is performed automatically by the workflow
+# The search is performed automatically
+
 response = risk_workflow(request)
 
 # Access search references in the response

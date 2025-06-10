@@ -203,7 +203,8 @@ request = RiskRequest(
     max_risks=5,
 )
 
-# Run the workflow with full capabilities (includes assessment)
+# Run the workflow (includes assessment)
+
 response = risk_workflow(request)
 
 # The assessments are performed internally in the workflow
