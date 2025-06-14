@@ -234,3 +234,13 @@ def prepare_presentation_output(request: PresentationRequest) -> PresentationRes
     app = _build_graph(request)
     result = app.invoke({"request": request})
     return result["response"]
+
+
+async def async_prepare_presentation_output(
+    request: PresentationRequest,
+) -> PresentationResponse:
+    """Async wrapper around :func:`prepare_presentation_output`."""
+
+    # For now, we will just call the sync version
+    # In a real async implementation, you would use an async graph execution method
+    return prepare_presentation_output(request)

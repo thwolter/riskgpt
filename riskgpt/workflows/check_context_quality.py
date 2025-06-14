@@ -30,3 +30,10 @@ def check_context_quality(request: ContextQualityRequest) -> ContextQualityRespo
     inputs["language"] = request.business_context.language or "en"
     inputs["system_prompt"] = system_prompt
     return chain.invoke(inputs)
+
+
+async def async_check_context_quality_fn(
+    request: ContextQualityRequest,
+) -> ContextQualityResponse:
+    """Async wrapper around :func:`check_context_quality`."""
+    return check_context_quality(request)
