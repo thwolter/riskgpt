@@ -32,7 +32,7 @@ def check_context_quality(request: ContextQualityRequest) -> ContextQualityRespo
     return chain.invoke(inputs)
 
 
-async def async_check_context_quality_fn(
+async def async_check_context_quality(
     request: ContextQualityRequest,
 ) -> ContextQualityResponse:
     """Async wrapper around :func:`check_context_quality`."""
