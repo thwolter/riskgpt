@@ -1,5 +1,4 @@
 import logging
-import os
 from unittest.mock import AsyncMock
 
 import pytest
@@ -21,9 +20,6 @@ class DummyParser(BaseOutputParser):
         return ""
 
 
-@pytest.mark.skipif(
-    not os.environ.get("OPENAI_API_KEY"), reason="OPENAI_API_KEY not set"
-)
 @pytest.mark.asyncio
 async def test_token_logging(monkeypatch, caplog):
     caplog.set_level(logging.INFO, logger="riskgpt")

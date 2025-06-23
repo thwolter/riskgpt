@@ -1,4 +1,3 @@
-import os
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
@@ -16,9 +15,6 @@ from riskgpt.models.schemas import (
 from riskgpt.workflows import risk_workflow
 
 
-@pytest.mark.skipif(
-    not os.environ.get("OPENAI_API_KEY"), reason="OPENAI_API_KEY not set"
-)
 @pytest.mark.integration
 @pytest.mark.asyncio
 async def test_risk_workflow_basic():
@@ -41,9 +37,6 @@ async def test_risk_workflow_basic():
     assert response.risks[0].category
 
 
-@pytest.mark.skipif(
-    not os.environ.get("OPENAI_API_KEY"), reason="OPENAI_API_KEY not set"
-)
 @pytest.mark.integration
 @pytest.mark.asyncio
 async def test_risk_workflow_with_document_refs():
@@ -72,9 +65,6 @@ async def test_risk_workflow_with_document_refs():
     assert "doc-uuid-002" in response.document_refs
 
 
-@pytest.mark.skipif(
-    not os.environ.get("OPENAI_API_KEY"), reason="OPENAI_API_KEY not set"
-)
 @pytest.mark.asyncio
 @pytest.mark.integration
 async def test_risk_workflow():
@@ -94,9 +84,6 @@ async def test_risk_workflow():
     assert len(response.risks) > 0
 
 
-@pytest.mark.skipif(
-    not os.environ.get("OPENAI_API_KEY"), reason="OPENAI_API_KEY not set"
-)
 @pytest.mark.integration
 def test_fetch_documents():
     """Test the placeholder function for fetching documents."""
@@ -115,9 +102,6 @@ def test_fetch_documents():
     assert isinstance(docs[0], str)
 
 
-@pytest.mark.skipif(
-    not os.environ.get("OPENAI_API_KEY"), reason="OPENAI_API_KEY not set"
-)
 @patch("riskgpt.workflows.risk_workflow.fetch_documents")
 @pytest.mark.integration
 @pytest.mark.asyncio
@@ -153,9 +137,6 @@ async def test_risk_workflow_with_mocked_document_service(mock_fetch):
     assert "mock-doc-003" in response.document_refs
 
 
-@pytest.mark.skipif(
-    not os.environ.get("OPENAI_API_KEY"), reason="OPENAI_API_KEY not set"
-)
 @patch("riskgpt.workflows.risk_workflow.search_context")
 @pytest.mark.integration
 @pytest.mark.asyncio

@@ -1,4 +1,3 @@
-import os
 from unittest.mock import patch
 
 import pytest
@@ -12,9 +11,6 @@ from riskgpt.models.schemas import (
 )
 
 
-@pytest.mark.skipif(
-    not os.environ.get("OPENAI_API_KEY"), reason="OPENAI_API_KEY not set"
-)
 @pytest.mark.integration
 @pytest.mark.asyncio
 async def test_get_assessment_chain():
