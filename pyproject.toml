@@ -11,6 +11,10 @@ classifiers = [
     "Operating System :: OS Independent",
 ]
 
+[tool.poetry.include]
+"riskgpt/py.typed" = { include = true }
+
+
 [tool.poetry.urls]
 "Documentation" = "https://thwolter.github.io/riskgpt/"
 "Source" = "https://github.com/thwolter/riskgpt.git"
