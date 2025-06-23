@@ -98,7 +98,7 @@ class BaseChain:
         fmt = fmt.replace("{", "{{").replace("}", "}}")
         return {"format_instructions": fmt}
 
-    def _fallback_response(self, inputs: Dict[str, Any]):
+    async def _fallback_response(self, inputs: Dict[str, Any]):
         """Fallback response when the circuit is open."""
         logger.warning(
             "Circuit is open for OpenAI API, using fallback response for '%s'",
@@ -145,34 +145,8 @@ class BaseChain:
 
     @openai_breaker
     @with_fallback(_fallback_response)
-    def invoke(self, inputs: Dict[str, Any]):
-        with get_openai_callback() as cb:
-            result = self.chain.invoke(inputs, memory=self.memory)
-            if hasattr(result, "response_info"):
-                result.response_info = ResponseInfo(
-                    consumed_tokens=cb.total_tokens,
-                    total_cost=cb.total_cost,
-                    prompt_name=self.prompt_name,
-                    model_name=self.settings.OPENAI_MODEL_NAME,
-                )
-            logger.info(
-                "Consumed %s tokens (%.4f USD) for '%s' using %s",
-                cb.total_tokens,
-                cb.total_cost,
-                self.prompt_name or "prompt",
-                self.settings.OPENAI_MODEL_NAME,
-            )
-        return result
-
-    async def _async_fallback_response(self, inputs: Dict[str, Any]):
-        """Async fallback response when the circuit is open."""
-        # Reuse the same logic as the sync fallback
-        return self._fallback_response(inputs)
-
-    @openai_breaker
-    @with_fallback(_async_fallback_response)
-    async def invoke_async(self, inputs: Dict[str, Any]):
-        """Asynchronously invoke the underlying chain."""
+    async def invoke(self, inputs: Dict[str, Any]):
+        """Invoke the underlying chain asynchronously."""
         with get_openai_callback() as cb:
             result = await self.chain.ainvoke(inputs, memory=self.memory)
             if hasattr(result, "response_info"):

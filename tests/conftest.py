@@ -1,3 +1,4 @@
+import os
 import sys
 from pathlib import Path
 
@@ -21,3 +22,9 @@ def set_max_tokens_for_tests(monkeypatch):
     # Using 400 instead of 10 to ensure the model can generate a valid response
     # with all required fields for all risks while still limiting token usage
     monkeypatch.setenv("MAX_TOKENS", "400")
+
+
+@pytest.fixture(autouse=True)
+def skip_if_no_openai_key(request):
+    if "integration" in request.keywords and not os.environ.get("OPENAI_API_KEY"):
+        pytest.skip("OPENAI_API_KEY not set")

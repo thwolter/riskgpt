@@ -10,7 +10,9 @@ from riskgpt.models.schemas import ContextQualityRequest, ContextQualityResponse
 from riskgpt.utils.prompt_loader import load_prompt, load_system_prompt
 
 
-def check_context_quality(request: ContextQualityRequest) -> ContextQualityResponse:
+async def check_context_quality(
+    request: ContextQualityRequest,
+) -> ContextQualityResponse:
     """Evaluate quality of provided project context knowledge."""
 
     settings = RiskGPTSettings()
@@ -29,11 +31,4 @@ def check_context_quality(request: ContextQualityRequest) -> ContextQualityRespo
     inputs["context_knowledge"] = request.business_context.domain_knowledge or ""
     inputs["language"] = request.business_context.language or "en"
     inputs["system_prompt"] = system_prompt
-    return chain.invoke(inputs)
-
-
-async def async_check_context_quality(
-    request: ContextQualityRequest,
-) -> ContextQualityResponse:
-    """Async wrapper around :func:`check_context_quality`."""
-    return check_context_quality(request)
+    return await chain.invoke(inputs)

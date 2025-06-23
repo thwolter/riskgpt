@@ -1,28 +1,33 @@
 import os
+from unittest.mock import patch
 
 import pytest
-from unittest.mock import patch
-from riskgpt.models.schemas import AssessmentResponse, ResponseInfo
 
 from riskgpt.chains.get_assessment import get_assessment_chain
-from riskgpt.models.schemas import AssessmentRequest, BusinessContext
+from riskgpt.models.schemas import (
+    AssessmentRequest,
+    AssessmentResponse,
+    BusinessContext,
+    ResponseInfo,
+)
 
 
 @pytest.mark.skipif(
     not os.environ.get("OPENAI_API_KEY"), reason="OPENAI_API_KEY not set"
 )
 @pytest.mark.integration
-def test_get_assessment_chain():
+@pytest.mark.asyncio
+async def test_get_assessment_chain():
     request = AssessmentRequest(
         business_context=BusinessContext(project_id="123", language="de"),
         risk_description="Ein Systemausfall kann zu Produktionsstopps f\u00fchren.",
     )
-    response = get_assessment_chain(request)
+    response = await get_assessment_chain(request)
     assert hasattr(response, "evidence")
 
 
-
-def test_get_assessment_chain_with_mock():
+@pytest.mark.asyncio
+async def test_get_assessment_chain_with_mock():
     """Test get_assessment_chain with mocked BaseChain.invoke."""
     request = AssessmentRequest(
         business_context=BusinessContext(project_id="mock", language="en"),
@@ -39,7 +44,11 @@ def test_get_assessment_chain_with_mock():
             model_name="mock-model",
         ),
     )
-    with patch("riskgpt.chains.base.BaseChain.invoke", return_value=expected):
-        resp = get_assessment_chain(request)
+
+    async def mock_invoke(*args, **kwargs):
+        return expected
+
+    with patch("riskgpt.chains.base.BaseChain.invoke", side_effect=mock_invoke):
+        resp = await get_assessment_chain(request)
         assert resp.impact == expected.impact
         assert resp.evidence == expected.evidence

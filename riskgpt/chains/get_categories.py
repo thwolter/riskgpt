@@ -1,5 +1,3 @@
-from typing import Any, Dict, Tuple
-
 from langchain_core.output_parsers import PydanticOutputParser
 
 from riskgpt.config.settings import RiskGPTSettings
@@ -10,10 +8,9 @@ from riskgpt.utils.prompt_loader import load_prompt
 from .base import BaseChain
 
 
-def _prepare_categories_chain(
-    request: CategoryRequest,
-) -> Tuple[BaseChain, Dict[str, Any]]:
-    """Helper function to prepare the chain and inputs for both sync and async versions."""
+@register("get_categories")
+async def get_categories_chain(request: CategoryRequest) -> CategoryResponse:
+    """Asynchronous wrapper around :func:`get_categories_chain`."""
     settings = RiskGPTSettings()
     prompt_data = load_prompt("get_categories")
 
@@ -41,17 +38,4 @@ def _prepare_categories_chain(
         else ""
     )
 
-    return chain, inputs
-
-
-@register("get_categories")
-def get_categories_chain(request: CategoryRequest) -> CategoryResponse:
-    """Get risk categories based on the provided request."""
-    chain, inputs = _prepare_categories_chain(request)
-    return chain.invoke(inputs)
-
-
-async def async_get_categories_chain(request: CategoryRequest) -> CategoryResponse:
-    """Asynchronous wrapper around :func:`get_categories_chain`."""
-    chain, inputs = _prepare_categories_chain(request)
-    return await chain.invoke_async(inputs)
+    return await chain.invoke(inputs)

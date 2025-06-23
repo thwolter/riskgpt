@@ -107,21 +107,13 @@ def _build_graph(request: ExternalContextRequest):
     return graph.compile()
 
 
-def external_context_enrichment(
-    request: ExternalContextRequest,
-) -> ExternalContextResponse:
-    """Run the external context enrichment workflow."""
-
-    app = _build_graph(request)
-    result = app.invoke({})
-    return result["response"]
-
-
-async def async_external_context_enrichment(
+async def external_context_enrichment(
     request: ExternalContextRequest,
 ) -> ExternalContextResponse:
     """Run the external context enrichment workflow asynchronously."""
 
     # For now, we will just call the sync version
     # In a real async implementation, you would use an async graph execution method
-    return external_context_enrichment(request)
+    app = _build_graph(request)
+    result = app.invoke({})
+    return result["response"]

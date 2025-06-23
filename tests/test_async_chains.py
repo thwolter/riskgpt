@@ -1,10 +1,9 @@
-import asyncio
 import os
 from unittest.mock import patch
 
 import pytest
 
-from riskgpt.chains.get_categories import async_get_categories_chain
+from riskgpt.chains.get_categories import get_categories_chain
 from riskgpt.models.schemas import (
     BusinessContext,
     CategoryRequest,
@@ -17,23 +16,9 @@ from riskgpt.models.schemas import (
 @pytest.mark.skipif(
     not os.environ.get("OPENAI_API_KEY"), reason="OPENAI_API_KEY not set"
 )
-@pytest.mark.integration
-def test_async_get_categories_chain():
-    request = CategoryRequest(
-        business_context=BusinessContext(
-            project_id="123",
-            project_description="Ein neues IT-Projekt zur Einführung eines CRM-Systems.",
-            domain_knowledge="Das Unternehmen ist im B2B-Bereich tätig.",
-            language=LanguageEnum.german,
-        ),
-    )
-    response = asyncio.run(async_get_categories_chain(request))
-    assert isinstance(response.categories, list)
-
-
 @pytest.mark.asyncio
-async def test_async_get_categories_chain_with_mock():
-    """Async categories chain with mocked invoke_async."""
+async def test_get_categories_chain_with_mock():
+    """Async categories chain with mocked invoke."""
     request = CategoryRequest(
         business_context=BusinessContext(
             project_id="mock", language=LanguageEnum.english
@@ -49,9 +34,9 @@ async def test_async_get_categories_chain_with_mock():
         ),
     )
 
-    async def mock_invoke_async(*args, **kwargs):
+    async def mock_invoke(*args, **kwargs):
         return expected
 
-    with patch("riskgpt.chains.base.BaseChain.invoke_async", mock_invoke_async):
-        resp = await async_get_categories_chain(request)
+    with patch("riskgpt.chains.base.BaseChain.invoke", mock_invoke):
+        resp = await get_categories_chain(request)
         assert resp.categories == expected.categories

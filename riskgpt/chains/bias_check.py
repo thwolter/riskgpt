@@ -8,7 +8,7 @@ from riskgpt.registry.chain_registry import register
 
 
 @register("bias_check")
-def bias_check_chain(request: BiasCheckRequest) -> BiasCheckResponse:
+async def bias_check_chain(request: BiasCheckRequest) -> BiasCheckResponse:
     desc = request.risk_description.lower()
     biases: List[str] = []
     suggestions: List[str] = []
@@ -26,7 +26,3 @@ def bias_check_chain(request: BiasCheckRequest) -> BiasCheckResponse:
     return BiasCheckResponse(
         biases=list(set(biases)), suggestions="; ".join(suggestions)
     )
-
-
-async def async_bias_check_chain(request: BiasCheckRequest) -> BiasCheckResponse:
-    return bias_check_chain(request)

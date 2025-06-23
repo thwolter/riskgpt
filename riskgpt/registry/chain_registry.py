@@ -17,11 +17,11 @@ def list_chains():
     return {"chains": chain_registry.get_chain_info()}
 
 @app.post("/chain/{chain_name}")
-def run_chain(chain_name: str, data: dict):
+async def run_chain(chain_name: str, data: dict):
     if not chain_registry.chain_exists(chain_name):
         return {"error": f"Chain '{chain_name}' not found"}, 404
     chain_func = chain_registry.get(chain_name)
-    return chain_func(**data)
+    return await chain_func(**data)
 ```
 """
 
@@ -32,7 +32,10 @@ _CHAIN_REGISTRY: Dict[str, Callable] = {}
 
 
 def register(name: str) -> Callable[[Callable], Callable]:
-    """Register a chain callable under the given name."""
+    """Register a chain callable under the given name.
+
+    This decorator can be used with both synchronous and asynchronous functions.
+    """
 
     def decorator(func: Callable) -> Callable:
         _CHAIN_REGISTRY[name] = func

@@ -102,7 +102,7 @@ def _build_risk_workflow_graph(request: RiskRequest, use_full_workflow: bool = T
 
         return state
 
-    def search_for_context(state: Dict[str, Any]) -> Dict[str, Any]:
+    async def search_for_context(state: Dict[str, Any]) -> Dict[str, Any]:
         """Search for relevant context using the search provider."""
         req = state["request"]
         logger.info("Searching for context related to '%s'", req.category)
@@ -140,7 +140,7 @@ def _build_risk_workflow_graph(request: RiskRequest, use_full_workflow: bool = T
         logger.info("Found %d relevant documents", len(document_refs))
         return state
 
-    def identify_risks(state: Dict[str, Any]) -> Dict[str, Any]:
+    async def identify_risks(state: Dict[str, Any]) -> Dict[str, Any]:
         """Identify risks using direct implementation to avoid circular dependency."""
         req = state["request"]
         logger.info("Identify risks for category '%s'", req.category)
@@ -157,7 +157,7 @@ def _build_risk_workflow_graph(request: RiskRequest, use_full_workflow: bool = T
         if "document_refs" in state and state["document_refs"]:
             risk_request.document_refs = state["document_refs"]
 
-        res = get_risks_chain(risk_request)
+        res = await get_risks_chain(risk_request)
 
         if res.response_info:
             totals["tokens"] += res.response_info.consumed_tokens
@@ -179,7 +179,7 @@ def _build_risk_workflow_graph(request: RiskRequest, use_full_workflow: bool = T
         state["risk_response"] = res
         return state
 
-    def assess_risks(state: Dict[str, Any]) -> Dict[str, Any]:
+    async def assess_risks(state: Dict[str, Any]) -> Dict[str, Any]:
         """Assess each identified risk using the get_assessment_chain."""
         req = state["request"]
         assessments = []
@@ -205,7 +205,7 @@ def _build_risk_workflow_graph(request: RiskRequest, use_full_workflow: bool = T
                 )
                 assessment_request.risk_description += additional_context
 
-            assess = get_assessment_chain(assessment_request)
+            assess = await get_assessment_chain(assessment_request)
 
             if assess.response_info:
                 totals["tokens"] += assess.response_info.consumed_tokens
@@ -280,28 +280,7 @@ def _build_risk_workflow_graph(request: RiskRequest, use_full_workflow: bool = T
     return graph.compile()
 
 
-def risk_workflow(request: RiskRequest) -> RiskResponse:
-    """
-    Run the risk workflow and return a structured response.
-
-    This workflow orchestrates:
-    1. Web search for relevant context
-    2. Document retrieval from the document microservice
-    3. Risk identification (using direct implementation to avoid circular dependency)
-    4. Risk assessment
-
-    Args:
-        request: The risk request containing business context and category
-
-    Returns:
-        A risk response containing identified risks and document references
-    """
-    app = _build_risk_workflow_graph(request)
-    result = app.invoke({"request": request})
-    return result["response"]
-
-
-async def async_risk_workflow(request: RiskRequest) -> RiskResponse:
+async def risk_workflow(request: RiskRequest) -> RiskResponse:
     """
     Asynchronous version of the risk workflow.
 

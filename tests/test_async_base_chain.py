@@ -1,4 +1,3 @@
-import asyncio
 import logging
 import os
 from types import SimpleNamespace
@@ -22,7 +21,8 @@ class DummyParser(BaseOutputParser):
 @pytest.mark.skipif(
     not os.environ.get("OPENAI_API_KEY"), reason="OPENAI_API_KEY not set"
 )
-def test_async_invoke(monkeypatch, caplog):
+@pytest.mark.asyncio
+async def test_invoke(monkeypatch, caplog):
     caplog.set_level(logging.INFO, logger="riskgpt")
     configure_logging(level=logging.INFO)
 
@@ -46,6 +46,6 @@ def test_async_invoke(monkeypatch, caplog):
         "langchain_community.callbacks.get_openai_callback", lambda: DummyCB()
     )
 
-    asyncio.run(chain.invoke_async({}))
+    await chain.invoke({})
 
     assert any("Consumed" in record.getMessage() for record in caplog.records)

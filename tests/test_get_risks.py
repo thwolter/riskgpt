@@ -1,18 +1,25 @@
 import os
+from unittest.mock import patch
 
 import pytest
-from unittest.mock import patch
-from riskgpt.models.schemas import RiskResponse, Risk, ResponseInfo
 
 from riskgpt.chains.get_risks import get_risks_chain
-from riskgpt.models.schemas import BusinessContext, LanguageEnum, RiskRequest
+from riskgpt.models.schemas import (
+    BusinessContext,
+    LanguageEnum,
+    ResponseInfo,
+    Risk,
+    RiskRequest,
+    RiskResponse,
+)
 
 
 @pytest.mark.skipif(
     not os.environ.get("OPENAI_API_KEY"), reason="OPENAI_API_KEY not set"
 )
 @pytest.mark.integration
-def test_get_risks_chain():
+@pytest.mark.asyncio
+async def test_get_risks_chain():
     request = RiskRequest(
         business_context=BusinessContext(
             project_id="123",
@@ -26,14 +33,14 @@ def test_get_risks_chain():
     response = get_risks_chain(request)
     assert isinstance(response.risks, list)
 
-from unittest.mock import patch
-from riskgpt.models.schemas import RiskResponse, Risk, ResponseInfo
 
-
-def test_get_risks_chain_with_mock():
+@pytest.mark.asyncio
+async def test_get_risks_chain_with_mock():
     """Test get_risks_chain with mocked BaseChain.invoke."""
     request = RiskRequest(
-        business_context=BusinessContext(project_id="mock", language=LanguageEnum.english),
+        business_context=BusinessContext(
+            project_id="mock", language=LanguageEnum.english
+        ),
         category="Technical",
     )
     expected = RiskResponse(
@@ -46,6 +53,10 @@ def test_get_risks_chain_with_mock():
             model_name="mock-model",
         ),
     )
-    with patch("riskgpt.chains.base.BaseChain.invoke", return_value=expected):
-        resp = get_risks_chain(request)
+
+    async def mock_invoke(*args, **kwargs):
+        return expected
+
+    with patch("riskgpt.chains.base.BaseChain.invoke", side_effect=mock_invoke):
+        resp = await get_risks_chain(request)
         assert resp.risks == expected.risks

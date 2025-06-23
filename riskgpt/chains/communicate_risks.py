@@ -1,5 +1,3 @@
-from typing import Any, Dict, Tuple
-
 from langchain_core.output_parsers import PydanticOutputParser
 
 from riskgpt.config.settings import RiskGPTSettings
@@ -10,10 +8,11 @@ from riskgpt.utils.prompt_loader import load_prompt, load_system_prompt
 from .base import BaseChain
 
 
-def _prepare_communicate_risks_chain(
+@register("communicate_risks")
+async def communicate_risks_chain(
     request: CommunicationRequest,
-) -> Tuple[BaseChain, Dict[str, Any]]:
-    """Helper function to prepare the chain and inputs for both sync and async versions."""
+) -> CommunicationResponse:
+    """Asynchronous wrapper around :func:`communicate_risks_chain`."""
     settings = RiskGPTSettings()
     prompt_data = load_prompt("communicate_risks")
     system_prompt = load_system_prompt()
@@ -37,20 +36,4 @@ def _prepare_communicate_risks_chain(
         else ""
     )
     inputs["system_prompt"] = system_prompt
-
-    return chain, inputs
-
-
-@register("communicate_risks")
-def communicate_risks_chain(request: CommunicationRequest) -> CommunicationResponse:
-    """Communicate risks based on the provided request."""
-    chain, inputs = _prepare_communicate_risks_chain(request)
-    return chain.invoke(inputs)
-
-
-async def async_communicate_risks_chain(
-    request: CommunicationRequest,
-) -> CommunicationResponse:
-    """Asynchronous wrapper around :func:`communicate_risks_chain`."""
-    chain, inputs = _prepare_communicate_risks_chain(request)
-    return await chain.invoke_async(inputs)
+    return await chain.invoke(inputs)

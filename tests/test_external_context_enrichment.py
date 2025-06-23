@@ -1,15 +1,16 @@
 import os
+from unittest.mock import patch
 
 import pydantic
 import pytest
-from unittest.mock import patch
 
 from riskgpt.models.schemas import BusinessContext, ExternalContextRequest
 from riskgpt.workflows import external_context_enrichment
 
 
 @pytest.mark.integration
-def test_external_context_enrichment_basic():
+@pytest.mark.asyncio
+async def test_external_context_enrichment_basic():
     req = ExternalContextRequest(
         business_context=BusinessContext(
             project_id="test_basic",
@@ -18,7 +19,7 @@ def test_external_context_enrichment_basic():
         ),
         focus_keywords=["supply"],
     )
-    resp = external_context_enrichment(req)
+    resp = await external_context_enrichment(req)
     assert resp.sector_summary
     assert isinstance(resp.external_risks, list)
     assert isinstance(resp.source_table, list)
@@ -30,7 +31,8 @@ def test_external_context_enrichment_missing_param():
 
 
 @pytest.mark.integration
-def test_external_context_sources_have_url():
+@pytest.mark.asyncio
+async def test_external_context_sources_have_url():
     req = ExternalContextRequest(
         business_context=BusinessContext(
             project_id="test_sources",
@@ -38,13 +40,14 @@ def test_external_context_sources_have_url():
             domain_knowledge="tech",
         ),
     )
-    resp = external_context_enrichment(req)
+    resp = await external_context_enrichment(req)
     for src in resp.source_table:
         assert src.get("url")
 
 
 @pytest.mark.integration
-def test_external_context_demo_company():
+@pytest.mark.asyncio
+async def test_external_context_demo_company():
     req = ExternalContextRequest(
         business_context=BusinessContext(
             project_id="test_demo",
@@ -53,7 +56,7 @@ def test_external_context_demo_company():
         ),
         focus_keywords=["cyber"],
     )
-    resp = external_context_enrichment(req)
+    resp = await external_context_enrichment(req)
     assert resp.sector_summary
 
 
@@ -65,7 +68,8 @@ def test_external_context_demo_company():
     reason="Google API key, CSE ID, or Wikipedia integration not set",
 )
 @pytest.mark.integration
-def test_external_context_with_google_and_wikipedia():
+@pytest.mark.asyncio
+async def test_external_context_with_google_and_wikipedia():
     """Test the workflow with Google Custom Search API and Wikipedia."""
 
     # Save original environment variables
@@ -113,15 +117,27 @@ def test_external_context_with_google_and_wikipedia():
         elif "INCLUDE_WIKIPEDIA" in os.environ:
             del os.environ["INCLUDE_WIKIPEDIA"]
 
-from unittest.mock import patch
 
-
-def test_external_context_enrichment_with_mock():
+@pytest.mark.asyncio
+async def test_external_context_enrichment_with_mock():
     req = ExternalContextRequest(
-        business_context=BusinessContext(project_id="mock", project_description="demo", domain_knowledge="it"),
+        business_context=BusinessContext(
+            project_id="mock", project_description="demo", domain_knowledge="it"
+        ),
         focus_keywords=["keyword"],
     )
-    mocked_result = ([{"title": "T", "url": "u", "date": "", "type": "news", "comment": "c"}], True)
-    with patch("riskgpt.workflows.external_context_enrichment.search_context", return_value=mocked_result):
-        resp = external_context_enrichment(req)
+
+    mocked_result = (
+        [{"title": "T", "url": "u", "date": "", "type": "news", "comment": "c"}],
+        True,
+    )
+
+    def mock_invoke(*args, **kwargs):
+        return mocked_result
+
+    with patch(
+        "riskgpt.workflows.external_context_enrichment.search_context",
+        side_effect=mock_invoke,
+    ):
+        resp = await external_context_enrichment(req)
         assert resp.source_table[0]["title"] == "T"

@@ -1,6 +1,5 @@
-import asyncio
 import os
-from unittest.mock import MagicMock, patch
+from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 
@@ -14,14 +13,15 @@ from riskgpt.models.schemas import (
     RiskRequest,
     RiskResponse,
 )
-from riskgpt.workflows import async_risk_workflow, risk_workflow
+from riskgpt.workflows import risk_workflow
 
 
 @pytest.mark.skipif(
     not os.environ.get("OPENAI_API_KEY"), reason="OPENAI_API_KEY not set"
 )
 @pytest.mark.integration
-def test_risk_workflow_basic():
+@pytest.mark.asyncio
+async def test_risk_workflow_basic():
     """Test the basic functionality of the risk workflow."""
     request = RiskRequest(
         business_context=BusinessContext(
@@ -33,7 +33,7 @@ def test_risk_workflow_basic():
         category="Technical",
         existing_risks=["Data loss"],
     )
-    response = risk_workflow(request)
+    response = await risk_workflow(request)
     assert isinstance(response.risks, list)
     assert len(response.risks) > 0
     assert response.risks[0].title
@@ -45,7 +45,8 @@ def test_risk_workflow_basic():
     not os.environ.get("OPENAI_API_KEY"), reason="OPENAI_API_KEY not set"
 )
 @pytest.mark.integration
-def test_risk_workflow_with_document_refs():
+@pytest.mark.asyncio
+async def test_risk_workflow_with_document_refs():
     """Test the risk workflow with document references."""
     # Create a request with document_refs
     request = RiskRequest(
@@ -61,7 +62,7 @@ def test_risk_workflow_with_document_refs():
     )
 
     # Run the workflow
-    response = risk_workflow(request)
+    response = await risk_workflow(request)
 
     # Check that document_refs are in the response
     assert hasattr(response, "document_refs")
@@ -76,7 +77,7 @@ def test_risk_workflow_with_document_refs():
 )
 @pytest.mark.asyncio
 @pytest.mark.integration
-async def test_async_risk_workflow():
+async def test_risk_workflow():
     """Test the async version of the risk workflow."""
     request = RiskRequest(
         business_context=BusinessContext(
@@ -88,7 +89,7 @@ async def test_async_risk_workflow():
         category="Technical",
         existing_risks=["Data loss"],
     )
-    response = await async_risk_workflow(request)
+    response = await risk_workflow(request)
     assert isinstance(response.risks, list)
     assert len(response.risks) > 0
 
@@ -119,7 +120,8 @@ def test_fetch_documents():
 )
 @patch("riskgpt.workflows.risk_workflow.fetch_documents")
 @pytest.mark.integration
-def test_risk_workflow_with_mocked_document_service(mock_fetch):
+@pytest.mark.asyncio
+async def test_risk_workflow_with_mocked_document_service(mock_fetch):
     """Test the risk workflow with a mocked document service."""
     # Mock the document service to return specific UUIDs
     mock_fetch.return_value = ["mock-doc-001", "mock-doc-002", "mock-doc-003"]
@@ -137,7 +139,7 @@ def test_risk_workflow_with_mocked_document_service(mock_fetch):
     )
 
     # Run the workflow
-    response = risk_workflow(request)
+    response = await risk_workflow(request)
 
     # Check that the mock was called
     mock_fetch.assert_called_once()
@@ -156,7 +158,8 @@ def test_risk_workflow_with_mocked_document_service(mock_fetch):
 )
 @patch("riskgpt.workflows.risk_workflow.search_context")
 @pytest.mark.integration
-def test_risk_workflow_with_search(mock_search):
+@pytest.mark.asyncio
+async def test_risk_workflow_with_search(mock_search):
     """Test the risk workflow with search functionality."""
     # Mock the search function to return specific results
     mock_search.return_value = (
@@ -192,7 +195,7 @@ def test_risk_workflow_with_search(mock_search):
     )
 
     # Run the workflow
-    response = risk_workflow(request)
+    response = await risk_workflow(request)
 
     # Check that the mock was called
     mock_search.assert_called_once()
@@ -211,7 +214,8 @@ def test_risk_workflow_with_search(mock_search):
     )
 
 
-def test_risk_workflow_with_mock(monkeypatch):
+@pytest.mark.asyncio
+async def test_risk_workflow_with_mock(monkeypatch):
     """Run workflow with external API calls patched."""
     request = RiskRequest(
         business_context=BusinessContext(
@@ -268,9 +272,9 @@ def test_risk_workflow_with_mock(monkeypatch):
         ),
     )
 
-    # Mock the StateGraph.compile().invoke method
+    # Mock the StateGraph.compile().ainvoke method
     mock_graph = MagicMock()
-    mock_graph.invoke.return_value = {"response": final_response}
+    mock_graph.ainvoke = AsyncMock(return_value={"response": final_response})
 
     with (
         patch(
@@ -291,6 +295,7 @@ def test_risk_workflow_with_mock(monkeypatch):
         patch("riskgpt.api.fetch_documents", return_value=["doc1"]),
         patch(
             "riskgpt.chains.base.BaseChain.invoke",
+            new_callable=AsyncMock,
             side_effect=[risk_response, assessment_response],
         ),
         patch(
@@ -298,119 +303,7 @@ def test_risk_workflow_with_mock(monkeypatch):
             return_value=mock_graph,
         ),
     ):
-        resp = risk_workflow(request)
-        assert isinstance(resp.risks, list)
-        assert len(resp.risks) > 0
-        assert resp.risks[
-            0
-        ].title  # Just check that there's a title, don't check the specific value
-        assert hasattr(resp, "document_refs")  # Just check that document_refs exists
-        assert hasattr(resp, "references")  # Just check that references exists
-        assert isinstance(resp.references, list)  # Check that references is a list
-
-
-def test_async_risk_workflow_with_mock(monkeypatch):
-    """Run async workflow with external API calls patched."""
-    request = RiskRequest(
-        business_context=BusinessContext(
-            project_id="mock", language=LanguageEnum.english, document_refs=None
-        ),
-        category="Technical",
-        max_risks=1,
-        document_refs=None,
-    )
-
-    # Mock response for get_risks_chain
-    risk_response = RiskResponse(
-        risks=[
-            Risk(
-                title="Mock Risk", description="Mock Description", category="Technical"
-            )
-        ],
-        references=["Mock Reference"],
-        response_info=ResponseInfo(
-            consumed_tokens=5,
-            total_cost=0.0,
-            prompt_name="get_risks",
-            model_name="mock-model",
-        ),
-    )
-
-    # Mock response for get_assessment_chain
-    assessment_response = AssessmentResponse(
-        impact=0.5,
-        probability=0.2,
-        evidence="mocked evidence",
-        response_info=ResponseInfo(
-            consumed_tokens=5,
-            total_cost=0.0,
-            prompt_name="get_assessment",
-            model_name="mock-model",
-        ),
-    )
-
-    # Mock final response
-    final_response = RiskResponse(
-        risks=[
-            Risk(
-                title="Mock Risk", description="Mock Description", category="Technical"
-            )
-        ],
-        references=["Mock Reference"],
-        document_refs=["doc1"],
-        response_info=ResponseInfo(
-            consumed_tokens=10,
-            total_cost=0.0,
-            prompt_name="risk_workflow",
-            model_name="mock-model",
-        ),
-    )
-
-    # Create async mock for BaseChain.invoke_async
-    async def mock_invoke_async(*args, **kwargs):
-        # Return different responses based on call order
-        if mock_invoke_async.call_count == 0:
-            mock_invoke_async.call_count += 1
-            return risk_response
-        else:
-            return assessment_response
-
-    mock_invoke_async.call_count = 0
-
-    # Mock the StateGraph.compile().ainvoke method
-    mock_graph = MagicMock()
-
-    async def mock_ainvoke(*args, **kwargs):
-        return {"response": final_response}
-
-    mock_graph.ainvoke = mock_ainvoke
-
-    with (
-        patch(
-            "riskgpt.api.search_context",
-            return_value=(
-                [
-                    {
-                        "title": "SearchRef",
-                        "url": "u",
-                        "date": "",
-                        "type": "risk_context",
-                        "comment": "",
-                    }
-                ],
-                True,
-            ),
-        ),
-        patch("riskgpt.api.fetch_documents", return_value=["doc1"]),
-        patch(
-            "riskgpt.chains.base.BaseChain.invoke_async", side_effect=mock_invoke_async
-        ),
-        patch(
-            "riskgpt.workflows.risk_workflow._build_risk_workflow_graph",
-            return_value=mock_graph,
-        ),
-    ):
-        resp = asyncio.run(async_risk_workflow(request))
+        resp = await risk_workflow(request)
         assert isinstance(resp.risks, list)
         assert len(resp.risks) > 0
         assert resp.risks[

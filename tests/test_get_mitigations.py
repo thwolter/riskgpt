@@ -1,11 +1,15 @@
 import os
+from unittest.mock import patch
 
 import pytest
-from unittest.mock import patch
-from riskgpt.models.schemas import MitigationResponse, ResponseInfo
 
 from riskgpt.chains.get_mitigations import get_mitigations_chain
-from riskgpt.models.schemas import BusinessContext, MitigationRequest
+from riskgpt.models.schemas import (
+    BusinessContext,
+    MitigationRequest,
+    MitigationResponse,
+    ResponseInfo,
+)
 
 
 @pytest.mark.skipif(
@@ -25,11 +29,9 @@ def test_get_mitigations_chain():
     response = get_mitigations_chain(request)
     assert isinstance(response.mitigations, list)
 
-from unittest.mock import patch
-from riskgpt.models.schemas import MitigationResponse, ResponseInfo
 
-
-def test_get_mitigations_chain_with_mock():
+@pytest.mark.asyncio
+async def test_get_mitigations_chain_with_mock():
     """Test get_mitigations_chain with mocked BaseChain.invoke."""
     request = MitigationRequest(
         business_context=BusinessContext(project_id="mock", language="en"),
@@ -45,6 +47,10 @@ def test_get_mitigations_chain_with_mock():
             model_name="mock-model",
         ),
     )
-    with patch("riskgpt.chains.base.BaseChain.invoke", return_value=expected):
-        resp = get_mitigations_chain(request)
+
+    async def mock_invoke(*args, **kwargs):
+        return expected
+
+    with patch("riskgpt.chains.base.BaseChain.invoke", side_effect=mock_invoke):
+        resp = await get_mitigations_chain(request)
         assert resp.mitigations == expected.mitigations

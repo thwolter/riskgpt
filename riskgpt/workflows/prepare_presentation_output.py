@@ -83,11 +83,11 @@ def _build_graph(request: PresentationRequest):
             state["request"] = request
         return state
 
-    def identify_risks(state: Dict[str, Any]) -> Dict[str, Any]:
+    async def identify_risks(state: Dict[str, Any]) -> Dict[str, Any]:
         req = state["request"]
         category = (req.focus_areas or ["General"])[0]
         logger.info("Identify risks for category '%s'", category)
-        res = get_risks_chain(
+        res = await get_risks_chain(
             RiskRequest(
                 business_context=req.business_context,
                 category=category,
@@ -99,12 +99,12 @@ def _build_graph(request: PresentationRequest):
         state["risks"] = res.risks
         return state
 
-    def assess_risks(state: Dict[str, Any]) -> Dict[str, Any]:
+    async def assess_risks(state: Dict[str, Any]) -> Dict[str, Any]:
         req = state["request"]
         assessments = []
         for risk in state.get("risks", []):
             logger.info("Assess risk '%s'", risk.title)
-            assess = get_assessment_chain(
+            assess = await get_assessment_chain(
                 AssessmentRequest(
                     business_context=req.business_context,
                     risk_description=risk.description,
@@ -117,12 +117,12 @@ def _build_graph(request: PresentationRequest):
         state["assessments"] = assessments
         return state
 
-    def drivers(state: Dict[str, Any]) -> Dict[str, Any]:
+    async def drivers(state: Dict[str, Any]) -> Dict[str, Any]:
         req = state["request"]
         driver_lists: List[List[str]] = []
         for risk in state.get("risks", []):
             logger.info("Get drivers for '%s'", risk.title)
-            res = get_drivers_chain(
+            res = await get_drivers_chain(
                 DriverRequest(
                     business_context=req.business_context,
                     risk_description=risk.description,
@@ -135,12 +135,12 @@ def _build_graph(request: PresentationRequest):
         state["drivers"] = driver_lists
         return state
 
-    def mitigations(state: Dict[str, Any]) -> Dict[str, Any]:
+    async def mitigations(state: Dict[str, Any]) -> Dict[str, Any]:
         req = state["request"]
         mitigation_lists: List[List[str]] = []
         for risk, drv in zip(state.get("risks", []), state.get("drivers", [])):
             logger.info("Get mitigations for '%s'", risk.title)
-            res = get_mitigations_chain(
+            res = await get_mitigations_chain(
                 MitigationRequest(
                     business_context=req.business_context,
                     risk_description=risk.description,
@@ -154,12 +154,12 @@ def _build_graph(request: PresentationRequest):
         state["mitigations"] = mitigation_lists
         return state
 
-    def correlation(state: Dict[str, Any]) -> Dict[str, Any]:
+    async def correlation(state: Dict[str, Any]) -> Dict[str, Any]:
         req = state["request"]
         titles = [r.title for r in state.get("risks", [])]
         known = [d for lst in state.get("drivers", []) for d in lst]
         logger.info("Define correlation tags")
-        res = get_correlation_tags_chain(
+        res = await get_correlation_tags_chain(
             CorrelationTagRequest(
                 business_context=req.business_context,
                 risk_titles=titles,
@@ -172,14 +172,14 @@ def _build_graph(request: PresentationRequest):
         state["correlation_tags"] = res.tags
         return state
 
-    def summary(state: Dict[str, Any]) -> Dict[str, Any]:
+    async def summary(state: Dict[str, Any]) -> Dict[str, Any]:
         req = state["request"]
         lines = []
         for risk, assess in zip(state.get("risks", []), state.get("assessments", [])):
             line = f"{risk.title}: P={assess.probability or 'n/a'}, I={assess.impact or 'n/a'}"
             lines.append(line)
         text = "\n".join(lines)
-        com = communicate_risks_chain(
+        com = await communicate_risks_chain(
             CommunicationRequest(
                 business_context=req.business_context,
                 summary=text,
@@ -228,19 +228,11 @@ def _build_graph(request: PresentationRequest):
     return graph.compile()
 
 
-def prepare_presentation_output(request: PresentationRequest) -> PresentationResponse:
-    """Run the presentation workflow and return a structured response."""
-
-    app = _build_graph(request)
-    result = app.invoke({"request": request})
-    return result["response"]
-
-
-async def async_prepare_presentation_output(
+async def prepare_presentation_output(
     request: PresentationRequest,
 ) -> PresentationResponse:
-    """Async wrapper around :func:`prepare_presentation_output`."""
+    """Run the presentation workflow asynchronously and return a structured response."""
 
-    # For now, we will just call the sync version
-    # In a real async implementation, you would use an async graph execution method
-    return prepare_presentation_output(request)
+    app = _build_graph(request)
+    result = await app.ainvoke({"request": request})
+    return result["response"]

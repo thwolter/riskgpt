@@ -1,5 +1,3 @@
-from typing import Any, Dict, Tuple
-
 from langchain_core.output_parsers import PydanticOutputParser
 
 from riskgpt.config.settings import RiskGPTSettings
@@ -10,10 +8,9 @@ from riskgpt.utils.prompt_loader import load_prompt, load_system_prompt
 from .base import BaseChain
 
 
-def _prepare_monitoring_chain(
-    request: MonitoringRequest,
-) -> Tuple[BaseChain, Dict[str, Any]]:
-    """Helper function to prepare the chain and inputs for both sync and async versions."""
+@register("monitoring")
+async def get_monitoring_chain(request: MonitoringRequest) -> MonitoringResponse:
+    """Asynchronous wrapper around :func:`get_monitoring_chain`."""
     settings = RiskGPTSettings()
     prompt_data = load_prompt("get_monitoring")
     system_prompt = load_system_prompt()
@@ -34,17 +31,4 @@ def _prepare_monitoring_chain(
     )
     inputs["system_prompt"] = system_prompt
 
-    return chain, inputs
-
-
-@register("get_monitoring")
-def get_monitoring_chain(request: MonitoringRequest) -> MonitoringResponse:
-    """Get monitoring recommendations based on the provided request."""
-    chain, inputs = _prepare_monitoring_chain(request)
-    return chain.invoke(inputs)
-
-
-async def async_get_monitoring_chain(request: MonitoringRequest) -> MonitoringResponse:
-    """Asynchronous wrapper around :func:`get_monitoring_chain`."""
-    chain, inputs = _prepare_monitoring_chain(request)
-    return await chain.invoke_async(inputs)
+    return await chain.invoke(inputs)

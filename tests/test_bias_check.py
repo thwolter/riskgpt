@@ -22,13 +22,14 @@ def test_bias_check_chain():
     assert isinstance(response.biases, list)
 
 
-def test_bias_check_chain_with_mock():
+@pytest.mark.asyncio
+async def test_bias_check_chain_with_mock():
     """Test bias_check_chain with a risk description containing bias patterns."""
     request = BiasCheckRequest(
         business_context=BusinessContext(project_id="mock"),
         risk_description="This risk will always fail due to recent issues.",
     )
-    resp = bias_check_chain(request)
+    resp = await bias_check_chain(request)
     assert "framing" in resp.biases
     assert "availability" in resp.biases
     assert "Avoid absolute terms like 'always' or 'never'" in resp.suggestions

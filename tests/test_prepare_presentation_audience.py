@@ -23,11 +23,12 @@ audiences = [
 )
 @pytest.mark.parametrize("audience", audiences)
 @pytest.mark.integration
-def test_prepare_presentation_all_audiences(audience, monkeypatch):
+@pytest.mark.asyncio
+async def test_prepare_presentation_all_audiences(audience, monkeypatch):
     # If OPENAI_API_KEY is not set, mock the prepare_presentation_output function
     if not os.environ.get("OPENAI_API_KEY"):
 
-        def mock_prepare_presentation_output(request):
+        async def mock_prepare_presentation_output(request):
             return PresentationResponse(
                 executive_summary="Mock executive summary",
                 main_risks=["Mock risk 1", "Mock risk 2"],
@@ -53,7 +54,7 @@ def test_prepare_presentation_all_audiences(audience, monkeypatch):
         audience=audience,
         focus_areas=["Technical"],
     )
-    resp = prepare_presentation_output(request)
+    resp = await prepare_presentation_output(request)
     assert resp.executive_summary
     assert resp.main_risks
     assert resp.response_info is not None
