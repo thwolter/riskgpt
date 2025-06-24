@@ -8,7 +8,7 @@ from src.registry.chain_registry import register
 
 
 @register("bias_check")
-async def bias_check_chain(request: BiasCheckRequest) -> BiasCheckResponse:
+async def check_bias_chain(request: BiasCheckRequest) -> BiasCheckResponse:
     desc = request.risk_description.lower()
     biases: List[str] = []
     suggestions: List[str] = []

@@ -7,8 +7,8 @@ from src.utils.prompt_loader import load_prompt
 from .base import BaseChain
 
 
-@register("monitoring")
-async def get_monitoring_chain(request: MonitoringRequest) -> MonitoringResponse:
+@register("risk_monitoring")
+async def risk_indicators_chain(request: MonitoringRequest) -> MonitoringResponse:
     """Chain to get monitoring information based on the request."""
 
     prompt_data = load_prompt("get_monitoring")

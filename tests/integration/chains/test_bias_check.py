@@ -1,6 +1,6 @@
 import pytest
 
-from src.chains.bias_check import bias_check_chain
+from src.chains.check_bias import check_bias_chain
 from src.models.chains.bias_check import BiasCheckRequest
 from src.models.common import BusinessContext
 
@@ -11,7 +11,7 @@ async def test_bias_check_chain():
         business_context=BusinessContext(project_id="test_bias"),
         risk_description="This will always fail due to recent issues.",
     )
-    response = await bias_check_chain(request)
+    response = await check_bias_chain(request)
     assert isinstance(response.biases, list)
 
 
@@ -22,7 +22,7 @@ async def test_bias_check_chain_with_mock():
         business_context=BusinessContext(project_id="mock"),
         risk_description="This risk will always fail due to recent issues.",
     )
-    resp = await bias_check_chain(request)
+    resp = await check_bias_chain(request)
     assert "framing" in resp.biases
     assert "availability" in resp.biases
     assert "Avoid absolute terms like 'always' or 'never'" in resp.suggestions

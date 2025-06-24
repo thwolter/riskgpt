@@ -2,7 +2,7 @@ from unittest.mock import patch
 
 import pytest
 
-from src.chains.get_opportunities import get_opportunities_chain
+from src.chains.opportunities import opportunities_chain
 from src.models.chains.opportunity import (
     Opportunity,
     OpportunityRequest,
@@ -32,7 +32,7 @@ def test_request():
 @pytest.mark.integration
 @pytest.mark.asyncio
 async def test_get_opportunities_chain(test_request):
-    response = await get_opportunities_chain(test_request)
+    response = await opportunities_chain(test_request)
     assert isinstance(response.opportunities, list)
     assert len(response.opportunities) > 0
 
@@ -52,5 +52,5 @@ async def test_get_opportunities_chain_with_mock(test_request):
         return expected
 
     with patch("src.chains.base.BaseChain.invoke", side_effect=mock_invoke):
-        resp = await get_opportunities_chain(test_request)
+        resp = await opportunities_chain(test_request)
         assert resp.opportunities == expected.opportunities

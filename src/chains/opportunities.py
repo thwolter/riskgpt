@@ -7,8 +7,8 @@ from src.utils.prompt_loader import load_prompt
 from .base import BaseChain
 
 
-@register("get_opportunities")
-async def get_opportunities_chain(
+@register("opportunities")
+async def opportunities_chain(
     request: OpportunityRequest,
 ) -> OpportunityResponse:
     prompt_data = load_prompt("get_opportunities")

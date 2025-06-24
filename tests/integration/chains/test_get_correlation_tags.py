@@ -2,7 +2,7 @@ from unittest.mock import patch
 
 import pytest
 
-from src.chains.get_correlation_tags import get_correlation_tags_chain
+from src.chains.correlation_tags import correlation_tags_chain
 from src.models.chains.correlation import (
     CorrelationTag,
     CorrelationTagRequest,
@@ -45,7 +45,7 @@ def test_request():
 @pytest.mark.integration
 @pytest.mark.asyncio
 async def test_get_correlation_tags_chain(test_request):
-    response = await get_correlation_tags_chain(test_request)
+    response = await correlation_tags_chain(test_request)
     assert isinstance(response.correlation_tags, list)
 
 
@@ -67,5 +67,5 @@ async def test_get_correlation_tags_chain_with_mock(test_request):
         return expected
 
     with patch("src.chains.base.BaseChain.invoke", side_effect=mock_invoke):
-        resp = await get_correlation_tags_chain(test_request)
+        resp = await correlation_tags_chain(test_request)
         assert resp.correlation_tags == expected.correlation_tags

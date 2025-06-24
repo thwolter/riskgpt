@@ -8,7 +8,7 @@ from .base import BaseChain
 
 
 @register("get_assessment")
-async def get_assessment_chain(request: AssessmentRequest) -> AssessmentResponse:
+async def risk_assessment_chain(request: AssessmentRequest) -> AssessmentResponse:
     """Get assessment based on the provided request."""
 
     prompt_data = load_prompt("get_assessment")

@@ -2,7 +2,7 @@ from unittest.mock import patch
 
 import pytest
 
-from src.chains.get_mitigations import get_mitigations_chain
+from src.chains.risk_mitigations import risk_mitigations_chain
 from src.models.chains.drivers import RiskDriver
 from src.models.chains.mitigation import (
     Mitigation,
@@ -43,7 +43,7 @@ def test_request():
 @pytest.mark.integration
 @pytest.mark.asyncio
 async def test_get_mitigations_chain(test_request):
-    response = await get_mitigations_chain(test_request)
+    response = await risk_mitigations_chain(test_request)
     assert isinstance(response.mitigations, list)
 
 
@@ -63,5 +63,5 @@ async def test_get_mitigations_chain_with_mock(test_request):
         return expected
 
     with patch("src.chains.base.BaseChain.invoke", side_effect=mock_invoke):
-        resp = await get_mitigations_chain(test_request)
+        resp = await risk_mitigations_chain(test_request)
         assert resp.mitigations == expected.mitigations

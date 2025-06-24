@@ -2,7 +2,7 @@ from unittest.mock import patch
 
 import pytest
 
-from src.chains.get_drivers import get_drivers_chain
+from src.chains.risk_drivers import risk_drivers_chain
 from src.models.chains.drivers import DriverRequest, DriverResponse, RiskDriver
 from src.models.chains.risk import Risk
 from src.models.common import BusinessContext
@@ -27,7 +27,7 @@ def test_request():
 @pytest.mark.integration
 @pytest.mark.asyncio
 async def test_get_drivers_chain(test_request):
-    response = await get_drivers_chain(test_request)
+    response = await risk_drivers_chain(test_request)
     assert isinstance(response.drivers, list)
     assert len(response.drivers) > 0
 
@@ -55,5 +55,5 @@ async def test_get_drivers_chain_with_mock(test_request):
         return expected
 
     with patch("src.chains.base.BaseChain.invoke", side_effect=mock_invoke):
-        resp = await get_drivers_chain(test_request)
+        resp = await risk_drivers_chain(test_request)
         assert resp.drivers == expected.drivers

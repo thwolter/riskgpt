@@ -20,7 +20,7 @@ reference sources the model is confident actually exist.
 ## Example
 
 ```python
-from src.chains.get_drivers import get_drivers_chain
+from src.chains.risk_drivers import risk_drivers_chain
 from src.models.schemas import BusinessContext, DriverRequest
 
 request = DriverRequest(
@@ -31,6 +31,6 @@ request = DriverRequest(
     risk_description="Systemausfall durch mangelnde Wartung kann zu Produktionsstopps führen.",
 )
 
-response = get_drivers_chain(request)
+response = risk_drivers_chain(request)
 print(response.drivers)
 ```

@@ -7,8 +7,8 @@ from src.utils.prompt_loader import load_prompt
 from .base import BaseChain
 
 
-@register("get_risks")
-async def get_risks_chain(request: RiskRequest) -> RiskResponse:
+@register("risks_identification")
+async def risk_identification_chain(request: RiskRequest) -> RiskResponse:
     prompt_data = load_prompt("get_risks")
 
     parser = PydanticOutputParser(pydantic_object=RiskResponse)

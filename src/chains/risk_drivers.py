@@ -6,7 +6,7 @@ from src.utils.prompt_loader import load_prompt
 from .base import BaseChain
 
 
-async def get_drivers_chain(request: DriverRequest) -> DriverResponse:
+async def risk_drivers_chain(request: DriverRequest) -> DriverResponse:
     """
     Get risk drivers based on the provided request.
     This function uses a prompt template to generate a response containing risk drivers

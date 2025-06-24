@@ -10,8 +10,8 @@ from src.utils.prompt_loader import load_prompt
 from .base import BaseChain
 
 
-@register("get_correlation_tags")
-async def get_correlation_tags_chain(
+@register("correlation_tags")
+async def correlation_tags_chain(
     request: CorrelationTagRequest,
 ) -> CorrelationTagResponse:
     for risk in request.risks:

@@ -21,7 +21,7 @@ The `get_risks` chain identifies specific risks for a given risk category.
 ## Example
 
 ```python
-from src.chains.get_risks import get_risks_chain
+from src.chains.risk_identification import risk_identification_chain
 from src.models.schemas import BusinessContext, RiskRequest
 
 request = RiskRequest(
@@ -36,6 +36,6 @@ request = RiskRequest(
     existing_risks=["Data loss"],
 )
 
-response = get_risks_chain(request)
+response = risk_identification_chain(request)
 print(response.risks)
 ```

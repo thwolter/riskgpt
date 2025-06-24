@@ -2,7 +2,7 @@ from unittest.mock import AsyncMock, patch
 
 import pytest
 
-from src.chains.get_categories import get_categories_chain
+from src.chains.risk_categories import risk_categories_chain
 from src.models.chains.categorization import (
     CategoryRequest,
     CategoryResponse,
@@ -27,7 +27,7 @@ def test_request():
 @pytest.mark.integration
 @pytest.mark.asyncio
 async def test_get_categories_chain(test_request):
-    response = await get_categories_chain(test_request)
+    response = await risk_categories_chain(test_request)
     assert isinstance(response.categories, list)
 
 
@@ -42,5 +42,5 @@ async def test_get_categories_chain_with_mock(test_request):
         new_callable=AsyncMock,
         return_value=expected,
     ):
-        resp = await get_categories_chain(test_request)
+        resp = await risk_categories_chain(test_request)
         assert resp.categories == expected.categories

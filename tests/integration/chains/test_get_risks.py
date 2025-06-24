@@ -2,7 +2,7 @@ from unittest.mock import patch
 
 import pytest
 
-from src.chains.get_risks import get_risks_chain
+from src.chains.risk_identification import risk_identification_chain
 from src.models.chains.risk import IdentifiedRisk, Risk, RiskRequest, RiskResponse
 from src.models.common import BusinessContext
 
@@ -29,7 +29,7 @@ def test_request():
 @pytest.mark.integration
 @pytest.mark.asyncio
 async def test_get_risks_chain(test_request):
-    response = await get_risks_chain(test_request)
+    response = await risk_identification_chain(test_request)
     assert isinstance(response.risks, list)
 
 
@@ -43,5 +43,5 @@ async def test_get_risks_chain_with_mock(test_request):
         return expected
 
     with patch("src.chains.base.BaseChain.invoke", side_effect=mock_invoke):
-        resp = await get_risks_chain(test_request)
+        resp = await risk_identification_chain(test_request)
         assert resp.risks == expected.risks

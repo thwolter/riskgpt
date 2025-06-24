@@ -7,8 +7,8 @@ from src.utils.prompt_loader import load_prompt
 from .base import BaseChain
 
 
-@register("get_mitigations")
-async def get_mitigations_chain(request: MitigationRequest) -> MitigationResponse:
+@register("risk_mitigations")
+async def risk_mitigations_chain(request: MitigationRequest) -> MitigationResponse:
     """
     Get mitigations for a given risk.
     """

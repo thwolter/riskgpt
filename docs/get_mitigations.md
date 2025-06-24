@@ -21,7 +21,7 @@ is reasonably sure of a real source.
 ## Example
 
 ```python
-from src.chains.get_mitigations import get_mitigations_chain
+from src.chains.risk_mitigations import risk_mitigations_chain
 from src.models.schemas import BusinessContext, MitigationRequest
 
 request = MitigationRequest(
@@ -33,6 +33,6 @@ request = MitigationRequest(
     drivers=["veraltete Hardware"],
 )
 
-response = get_mitigations_chain(request)
+response = risk_mitigations_chain(request)
 print(response.mitigations)
 ```

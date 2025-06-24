@@ -18,7 +18,7 @@ The `get_categories` chain identifies relevant risk categories for a project des
 ## Example
 
 ```python
-from src.chains.get_categories import get_categories_chain
+from src.chains.risk_categories import risk_categories_chain
 from src.models.schemas import BusinessContext, CategoryRequest
 
 request = CategoryRequest(
@@ -31,6 +31,6 @@ request = CategoryRequest(
     existing_categories=["technical", "strategic"],
 )
 
-response = get_categories_chain(request)
+response = risk_categories_chain(request)
 print(response.categories)
 ```

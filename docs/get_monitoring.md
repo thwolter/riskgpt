@@ -18,7 +18,7 @@ The `get_monitoring` chain derives indicators for ongoing risk monitoring.
 ## Example
 
 ```python
-from src.chains.get_monitoring import get_monitoring_chain
+from src.chains.risk_indicators import risk_indicators_chain
 from src.models.schemas import BusinessContext, MonitoringRequest
 
 request = MonitoringRequest(
@@ -29,6 +29,6 @@ request = MonitoringRequest(
     risk_description="Systemausfall durch mangelnde Wartung",
 )
 
-response = get_monitoring_chain(request)
+response = risk_indicators_chain(request)
 print(response.indicators)
 ```

@@ -8,7 +8,7 @@ from .base import BaseChain
 
 
 @register("get_categories")
-async def get_categories_chain(request: CategoryRequest) -> CategoryResponse:
+async def risk_categories_chain(request: CategoryRequest) -> CategoryResponse:
     """Asynchronous wrapper around :func:`get_categories_chain`."""
     prompt_data = load_prompt("get_categories")
 

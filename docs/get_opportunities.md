@@ -18,7 +18,7 @@ The `get_opportunities` chain identifies potential positive developments based o
 ## Example
 
 ```python
-from src.chains.get_opportunities import get_opportunities_chain
+from src.chains.opportunities import opportunities_chain
 from src.models.schemas import BusinessContext, OpportunityRequest
 
 request = OpportunityRequest(
@@ -29,6 +29,6 @@ request = OpportunityRequest(
     risks=["Systemausfall", "Lieferverzögerung"],
 )
 
-response = get_opportunities_chain(request)
+response = opportunities_chain(request)
 print(response.opportunities)
 ```

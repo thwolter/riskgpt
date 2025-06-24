@@ -2,7 +2,7 @@ from unittest.mock import patch
 
 import pytest
 
-from src.chains.get_monitoring import get_monitoring_chain
+from src.chains.risk_indicators import risk_indicators_chain
 from src.models.chains.monitoring import (
     MonitoringRequest,
     MonitoringResponse,
@@ -31,7 +31,7 @@ def test_request():
 @pytest.mark.integration
 @pytest.mark.asyncio
 async def test_get_monitoring_chain(test_request):
-    response = await get_monitoring_chain(test_request)
+    response = await risk_indicators_chain(test_request)
     assert isinstance(response.indicators, list)
     assert len(response.indicators) > 0
 
@@ -54,5 +54,5 @@ async def test_get_monitoring_chain_with_mock(test_request):
         return expected
 
     with patch("src.chains.base.BaseChain.invoke", side_effect=mock_invoke):
-        resp = await get_monitoring_chain(test_request)
+        resp = await risk_indicators_chain(test_request)
         assert resp.indicators == expected.indicators
