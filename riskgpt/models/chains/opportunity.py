@@ -6,9 +6,10 @@ This module contains models for identifying opportunities from risks.
 
 from typing import List, Optional
 
-from pydantic import Field
+from pydantic import BaseModel, Field
 
-from riskgpt.models.base import BaseRequest, BaseResponse
+from riskgpt.models.base import BaseRequest
+from riskgpt.models.chains.risk import Risk
 from riskgpt.models.common import BusinessContext
 
 
@@ -18,15 +19,23 @@ class OpportunityRequest(BaseRequest):
     business_context: BusinessContext = Field(
         description="Business context information"
     )
-    risks: List[str] = Field(
-        description="List of risk descriptions to identify opportunities from"
+    risk: Risk = Field(description="Risk for which opportunities are to be identified")
+
+
+class Opportunity(BaseModel):
+    opportunity: str = Field(description="Description of the identified opportunity")
+    explanation: str = Field(
+        description="Explanation of how this opportunity relates to the risk"
+    )
+    category: Optional[str] = Field(
+        default=None, description="Category of the opportunity, if applicable"
+    )
+    reference: Optional[str] = Field(
+        default=None, description="Reference or source for the opportunity"
     )
 
 
-class OpportunityResponse(BaseResponse):
+class OpportunityResponse(BaseModel):
     """Output model containing identified opportunities."""
 
-    opportunities: List[str] = Field(description="List of identified opportunities")
-    references: Optional[List[str]] = Field(
-        default=None, description="References used for opportunity identification"
-    )
+    opportunities: List[Opportunity]

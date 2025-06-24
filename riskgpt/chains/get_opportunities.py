@@ -1,9 +1,8 @@
 from langchain_core.output_parsers import PydanticOutputParser
 
-from riskgpt.config.settings import RiskGPTSettings
-from riskgpt.models.schemas import OpportunityRequest, OpportunityResponse
+from riskgpt.models.chains.opportunity import OpportunityRequest, OpportunityResponse
 from riskgpt.registry.chain_registry import register
-from riskgpt.utils.prompt_loader import load_prompt, load_system_prompt
+from riskgpt.utils.prompt_loader import load_prompt
 
 from .base import BaseChain
 
@@ -12,25 +11,14 @@ from .base import BaseChain
 async def get_opportunities_chain(
     request: OpportunityRequest,
 ) -> OpportunityResponse:
-    """Asynchronous wrapper around :func:`get_opportunities_chain`."""
-    settings = RiskGPTSettings()
     prompt_data = load_prompt("get_opportunities")
-    system_prompt = load_system_prompt()
 
     parser = PydanticOutputParser(pydantic_object=OpportunityResponse)
     chain = BaseChain(
         prompt_template=prompt_data["template"],
         parser=parser,
-        settings=settings,
         prompt_name="get_opportunities",
     )
 
-    inputs = request.model_dump()
-    inputs["risks"] = ", ".join(request.risks)
-    inputs["domain_section"] = (
-        f"Domain knowledge: {request.business_context.domain_knowledge} "
-        if request.business_context.domain_knowledge
-        else ""
-    )
-    inputs["system_prompt"] = system_prompt
+    inputs = request.model_dump(mode="json", exclude_none=True)
     return await chain.invoke(inputs)

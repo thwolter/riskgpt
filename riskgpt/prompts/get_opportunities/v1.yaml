@@ -1,12 +1,22 @@
 version: "v1"
-description: "Identify opportunities that arise from the risks."
+description: "Identify and explain opportunities arising from risks."
 template: |
   {system_prompt}
-  Risks: {risks}
-  {domain_section}
 
-  Describe potential positive developments or opportunities that could result from these risks.
-  Provide references in Harvard style where relevant.
+  Your task is to identify potential positive developments or opportunities that could plausibly arise from the risk described below.
+  For each opportunity:
+    - Clearly describe the opportunity.
+    - Briefly explain how or why this opportunity arises from the risk scenario, context, or potential response.
+    - Optionally, classify the opportunity (e.g., “operational,” “financial,” “strategic,” “compliance”).
+    - Provide a real, verifiable reference in Harvard style where relevant; omit if not available.
+
+  Risk:
+  - title: {risk_title}
+    description: {risk_description}
+    
+  Project description: {business_context_project_description}
+  Domain knowledge: {business_context_domain_knowledge}
+
   Respond in the following language: {language}
 
   {format_instructions}
