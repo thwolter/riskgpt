@@ -2,9 +2,7 @@ from unittest.mock import patch
 
 import pytest
 
-from src.chains.cost_benefit import (
-    cost_benefit_chain,
-)
+from src.chains.cost_benefit import cost_benefit_chain
 from src.models.chains.mitigation import (
     CostBenefit,
     CostBenefitRequest,

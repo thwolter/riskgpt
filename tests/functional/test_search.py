@@ -4,11 +4,7 @@ from unittest.mock import patch
 import pytest
 
 from src.config.settings import RiskGPTSettings
-from src.utils.search import (
-    _google_search,
-    _wikipedia_search,
-    search,
-)
+from src.utils.search import _google_search, _wikipedia_search, search
 
 
 @pytest.mark.skipif(

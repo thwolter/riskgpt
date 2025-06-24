@@ -3,10 +3,7 @@ from unittest.mock import patch
 import pytest
 
 from src.chains.risk_assessment import risk_assessment_chain
-from src.models.chains.assessment import (
-    AssessmentRequest,
-    AssessmentResponse,
-)
+from src.models.chains.assessment import AssessmentRequest, AssessmentResponse
 from src.models.common import BusinessContext
 
 

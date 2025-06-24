@@ -5,9 +5,7 @@ from typing import Literal, Optional
 from pydantic_settings import BaseSettings
 
 from src.config.settings import RiskGPTSettings
-from src.utils.memory_factory import (
-    get_memory as factory_get_memory,
-)
+from src.utils.memory_factory import get_memory as factory_get_memory
 
 
 class MemorySettings(BaseSettings):

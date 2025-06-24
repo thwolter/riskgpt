@@ -4,12 +4,8 @@ from chains.check_context_quality import check_context_quality
 
 from src.api import fetch_documents
 
-from .external_context_enrichment import (
-    external_context_enrichment,
-)
-from .prepare_presentation_output import (
-    prepare_presentation_output,
-)
+from .external_context_enrichment import external_context_enrichment
+from .prepare_presentation_output import prepare_presentation_output
 from .risk_workflow import risk_workflow
 
 __all__ = [

@@ -3,10 +3,7 @@ from unittest.mock import AsyncMock, patch
 import pytest
 
 from src.chains.risk_categories import risk_categories_chain
-from src.models.chains.categorization import (
-    CategoryRequest,
-    CategoryResponse,
-)
+from src.models.chains.categorization import CategoryRequest, CategoryResponse
 from src.models.common import BusinessContext
 
 
