@@ -8,7 +8,7 @@ from typing import List, Optional
 
 from pydantic import BaseModel, ConfigDict, Field
 
-from riskgpt.models.base import BaseRequest, BaseResponse
+from riskgpt.models.base import BaseRequest
 from riskgpt.models.common import BusinessContext, Dist
 
 
@@ -22,6 +22,9 @@ class AssessmentRequest(BaseRequest):
     business_context: BusinessContext = Field(
         description="Business context information"
     )
+    risk_title: str = Field(
+        description="Title of the risk being assessed",
+    )
     risk_description: str = Field(description="Risk description to assess")
     document_refs: Optional[List[str]] = Field(
         default=None,
@@ -34,8 +37,8 @@ class AssessmentRequest(BaseRequest):
                 "business_context": {
                     "project_id": "CRM-2023",
                     "project_description": "Implementation of a new CRM system",
-                    "language": "en",
                 },
+                "risk_title": "CRM Implementation Failure",
                 "risk_description": "There is a 30% probability that the CRM implementation will experience critical technical failures within the first 3 months of deployment.",
             }
         }
@@ -77,7 +80,7 @@ class QuantitativeAssessment(BaseModel):
     )
 
 
-class AssessmentResponse(BaseResponse):
+class AssessmentResponse(BaseModel):
     """
     Output model for a risk impact assessment.
 

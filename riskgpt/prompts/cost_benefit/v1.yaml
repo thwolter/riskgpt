@@ -1,13 +1,28 @@
 version: "v1"
-description: "Estimate costs and benefits for mitigations."
+description: "Estimate costs and benefits for risk mitigations."
 template: |
   {system_prompt}
-  Risk description: {risk_description}
-  Proposed mitigations: {mitigations}
-  {domain_section}
 
-  For each mitigation, estimate the expected cost or effort and the potential benefit.
-  Provide references in Harvard style when useful.
+  Your task is to analyse each proposed mitigation for the following risk and provide structured estimates of costs and benefits in clear, professional language.
+
+  Business context: {business_context_project_description}
+  Relevant domain knowledge: {business_context_domain_knowledge}
+
+  Risk:
+  - Title: {risk_title}
+  - Description: {risk_description}
+
+  Proposed mitigations:
+  {mitigations}
+
+  For each mitigation, provide an entry with the following fields:
+  - "mitigation": The name or summary of the mitigation measure.
+  - "cost": A concise, quantitative estimate of the expected cost or resource requirement, or a structured qualitative description if quantification is not possible (e.g., "Minimal direct costs, mainly management time", or "Estimated increase in project costs by 10–15%").
+  - "benefit": A clear description of the anticipated risk reduction or benefit, with quantitative estimates where possible (e.g., "Reduces delay probability by up to 30–50%") or a well-structured qualitative justification (e.g., "Enhances focus on essential components, reducing likelihood and impact of delays").
+  - Use professional, precise language suitable for senior decision makers.
+  - Where appropriate, reference relevant industry benchmarks or studies (Harvard style; include only real, verifiable sources).
+  - Do not include any generic statements or non-informative content.
+
   Respond in the following language: {language}
 
   {format_instructions}

@@ -21,7 +21,7 @@ def set_max_tokens_for_tests(monkeypatch):
     # Set the MAX_TOKENS environment variable for tests
     # Using 400 instead of 10 to ensure the model can generate a valid response
     # with all required fields for all risks while still limiting token usage
-    monkeypatch.setenv("MAX_TOKENS", "400")
+    monkeypatch.setenv("MAX_TOKENS", "5000")
 
 
 @pytest.fixture(autouse=True)

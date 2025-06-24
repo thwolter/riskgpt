@@ -22,20 +22,5 @@ async def get_categories_chain(request: CategoryRequest) -> CategoryResponse:
         prompt_name="get_categories",
     )
 
-    inputs = request.model_dump()
-    # Extract fields from business_context and add them directly to inputs
-    inputs["project_description"] = request.business_context.project_description
-    inputs["language"] = request.business_context.language
-
-    inputs["domain_section"] = (
-        f"Domain knowledge: {request.business_context.domain_knowledge}"
-        if request.business_context.domain_knowledge
-        else ""
-    )
-    inputs["existing_categories_section"] = (
-        f"Existing categories: {', '.join(request.existing_categories)}"
-        if request.existing_categories
-        else ""
-    )
-
+    inputs = request.model_dump(mode="json", exclude_none=True)
     return await chain.invoke(inputs)

@@ -41,6 +41,7 @@ class CostBenefitRequest(BaseRequest):
     business_context: BusinessContext = Field(
         description="Business context information"
     )
+    risk_title: str = Field(description="Title of the risk to analyze mitigations for")
     risk_description: str = Field(
         description="Risk description to analyze mitigations for"
     )
@@ -50,7 +51,7 @@ class CostBenefitRequest(BaseRequest):
 class CostBenefit(BaseModel):
     """Model for cost-benefit analysis of a single mitigation measure."""
 
-    mitigation: str = Field(description="Mitigation measure")
+    mitigation: str = Field(description="Mitigation measure being analyzed")
     cost: Optional[str] = Field(
         default=None, description="Cost estimate for the mitigation"
     )
@@ -59,7 +60,7 @@ class CostBenefit(BaseModel):
     )
 
 
-class CostBenefitResponse(BaseResponse):
+class CostBenefitResponse(BaseModel):
     """Output model containing cost-benefit analyses."""
 
     analyses: List[CostBenefit] = Field(

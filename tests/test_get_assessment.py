@@ -3,48 +3,46 @@ from unittest.mock import patch
 import pytest
 
 from riskgpt.chains.get_assessment import get_assessment_chain
-from riskgpt.models.schemas import (
+from riskgpt.models import (
     AssessmentRequest,
     AssessmentResponse,
     BusinessContext,
-    ResponseInfo,
 )
+
+
+@pytest.fixture
+def test_request():
+    return AssessmentRequest(
+        business_context=BusinessContext(
+            project_id="CRM-2023",
+            project_description="Investment in new CRM system",
+            domain_knowledge="Our company is investing in a new CRM system to improve customer relations.",
+        ),
+        risk_title="CRM System Implementation Risk",
+        risk_description="There is a risk that the CRM system implementation will not meet the expected requirements, leading to potential delays and increased costs.",
+    )
 
 
 @pytest.mark.integration
 @pytest.mark.asyncio
-async def test_get_assessment_chain():
-    request = AssessmentRequest(
-        business_context=BusinessContext(project_id="123", language="de"),
-        risk_description="Ein Systemausfall kann zu Produktionsstopps f\u00fchren.",
-    )
-    response = await get_assessment_chain(request)
-    assert hasattr(response, "evidence")
+async def test_get_assessment_chain(test_request):
+    response = await get_assessment_chain(test_request)
+    assert hasattr(response, "impact")
+    assert response.impact is not None
 
 
 @pytest.mark.asyncio
-async def test_get_assessment_chain_with_mock():
-    """Test get_assessment_chain with mocked BaseChain.invoke."""
-    request = AssessmentRequest(
-        business_context=BusinessContext(project_id="mock", language="en"),
-        risk_description="System outage",
-    )
+async def test_get_assessment_chain_with_mock(test_request):
     expected = AssessmentResponse(
         impact=0.5,
         probability=0.2,
         evidence="mocked",
-        response_info=ResponseInfo(
-            consumed_tokens=5,
-            total_cost=0.0,
-            prompt_name="get_assessment",
-            model_name="mock-model",
-        ),
     )
 
     async def mock_invoke(*args, **kwargs):
         return expected
 
     with patch("riskgpt.chains.base.BaseChain.invoke", side_effect=mock_invoke):
-        resp = await get_assessment_chain(request)
+        resp = await get_assessment_chain(test_request)
         assert resp.impact == expected.impact
         assert resp.evidence == expected.evidence

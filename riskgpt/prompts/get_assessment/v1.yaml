@@ -1,17 +1,37 @@
 version: "v1"
-description: "Assess the impact and probability of a risk."
+description: "Assess the impact and probability of a risk with robust, evidence-based justification."
 template: |
   {system_prompt}
 
-  Risk description: {risk_description}
-  {domain_section}
+  Your task is to assess the impact and probability of the following risk in a structured, professional manner.
+  Business context: {business_context_project_description}
+  Relevant domain knowledge: {business_context_domain_knowledge}
 
-  Determine whether this risk is a single event or not.
-  - If it is not a single event, provide a three-point estimate (minimum, most likely, maximum) for its impact, specify an appropriate probability distribution and suggest a plausible distribution fit.
-  - If it is a single event, provide an impact estimate and the probability of occurrence and recommend a suitable distribution where possible.
+  Risk:
+    - Title: {risk_title}
+    - Description: {risk_description}
 
-  Explain why you assessed the risk in this way and how you derived the values. Include references in Harvard style when possible.
+  1. Determine whether this risk is a single event or not.
+     - If not a single event, provide a three-point estimate (minimum, most likely, maximum) for its impact, specify an appropriate probability distribution, and suggest a plausible distribution fit.
+     - If a single event, provide an impact estimate and the probability of occurrence, and recommend a suitable distribution where possible.
+
+  2. You SHOULD provide numerical values for both 'impact' and 'probability' fields **only if supported by real data, expert judgement, or verifiable industry experience**:
+     - Impact: a number between 0 and 1 (or a monetary value if appropriate).
+     - Probability: a number between 0 and 1.
+     - If figures cannot be substantiated, provide a clearly reasoned qualitative assessment (e.g., "High," "Moderate," "Low," or as a narrative), or use reasonable ranges or confidence intervals if supported by analogous cases.
+
+  3. Justify your assessment with:
+     - A description of which sources, datasets, academic studies, or **real-world CRM projects** you used to inform your judgement.
+     - Summarise relevant findings or data points from these sources (not just generic statements).
+     - If neither quantitative nor qualitative assessment is possible, clearly state the reason.
+
+  4. **References:**
+     - Do NOT invent or fabricate references. Cite only sources or case studies that you are at least 90% certain exist.
+     - Each reference must include a valid DOI, ISBN, or stable URL. Omit the reference field if no such source can be found.
+
+  5. The 'evidence' field should explain your reasoning, the limitations of available data, and, if applicable, why quantification was not possible.
+
   Respond in the following language: {language}
 
   {format_instructions}
-  Output the result as a JSON object that conforms to the schema above and do not include any additional text.
+  Output the result as a JSON object conforming to the schema above. Do not include any additional text or commentary.

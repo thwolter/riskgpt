@@ -8,15 +8,10 @@ from typing import Dict, List, Optional
 
 from pydantic import BaseModel, ConfigDict, Field
 
-from riskgpt.models.enums import LanguageEnum
-
 
 class BusinessContext(BaseModel):
     """Standardized schema for business context information."""
 
-    model_version: str = Field(
-        default="1.0", description="Schema version for backward compatibility"
-    )
     project_id: str = Field(
         description="Unique identifier for the project",
         examples=["PRJ-2023-001", "CRM-ROLLOUT-Q1"],
@@ -46,9 +41,6 @@ class BusinessContext(BaseModel):
         default=None,
         description="Industry sector the project operates in",
         examples=["Healthcare", "Finance", "Manufacturing", "Retail"],
-    )
-    language: Optional[LanguageEnum] = Field(
-        default=LanguageEnum.english, description="Language for the response"
     )
     document_refs: Optional[List[str]] = Field(
         default=None,
