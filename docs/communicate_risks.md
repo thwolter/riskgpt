@@ -17,8 +17,8 @@ The `communicate_risks` chain generates concise summaries or slide text for stak
 ## Example
 
 ```python
-from riskgpt.chains.communicate_risks import communicate_risks_chain
-from riskgpt.models.schemas import BusinessContext, CommunicationRequest
+from src.chains.communicate_risks import communicate_risks_chain
+from src.models.schemas import BusinessContext, CommunicationRequest
 
 request = CommunicationRequest(
     business_context=BusinessContext(

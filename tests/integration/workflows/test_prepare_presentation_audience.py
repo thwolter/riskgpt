@@ -2,7 +2,7 @@ import os
 
 import pytest
 
-from riskgpt.models.schemas import (
+from src.models.schemas import (
     AudienceEnum,
     BusinessContext,
     LanguageEnum,
@@ -10,7 +10,7 @@ from riskgpt.models.schemas import (
     PresentationResponse,
     ResponseInfo,
 )
-from riskgpt.workflows import prepare_presentation_output
+from src.workflows import prepare_presentation_output
 
 audiences = [
     AudienceEnum.executive,
@@ -38,7 +38,7 @@ async def test_prepare_presentation_all_audiences(audience, monkeypatch):
             )
 
         monkeypatch.setattr(
-            "riskgpt.workflows.prepare_presentation_output.prepare_presentation_output",
+            "src.workflows.prepare_presentation_output.prepare_presentation_output",
             mock_prepare_presentation_output,
         )
 

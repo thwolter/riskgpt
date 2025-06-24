@@ -18,8 +18,8 @@ The `check_definition` chain validates and revises a risk description so that it
 ## Example
 
 ```python
-from riskgpt.chains.check_definition import check_definition_chain
-from riskgpt.models.schemas import BusinessContext, DefinitionCheckRequest
+from src.chains.check_definition import check_definition_chain
+from src.models.schemas import BusinessContext, DefinitionCheckRequest
 
 request = DefinitionCheckRequest(
     business_context=BusinessContext(

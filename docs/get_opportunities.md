@@ -18,8 +18,8 @@ The `get_opportunities` chain identifies potential positive developments based o
 ## Example
 
 ```python
-from riskgpt.chains.get_opportunities import get_opportunities_chain
-from riskgpt.models.schemas import BusinessContext, OpportunityRequest
+from src.chains.get_opportunities import get_opportunities_chain
+from src.models.schemas import BusinessContext, OpportunityRequest
 
 request = OpportunityRequest(
     business_context=BusinessContext(

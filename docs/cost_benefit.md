@@ -19,8 +19,8 @@ The `cost_benefit` chain estimates the effort or cost of mitigations relative to
 ## Example
 
 ```python
-from riskgpt.chains.cost_benefit import cost_benefit_chain
-from riskgpt.models.schemas import BusinessContext, CostBenefitRequest
+from src.chains.cost_benefit import cost_benefit_chain
+from src.models.schemas import BusinessContext, CostBenefitRequest
 
 request = CostBenefitRequest(
     business_context=BusinessContext(

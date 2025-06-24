@@ -36,8 +36,8 @@ The search provider can be configured using environment variables:
 ## Example
 
 ```python
-from riskgpt.workflows import external_context_enrichment
-from riskgpt.models.schemas import ExternalContextRequest
+from src.workflows import external_context_enrichment
+from src.models.schemas import ExternalContextRequest
 
 req = ExternalContextRequest(
     project_name="SEFE Energy",

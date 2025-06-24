@@ -80,8 +80,8 @@ These models are used in the check_context_quality workflow to evaluate the qual
 ### Context Quality Check
 
 ```python
-from riskgpt.models.schemas import BusinessContext, ContextQualityRequest
-from riskgpt.workflows import check_context_quality
+from src.models.schemas import BusinessContext, ContextQualityRequest
+from src.workflows import check_context_quality
 
 # Create a request
 request = ContextQualityRequest(
@@ -111,8 +111,8 @@ print(f"\nSuggested Improvements: {response.suggested_improvements}")
 The context quality check can be used to improve the business context before performing risk analysis:
 
 ```python
-from riskgpt.models.schemas import BusinessContext, ContextQualityRequest, RiskRequest
-from riskgpt.workflows import check_context_quality, risk_workflow
+from src.models.schemas import BusinessContext, ContextQualityRequest, RiskRequest
+from src.workflows import check_context_quality, risk_workflow
 
 # First, check the context quality
 initial_context = BusinessContext(
@@ -154,8 +154,8 @@ risk_response = risk_workflow(risk_request)
 The context quality check can be integrated with other workflows to ensure high-quality input:
 
 ```python
-from riskgpt.models.schemas import BusinessContext, ContextQualityRequest, PresentationRequest, AudienceEnum
-from riskgpt.workflows import check_context_quality, prepare_presentation_output
+from src.models.schemas import BusinessContext, ContextQualityRequest, PresentationRequest, AudienceEnum
+from src.workflows import check_context_quality, prepare_presentation_output
 
 # Check context quality first
 context = BusinessContext(

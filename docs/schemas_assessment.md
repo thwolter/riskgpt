@@ -155,8 +155,8 @@ These models are used in the risk assessment workflow and related chains to asse
 ### Risk Assessment
 
 ```python
-from riskgpt.models.schemas import BusinessContext, AssessmentRequest
-from riskgpt.chains import get_assessment_chain
+from src.models.schemas import BusinessContext, AssessmentRequest
+from src.chains import get_assessment_chain
 
 # Create a request
 request = AssessmentRequest(
@@ -189,8 +189,8 @@ if response.quantitative:
 The assessment models are also used in the risk workflow:
 
 ```python
-from riskgpt.models.schemas import BusinessContext, RiskRequest
-from riskgpt.workflows import risk_workflow
+from src.models.schemas import BusinessContext, RiskRequest
+from src.workflows import risk_workflow
 
 # Create a request
 request = RiskRequest(

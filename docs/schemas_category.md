@@ -149,8 +149,8 @@ These models are used in the category identification and correlation tag chains 
 ### Category Identification
 
 ```python
-from riskgpt.models.schemas import BusinessContext, CategoryRequest
-from riskgpt.chains import get_categories_chain
+from src.models.schemas import BusinessContext, CategoryRequest
+from src.chains import get_categories_chain
 
 # Create a request
 request = CategoryRequest(
@@ -176,8 +176,8 @@ if response.rationale:
 ### Correlation Tag Identification
 
 ```python
-from riskgpt.models.schemas import BusinessContext, CorrelationTagRequest
-from riskgpt.chains import get_correlation_tags_chain
+from src.models.schemas import BusinessContext, CorrelationTagRequest
+from src.chains import get_correlation_tags_chain
 
 # Create a request
 request = CorrelationTagRequest(
@@ -214,11 +214,11 @@ if response.rationale:
 The category models are used in the risk workflow to identify risks for specific categories:
 
 ```python
-from riskgpt.models.schemas import BusinessContext, RiskRequest
-from riskgpt.workflows import risk_workflow
+from src.models.schemas import BusinessContext, RiskRequest
+from src.workflows import risk_workflow
 
 # First identify categories
-from riskgpt.chains import get_categories_chain
+from src.chains import get_categories_chain
 category_request = CategoryRequest(
     business_context=BusinessContext(
         project_id="PRJ-2023-001",

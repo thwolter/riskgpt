@@ -23,8 +23,8 @@ jobs:
           poetry run ruff check .
           poetry run black --check .
       - name: Type check
-        run: poetry run mypy riskgpt
+        run: poetry run mypy src
       - name: Test
-        run: poetry run pytest --cov=riskgpt --cov-fail-under=80
+        run: poetry run pytest --cov=src --cov-fail-under=80
       - name: Build docs
         run: poetry run mkdocs build --strict

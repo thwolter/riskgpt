@@ -186,7 +186,7 @@ Generic distribution model for statistical distributions.
 These base models are used throughout the application as building blocks for more complex models. For example, the `BusinessContext` model is used in almost all request models to provide context for the request.
 
 ```python
-from riskgpt.models.schemas import BusinessContext
+from src.models.schemas import BusinessContext
 
 # Create a business context
 context = BusinessContext(
@@ -199,7 +199,7 @@ context = BusinessContext(
 )
 
 # Use the business context in a request
-from riskgpt.models.schemas import RiskRequest
+from src.models.schemas import RiskRequest
 
 request = RiskRequest(
     business_context=context,

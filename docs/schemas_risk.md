@@ -206,8 +206,8 @@ These models are used in the risk workflow and related chains to identify and ma
 ### Risk Identification
 
 ```python
-from riskgpt.models.schemas import BusinessContext, RiskRequest
-from riskgpt.workflows import risk_workflow
+from src.models.schemas import BusinessContext, RiskRequest
+from src.workflows import risk_workflow
 
 # Create a request
 request = RiskRequest(
@@ -234,8 +234,8 @@ for risk in response.risks:
 ### Definition Check
 
 ```python
-from riskgpt.models.schemas import BusinessContext, DefinitionCheckRequest
-from riskgpt.chains import check_definition_chain
+from src.models.schemas import BusinessContext, DefinitionCheckRequest
+from src.chains import check_definition_chain
 
 # Create a request
 request = DefinitionCheckRequest(

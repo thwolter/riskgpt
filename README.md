@@ -54,9 +54,9 @@ uv sync
 Basic usage example:
 
 ```python
-from riskgpt import configure_logging
-from riskgpt.models.schemas import BusinessContext
-from riskgpt.workflows.risk_workflow import run_risk_workflow
+from src import configure_logging
+from src.models.schemas import BusinessContext
+from src.workflows.risk_workflow import run_risk_workflow
 
 # Configure logging
 configure_logging()
@@ -75,7 +75,7 @@ result = run_risk_workflow(context)
 Validation helpers are available in `riskgpt.processors.input_validator` to convert dictionaries into request objects:
 
 ```python
-from riskgpt.processors.input_validator import validate_risk_request
+from src.processors.input_validator import validate_risk_request
 request_dict = {"project_id": "ACME-1", "project_name": "Security Upgrade", ...}
 validated_request = validate_risk_request(request_dict)
 ```
@@ -132,7 +132,7 @@ The hooks run black, ruff and mypy on each commit. Tests are executed with `pyte
 Run the full test suite locally with:
 
 ```bash
-pytest --cov=riskgpt
+pytest --cov=src
 ```
 
 Unit tests run by default when executing `pytest`:
@@ -154,8 +154,8 @@ pytest -m integration
 RiskGPT exposes helper functions to access search and document services directly:
 
 ```python
-from riskgpt.api import search_context, fetch_documents
-from riskgpt.models.schemas import BusinessContext
+from src.api import search_context, fetch_documents
+from src.models.schemas import BusinessContext
 
 # Search recent news
 results, ok = search_context("ACME Corp cybersecurity", "news")

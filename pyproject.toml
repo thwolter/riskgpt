@@ -37,6 +37,10 @@ Documentation = "https://thwolter.github.io/riskgpt/"
 Source = "https://github.com/thwolter/riskgpt.git"
 Tracker = "https://github.com/thwolter/riskgpt/issues"
 
+[tool.setuptools]
+packages = ["riskgpt"]
+package-dir = {"riskgpt" = "src"}
+
 [tool.ruff]
 line-length = 88
 

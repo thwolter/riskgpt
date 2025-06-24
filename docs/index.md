@@ -16,7 +16,7 @@ RiskGPT is a Python package for analyzing project-related risks and opportunitie
 
 Install the latest release from [PyPI](https://pypi.org/project/riskgpt/):
 ```bash
-pip install riskgpt
+pip install src
 ```
 
 

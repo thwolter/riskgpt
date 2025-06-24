@@ -2,8 +2,8 @@ from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 
-from riskgpt.api import fetch_documents
-from riskgpt.models.schemas import (
+from src.api import fetch_documents
+from src.models.schemas import (
     AssessmentResponse,
     BusinessContext,
     LanguageEnum,
@@ -12,7 +12,7 @@ from riskgpt.models.schemas import (
     RiskRequest,
     RiskResponse,
 )
-from riskgpt.workflows import risk_workflow
+from src.workflows import risk_workflow
 
 
 @pytest.mark.integration
@@ -102,7 +102,7 @@ def test_fetch_documents():
     assert isinstance(docs[0], str)
 
 
-@patch("riskgpt.workflows.risk_workflow.fetch_documents")
+@patch("src.workflows.risk_workflow.fetch_documents")
 @pytest.mark.integration
 @pytest.mark.asyncio
 async def test_risk_workflow_with_mocked_document_service(mock_fetch):
@@ -137,7 +137,7 @@ async def test_risk_workflow_with_mocked_document_service(mock_fetch):
     assert "mock-doc-003" in response.document_refs
 
 
-@patch("riskgpt.workflows.risk_workflow.search_context")
+@patch("src.workflows.risk_workflow.search_context")
 @pytest.mark.integration
 @pytest.mark.asyncio
 async def test_risk_workflow_with_search(mock_search):
@@ -259,7 +259,7 @@ async def test_risk_workflow_with_mock(monkeypatch):
 
     with (
         patch(
-            "riskgpt.api.search_context",
+            "src.api.search_context",
             return_value=(
                 [
                     {
@@ -273,14 +273,14 @@ async def test_risk_workflow_with_mock(monkeypatch):
                 True,
             ),
         ),
-        patch("riskgpt.api.fetch_documents", return_value=["doc1"]),
+        patch("src.api.fetch_documents", return_value=["doc1"]),
         patch(
-            "riskgpt.chains.base.BaseChain.invoke",
+            "src.chains.base.BaseChain.invoke",
             new_callable=AsyncMock,
             side_effect=[risk_response, assessment_response],
         ),
         patch(
-            "riskgpt.workflows.risk_workflow._build_risk_workflow_graph",
+            "src.workflows.risk_workflow._build_risk_workflow_graph",
             return_value=mock_graph,
         ),
     ):

@@ -3,8 +3,8 @@ from unittest.mock import patch
 
 import pytest
 
-from riskgpt.config.settings import RiskGPTSettings
-from riskgpt.utils.search import (
+from src.config.settings import RiskGPTSettings
+from src.utils.search import (
     _google_search,
     _wikipedia_search,
     search,
@@ -129,7 +129,7 @@ def test_search_google_with_mock(monkeypatch):
         os.environ["INCLUDE_WIKIPEDIA"] = "true"
         with (
             patch(
-                "riskgpt.utils.search._google_search",
+                "src.utils.search._google_search",
                 return_value=(
                     [
                         {
@@ -144,7 +144,7 @@ def test_search_google_with_mock(monkeypatch):
                 ),
             ),
             patch(
-                "riskgpt.utils.search._wikipedia_search",
+                "src.utils.search._wikipedia_search",
                 return_value=(
                     [
                         {
@@ -167,7 +167,7 @@ def test_search_google_with_mock(monkeypatch):
         # Test with INCLUDE_WIKIPEDIA disabled
         os.environ["INCLUDE_WIKIPEDIA"] = "false"
         with patch(
-            "riskgpt.utils.search._google_search",
+            "src.utils.search._google_search",
             return_value=(
                 [
                     {
@@ -203,7 +203,7 @@ def test_search_duckduckgo_with_mock(monkeypatch):
         os.environ["INCLUDE_WIKIPEDIA"] = "true"
         with (
             patch(
-                "riskgpt.utils.search._duckduckgo_search",
+                "src.utils.search._duckduckgo_search",
                 return_value=(
                     [
                         {
@@ -218,7 +218,7 @@ def test_search_duckduckgo_with_mock(monkeypatch):
                 ),
             ),
             patch(
-                "riskgpt.utils.search._wikipedia_search",
+                "src.utils.search._wikipedia_search",
                 return_value=(
                     [
                         {
@@ -241,7 +241,7 @@ def test_search_duckduckgo_with_mock(monkeypatch):
         # Test with INCLUDE_WIKIPEDIA disabled
         os.environ["INCLUDE_WIKIPEDIA"] = "false"
         with patch(
-            "riskgpt.utils.search._duckduckgo_search",
+            "src.utils.search._duckduckgo_search",
             return_value=(
                 [
                     {
@@ -269,7 +269,7 @@ def test_search_duckduckgo_with_mock(monkeypatch):
 def test_search_wikipedia_with_mock(monkeypatch):
     os.environ["SEARCH_PROVIDER"] = "wikipedia"
     with patch(
-        "riskgpt.utils.search._wikipedia_search",
+        "src.utils.search._wikipedia_search",
         return_value=(
             [{"title": "W", "url": "u", "date": "", "type": "news", "comment": "c"}],
             True,

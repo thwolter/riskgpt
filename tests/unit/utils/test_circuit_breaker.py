@@ -2,7 +2,7 @@
 
 import functools
 
-from riskgpt.utils.circuit_breaker import (
+from src.utils.circuit_breaker import (
     duckduckgo_breaker,
     openai_breaker,
     with_fallback,

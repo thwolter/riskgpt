@@ -4,8 +4,8 @@ from unittest.mock import patch
 import pydantic
 import pytest
 
-from riskgpt.models.schemas import BusinessContext, ExternalContextRequest
-from riskgpt.workflows import external_context_enrichment
+from src.models.schemas import BusinessContext, ExternalContextRequest
+from src.workflows import external_context_enrichment
 
 
 @pytest.mark.integration
@@ -136,7 +136,7 @@ async def test_external_context_enrichment_with_mock():
         return mocked_result
 
     with patch(
-        "riskgpt.workflows.external_context_enrichment.search_context",
+        "src.workflows.external_context_enrichment.search_context",
         side_effect=mock_invoke,
     ):
         resp = await external_context_enrichment(req)

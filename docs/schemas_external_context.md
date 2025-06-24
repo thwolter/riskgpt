@@ -135,8 +135,8 @@ These models are used in the external_context_enrichment workflow to collect and
 ### External Context Enrichment
 
 ```python
-from riskgpt.models.schemas import BusinessContext, ExternalContextRequest
-from riskgpt.workflows import external_context_enrichment
+from src.models.schemas import BusinessContext, ExternalContextRequest
+from src.workflows import external_context_enrichment
 
 # Create a request
 request = ExternalContextRequest(
@@ -197,8 +197,8 @@ The workflow performs searches in different categories:
 The external context information can be used to enhance the risk workflow:
 
 ```python
-from riskgpt.models.schemas import BusinessContext, ExternalContextRequest, RiskRequest
-from riskgpt.workflows import external_context_enrichment, risk_workflow
+from src.models.schemas import BusinessContext, ExternalContextRequest, RiskRequest
+from src.workflows import external_context_enrichment, risk_workflow
 
 # First, get external context
 context_request = ExternalContextRequest(

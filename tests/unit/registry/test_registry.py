@@ -1,16 +1,16 @@
 import importlib
 import sys
 
-from riskgpt.registry.chain_registry import available, get
+from src.registry.chain_registry import available, get
 
 
 def _reload_chains():
     """Reload chain modules so decorators register functions."""
-    if "riskgpt.chains" in sys.modules:
-        del sys.modules["riskgpt.chains"]
-        for mod in [m for m in list(sys.modules) if m.startswith("riskgpt.chains.")]:
+    if "src.chains" in sys.modules:
+        del sys.modules["src.chains"]
+        for mod in [m for m in list(sys.modules) if m.startswith("src.chains.")]:
             del sys.modules[mod]
-    importlib.import_module("riskgpt.chains")
+    importlib.import_module("src.chains")
 
 
 def test_registry_contains_get_categories():

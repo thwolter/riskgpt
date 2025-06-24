@@ -20,8 +20,8 @@ reference sources the model is confident actually exist.
 ## Example
 
 ```python
-from riskgpt.chains.get_drivers import get_drivers_chain
-from riskgpt.models.schemas import BusinessContext, DriverRequest
+from src.chains.get_drivers import get_drivers_chain
+from src.models.schemas import BusinessContext, DriverRequest
 
 request = DriverRequest(
     business_context=BusinessContext(

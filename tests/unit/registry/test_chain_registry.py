@@ -2,7 +2,7 @@ from typing import Any, Dict, List
 
 import pytest
 
-from riskgpt.registry.chain_registry import (
+from src.registry.chain_registry import (
     available,
     chain_exists,
     get,
@@ -16,7 +16,7 @@ from riskgpt.registry.chain_registry import (
 @pytest.fixture
 def setup_test_registry():
     # Clean up registry between tests
-    from riskgpt.registry.chain_registry import _CHAIN_REGISTRY
+    from src.registry.chain_registry import _CHAIN_REGISTRY
 
     _CHAIN_REGISTRY.clear()
 

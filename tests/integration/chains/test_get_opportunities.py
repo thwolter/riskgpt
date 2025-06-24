@@ -2,14 +2,14 @@ from unittest.mock import patch
 
 import pytest
 
-from riskgpt.chains.get_opportunities import get_opportunities_chain
-from riskgpt.models.chains.opportunity import (
+from src.chains.get_opportunities import get_opportunities_chain
+from src.models.chains.opportunity import (
     Opportunity,
     OpportunityRequest,
     OpportunityResponse,
 )
-from riskgpt.models.chains.risk import Risk
-from riskgpt.models.common import BusinessContext
+from src.models.chains.risk import Risk
+from src.models.common import BusinessContext
 
 
 @pytest.fixture
@@ -51,6 +51,6 @@ async def test_get_opportunities_chain_with_mock(test_request):
     async def mock_invoke(*args, **kwargs):
         return expected
 
-    with patch("riskgpt.chains.base.BaseChain.invoke", side_effect=mock_invoke):
+    with patch("src.chains.base.BaseChain.invoke", side_effect=mock_invoke):
         resp = await get_opportunities_chain(test_request)
         assert resp.opportunities == expected.opportunities

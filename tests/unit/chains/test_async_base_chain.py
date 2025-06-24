@@ -4,9 +4,9 @@ from types import SimpleNamespace
 import pytest
 from langchain_core.output_parsers import BaseOutputParser
 
-from riskgpt.chains.base import BaseChain
-from riskgpt.logger import configure_logging
-from riskgpt.models.schemas import CategoryResponse
+from src.chains.base import BaseChain
+from src.logger import configure_logging
+from src.models.schemas import CategoryResponse
 
 
 class DummyParser(BaseOutputParser):
@@ -19,7 +19,7 @@ class DummyParser(BaseOutputParser):
 
 @pytest.mark.asyncio
 async def test_invoke(monkeypatch, caplog):
-    caplog.set_level(logging.INFO, logger="riskgpt")
+    caplog.set_level(logging.INFO, logger="src")
     configure_logging(level=logging.INFO)
 
     parser = DummyParser()

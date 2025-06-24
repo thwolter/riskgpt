@@ -18,8 +18,8 @@ The `prioritize_risks` chain ranks identified risks by urgency or expected impac
 ## Example
 
 ```python
-from riskgpt.chains.prioritize_risks import prioritize_risks_chain
-from riskgpt.models.schemas import BusinessContext, PrioritizationRequest
+from src.chains.prioritize_risks import prioritize_risks_chain
+from src.models.schemas import BusinessContext, PrioritizationRequest
 
 request = PrioritizationRequest(
     business_context=BusinessContext(

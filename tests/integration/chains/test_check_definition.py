@@ -2,8 +2,8 @@ from unittest.mock import patch
 
 import pytest
 
-from riskgpt.chains.check_definition import check_definition_chain
-from riskgpt.models.chains.definition_check import (
+from src.chains.check_definition import check_definition_chain
+from src.models.chains.definition_check import (
     DefinitionCheckRequest,
     DefinitionCheckResponse,
 )
@@ -45,7 +45,7 @@ async def test_check_definition_chain_with_mock(test_request):
 
     # Mock the chain.invoke method to return our expected response
     with patch(
-        "riskgpt.chains.base.BaseChain.invoke",
+        "src.chains.base.BaseChain.invoke",
         return_value=expected_response,
         side_effect=mock_invoke,
     ):

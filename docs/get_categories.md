@@ -18,8 +18,8 @@ The `get_categories` chain identifies relevant risk categories for a project des
 ## Example
 
 ```python
-from riskgpt.chains.get_categories import get_categories_chain
-from riskgpt.models.schemas import BusinessContext, CategoryRequest
+from src.chains.get_categories import get_categories_chain
+from src.models.schemas import BusinessContext, CategoryRequest
 
 request = CategoryRequest(
     business_context=BusinessContext(

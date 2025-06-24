@@ -21,8 +21,8 @@ is reasonably sure of a real source.
 ## Example
 
 ```python
-from riskgpt.chains.get_mitigations import get_mitigations_chain
-from riskgpt.models.schemas import BusinessContext, MitigationRequest
+from src.chains.get_mitigations import get_mitigations_chain
+from src.models.schemas import BusinessContext, MitigationRequest
 
 request = MitigationRequest(
     business_context=BusinessContext(
