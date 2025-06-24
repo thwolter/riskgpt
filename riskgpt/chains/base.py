@@ -12,8 +12,10 @@ from langsmith import traceable
 from riskgpt.config.settings import RiskGPTSettings
 from riskgpt.logger import logger
 from riskgpt.models.schemas import ResponseInfo
+from riskgpt.utils import load_system_prompt
 from riskgpt.utils.circuit_breaker import openai_breaker, with_fallback
 from riskgpt.utils.memory_factory import get_memory
+from riskgpt.utils.misc import flatten_dict
 
 
 class BaseChain:
@@ -107,6 +109,9 @@ class BaseChain:
     async def invoke(self, inputs: Dict[str, Any]):
         """Invoke the underlying chain asynchronously."""
         with get_openai_callback() as cb:
+            inputs = flatten_dict(inputs)
+            inputs["system_prompt"] = load_system_prompt()
+
             result = await self.chain.ainvoke(inputs, memory=self.memory)
             if hasattr(result, "response_info"):
                 result.response_info = ResponseInfo(

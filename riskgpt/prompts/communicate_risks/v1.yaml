@@ -1,14 +1,45 @@
 version: "v1"
-description: "Generate summaries for stakeholders."
+description: "Generate risk summaries tailored to the selected stakeholder audience."
 template: |
   {system_prompt}
-  Summary: {summary}
-  {domain_section}
+  • Do not duplicate content between the summary and the technical annex; the annex should expand on technical detail only where required for an analyst.
+  • Always adapt the summary to the specified audience. If the audience is not provided, default to an executive-level summary.
 
-  Write two sections:
-  1. Executive summary in plain English for board members (≤150 words).
-  2. Technical annex for analysts with detailed reasoning.
+  Your task is to summarise the identified risks for a specific audience.
+  The business context is as follows: {business_context_project_description}
+  The following domain knowledge is relevant: {business_context_domain_knowledge}
+
+  The following risks have been identified:
+  {risks}
+
+  Write three clearly separated sections:
+  1. **Audience-specific summary**
+     - Address the summary to the following audience: **{audience}**
+     - Adapt the tone, focus, and level of detail according to the needs and typical concerns of this audience:
+       - **Executive:** High-level, concise, focused on major exposures and strategic impact; avoid technical jargon.
+       - **Workshop:** Balanced detail, actionable insights, focus on collaborative next steps.
+       - **Risk_internal:** Detailed, technical, referencing frameworks, controls, and methodologies.
+       - **Audit:** Compliance-focused, referencing control environment, adherence to standards, and gaps.
+       - **Regulator:** Formal, regulatory language, focus on compliance, statutory requirements, and risk exposure.
+       - **Project_owner:** Practical, actionable summary of risks and mitigation relevant to project delivery.
+       - **Investor:** Financial and reputational implications, materiality, risk/return considerations.
+       - **Operations:** Operational impacts, continuity, process risks, and mitigation measures.
+     - Summarise only information material and relevant for the selected audience, omitting unnecessary technical detail unless specifically required by the audience type.
+     - Use clear, audience-appropriate language and structure.
+  
+  2. **Key points**
+   - List the most important key points for communication with this audience, each as a concise bullet point.
+   - Focus on the main takeaways, action items, or messages that should be communicated.
+   - Do not simply copy text from the summary; extract and rephrase the most relevant points for clarity and emphasis.
+   - Output as a list of short strings.
+
+  3. **Technical annex for analysts**
+     - Provide a comprehensive and structured analysis of each risk, including background, rationale, and supporting data or reasoning.
+     - Include all relevant details that support the conclusions in the audience summary, with references to frameworks, quantitative estimates, and mitigation measures where appropriate.
+     - The annex should not simply repeat the summary, but add depth for technical readers.
+
   Respond in the following language: {language}
 
+  The output should be formatted as a JSON object conforming to the provided schema. Validate your output against the schema before submission. Do not include any additional text or commentary.
+
   {format_instructions}
-  Output the result as a JSON object that conforms to the schema above and do not include any additional text

@@ -13,8 +13,8 @@ class Prompt(BaseModel):
 class LanguageEnum(str, Enum):
     """Supported languages for responses."""
 
-    english = "en"
-    german = "de"
+    english = "english"
+    german = "german"
     french = "fr"
     spanish = "es"
     italian = "it"
@@ -29,6 +29,19 @@ class LanguageEnum(str, Enum):
     japanese = "ja"
     chinese = "zh"
     korean = "ko"
+
+
+class AudienceEnum(str, Enum):
+    """Supported audiences for presentation output."""
+
+    executive = "executive"
+    workshop = "workshop"
+    risk_internal = "risk_internal"
+    audit = "audit"
+    regulator = "regulator"
+    project_owner = "project_owner"
+    investor = "investor"
+    operations = "operations"
 
 
 class ResponseInfo(BaseModel):
@@ -118,6 +131,17 @@ class BusinessContext(BaseModel):
             if self.domain_knowledge
             else ""
         )
+
+
+class BaseRequest(BaseModel):
+    model_version: str = Field(
+        default="1.0", description="Schema version for backward compatibility"
+    )
+    language: Optional[LanguageEnum] = Field(
+        default=LanguageEnum.english, description="Language for the response"
+    )
+
+    model_config = {"use_enum_values": True}
 
 
 class Dist(BaseModel):
@@ -250,7 +274,9 @@ class Risk(BaseModel):
 
     title: str = Field(description="Short title of the risk")
     description: str = Field(description="Detailed description of the risk")
-    category: str = Field(description="Category the risk belongs to")
+    category: Optional[str] = Field(
+        default=None, description="Category the risk belongs to"
+    )
     document_refs: Optional[List[str]] = Field(
         default=None,
         description="References to document UUIDs from the document microservice",
@@ -635,17 +661,23 @@ class OpportunityResponse(BaseModel):
     response_info: Optional[ResponseInfo] = None
 
 
-class CommunicationRequest(BaseModel):
+class CommunicationRequest(BaseRequest):
     """Input for summarising risks for stakeholders."""
 
     business_context: BusinessContext
-    summary: str
+    audience: AudienceEnum = Field(
+        default=AudienceEnum.executive,
+        description="Target audience for the communication",
+    )
+    risks: List[Risk]
 
 
 class CommunicationResponse(BaseModel):
-    executive_summary: str
+    summary: str
+    key_points: List[str] = Field(
+        default_factory=list, description="Key points for communication"
+    )
     technical_annex: Optional[str] = None
-    response_info: Optional[ResponseInfo] = None
 
 
 class BiasCheckRequest(BaseModel):
@@ -673,19 +705,6 @@ class CorrelationTagResponse(BaseModel):
     tags: List[str]
     rationale: Optional[str] = None
     response_info: Optional[ResponseInfo] = None
-
-
-class AudienceEnum(str, Enum):
-    """Supported audiences for presentation output."""
-
-    executive = "executive"
-    workshop = "workshop"
-    risk_internal = "risk_internal"
-    audit = "audit"
-    regulator = "regulator"
-    project_owner = "project_owner"
-    investor = "investor"
-    operations = "operations"
 
 
 class PresentationRequest(BaseModel):
