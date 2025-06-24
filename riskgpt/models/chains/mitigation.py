@@ -8,7 +8,9 @@ from typing import List, Optional
 
 from pydantic import BaseModel, Field
 
-from riskgpt.models.base import BaseRequest, BaseResponse
+from riskgpt.models.base import BaseRequest
+from riskgpt.models.chains.drivers import RiskDriver
+from riskgpt.models.chains.risk import Risk
 from riskgpt.models.common import BusinessContext
 
 
@@ -18,21 +20,30 @@ class MitigationRequest(BaseRequest):
     business_context: BusinessContext = Field(
         description="Business context information"
     )
-    risk_description: str = Field(
-        description="Risk description to identify mitigation measures for"
-    )
-    drivers: Optional[List[str]] = Field(
-        default=None, description="List of risk drivers to consider"
+    risk: Risk = Field(description="Risk information to identify mitigations for")
+    risk_drivers: Optional[List[RiskDriver]] = Field(
+        default=None,
+        description="List of risk drivers to consider for mitigation identification",
     )
 
 
-class MitigationResponse(BaseResponse):
+class Mitigation(BaseModel):
+    driver: str = Field(
+        description="Short description of the risk driver related to the mitigation"
+    )
+    mitigation: str = Field(description="Short description of the mitigation measure")
+    explanation: str = Field(
+        description="Detailed explanation of how the mitigation addresses the risk"
+    )
+    reference: Optional[str] = Field(
+        default=None, description="Reference for the mitigation measure"
+    )
+
+
+class MitigationResponse(BaseModel):
     """Output model containing mitigation measures."""
 
-    mitigations: List[str] = Field(description="List of identified mitigation measures")
-    references: Optional[List[str]] = Field(
-        default=None, description="References used for mitigation identification"
-    )
+    mitigations: List[Mitigation]
 
 
 class CostBenefitRequest(BaseRequest):

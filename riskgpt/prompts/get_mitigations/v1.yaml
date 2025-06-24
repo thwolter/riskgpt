@@ -1,13 +1,24 @@
 version: "v1"
-description: "Suggest mitigation measures based on identified risk drivers."
+description: "Suggest targeted mitigation measures based on identified risk drivers."
 template: |
   {system_prompt}
-  Risk description: {risk_description}
-  {drivers_section}
-  {domain_section}
 
-  Propose mitigation measures addressing the identified drivers.
-  Provide references in Harvard style where useful.
+  Your task is to propose actionable mitigation measures for each identified risk driver associated with the specific risk described below.
+
+  For each driver:
+    - Propose at least one specific mitigation measure addressing the root cause or pathway of the driver.
+    - Briefly explain how the mitigation reduces the risk’s likelihood and/or impact.
+    - Where possible, provide a real, verifiable reference in Harvard style; omit the reference if none is available.
+    - Avoid generic or unsupported mitigations.
+
+  Risk:
+    - title: {risk_title}
+    - description: {risk_description}
+    - drivers: {risk_drivers}
+
+  Project description: {business_context_project_description}
+  Domain knowledge: {business_context_domain_knowledge}
+
   Respond in the following language: {language}
 
   {format_instructions}
