@@ -1,59 +1,58 @@
 from unittest.mock import patch
 
 import pytest
+from models import Risk
+from models.chains.monitoring import RiskIndicator
 
 from riskgpt.chains.get_monitoring import get_monitoring_chain
-from riskgpt.models.schemas import (
+from riskgpt.models import (
     BusinessContext,
-    LanguageEnum,
     MonitoringRequest,
     MonitoringResponse,
-    ResponseInfo,
 )
+
+
+@pytest.fixture
+def test_request():
+    """Fixture to create a sample MonitoringRequest."""
+    return MonitoringRequest(
+        business_context=BusinessContext(
+            project_id="FoundationProject",
+            project_description="Founding a startup focused on AI-driven risk management solutions.",
+            domain_knowledge="AI, risk management, and business strategy.",
+        ),
+        risk=Risk(
+            title="Data Privacy Risk",
+            description="Risk of data breaches affecting customer privacy.",
+        ),
+    )
 
 
 @pytest.mark.integration
 @pytest.mark.asyncio
-async def test_get_monitoring_chain():
-    """Test the get_monitoring_chain function with real API calls."""
-    request = MonitoringRequest(
-        business_context=BusinessContext(
-            project_id="test_get_monitoring",
-            project_description="A new IT project to implement a CRM system.",
-            domain_knowledge="The company operates in the B2B sector.",
-            language=LanguageEnum.english,
-        ),
-        risk_description="Data loss due to system failure",
-    )
-    response = await get_monitoring_chain(request)
+async def test_get_monitoring_chain(test_request):
+    response = await get_monitoring_chain(test_request)
     assert isinstance(response.indicators, list)
     assert len(response.indicators) > 0
 
 
 @pytest.mark.asyncio
-async def test_get_monitoring_chain_with_mock():
-    """Test get_monitoring_chain with mocked BaseChain.invoke."""
-    request = MonitoringRequest(
-        business_context=BusinessContext(
-            project_id="mock",
-            project_description="Mock project",
-            language=LanguageEnum.english,
-        ),
-        risk_description="Mock risk",
-    )
+async def test_get_monitoring_chain_with_mock(test_request):
     expected = MonitoringResponse(
-        indicators=["Mock indicator 1", "Mock indicator 2"],
-        response_info=ResponseInfo(
-            consumed_tokens=5,
-            total_cost=0.0,
-            prompt_name="get_monitoring",
-            model_name="mock-model",
-        ),
+        indicators=[
+            RiskIndicator(
+                indicator="Data Breach Frequency",
+                type="leading",
+                explanation="Tracks the number of data breaches over time to identify trends.",
+                action="Implement stronger data encryption and access controls.",
+                reference="NIST SP 800-53 Rev. 5",
+            )
+        ],
     )
 
     async def mock_invoke(*args, **kwargs):
         return expected
 
     with patch("riskgpt.chains.base.BaseChain.invoke", side_effect=mock_invoke):
-        resp = await get_monitoring_chain(request)
+        resp = await get_monitoring_chain(test_request)
         assert resp.indicators == expected.indicators

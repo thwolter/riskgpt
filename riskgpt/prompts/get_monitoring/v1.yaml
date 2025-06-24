@@ -1,12 +1,23 @@
 version: "v1"
-description: "Suggest monitoring indicators for a risk."
+description: "Suggest and explain monitoring indicators for a risk."
 template: |
   {system_prompt}
-  Risk description: {risk_description}
-  {domain_section}
 
-  Suggest indicators or leading signals that should be tracked to monitor this risk.
-  Provide references in Harvard style if appropriate.
+  Your task is to suggest specific indicators or leading signals that should be tracked to monitor the risk described below.
+  For each indicator:
+    - Clearly name and describe the indicator.
+    - State whether it is a leading indicator (predictive/early warning), lagging indicator (outcome-based), or both.
+    - Briefly explain how this indicator helps with early detection or quantification of the risk.
+    - Optionally, suggest what action should be taken if the indicator signals an elevated risk.
+    - Provide a real, verifiable reference in Harvard style if appropriate; omit if not available.
+
+  Risk:
+    - title: {risk_title}
+    - description: {risk_description}
+
+  Project description: {business_context_project_description}
+  Domain knowledge: {business_context_domain_knowledge}
+
   Respond in the following language: {language}
 
   {format_instructions}
