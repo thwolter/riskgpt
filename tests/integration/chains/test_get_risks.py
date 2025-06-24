@@ -1,58 +1,52 @@
 from unittest.mock import patch
 
 import pytest
+from models.chains.risk import IdentifiedRisk
 
 from riskgpt.chains.get_risks import get_risks_chain
-from riskgpt.models.schemas import (
+from riskgpt.models import (
     BusinessContext,
-    LanguageEnum,
-    ResponseInfo,
     Risk,
     RiskRequest,
     RiskResponse,
 )
 
 
+@pytest.fixture
+def test_request():
+    return RiskRequest(
+        business_context=BusinessContext(
+            project_id="CRM-2023",
+            project_description="Development of a new CRM system",
+            domain_knowledge="Customer relationship management",
+        ),
+        category="Technical",
+        existing_risks=[
+            Risk(
+                title="Data migration failure",
+                description="Risk of losing critical customer data during migration to the new CRM system",
+                category="Technical",
+            )
+        ],
+    )
+
+
 @pytest.mark.integration
 @pytest.mark.asyncio
-async def test_get_risks_chain():
-    request = RiskRequest(
-        business_context=BusinessContext(
-            project_id="123",
-            project_description="Ein neues IT-Projekt zur Einführung eines CRM-Systems.",
-            domain_knowledge="Das Unternehmen ist im B2B-Bereich tätig.",
-            language=LanguageEnum.german,
-        ),
-        category="Technisch",
-        existing_risks=["Datenverlust"],
-    )
-    response = get_risks_chain(request)
+async def test_get_risks_chain(test_request):
+    response = await get_risks_chain(test_request)
     assert isinstance(response.risks, list)
 
 
 @pytest.mark.asyncio
-async def test_get_risks_chain_with_mock():
-    """Test get_risks_chain with mocked BaseChain.invoke."""
-    request = RiskRequest(
-        business_context=BusinessContext(
-            project_id="mock", language=LanguageEnum.english
-        ),
-        category="Technical",
-    )
+async def test_get_risks_chain_with_mock(test_request):
     expected = RiskResponse(
-        risks=[Risk(title="mock", description="desc", category="Technical")],
-        references=["ref"],
-        response_info=ResponseInfo(
-            consumed_tokens=5,
-            total_cost=0.0,
-            prompt_name="get_risks",
-            model_name="mock-model",
-        ),
+        risks=[IdentifiedRisk(title="mock", description="desc")],
     )
 
     async def mock_invoke(*args, **kwargs):
         return expected
 
     with patch("riskgpt.chains.base.BaseChain.invoke", side_effect=mock_invoke):
-        resp = await get_risks_chain(request)
+        resp = await get_risks_chain(test_request)
         assert resp.risks == expected.risks

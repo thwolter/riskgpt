@@ -2,15 +2,29 @@ version: "v1"
 description: "Identify risks within a category using project information."
 template: |
   {system_prompt}
-  Project description: {project_description}
-  {domain_section}
-  {existing_risks_section}
+  
+  Your task is to identify the most important risks in the category: {category} for the project described below.
+  - You will be given a project description, relevant domain knowledge, a list of existing risks, and a risk category to focus on.
+  - If existing risks are provided, propose only additional risks that are not already on the list; avoid duplication.
+  - List no more than {max_risks} risks.
+  - Only include plausible, justifiable risks relevant to the specific project and category.
 
-  Identify the most important risks in the category: {category}.
-  If existing risks are provided, propose additional risks that are not on the list.
-  List no more than {max_risks} risks.
-  Each risk must have a short title and a description using the event, cause, consequence structure.
-  Support the risks with references to studies or academic papers and list the references in Harvard style.
+  For each risk you identify:
+    • The risk title must be short but informative, directly relating to the event or condition that poses the risk (e.g., “Shortage of Critical Project Resources”).
+    • Avoid vague, generic, or single-word titles; ensure the title directly reflects the risk event.
+    • The risk description must fit the title and be formulated as a clear, factual statement.
+    • **Do not use conditional phrases or “if… then…” constructions.** Instead, state the risk as a present or potential situation of uncertainty.
+    • A high-quality risk description must:
+        – Clearly state the **event** or situation that could impact objectives (e.g., “Shortage of critical resources such as personnel, hardware, or funding”).
+        – Specify the **cause(s)** leading to the risk (e.g., “due to inaccurate resource planning or unforeseen constraints”).
+        – Describe the **consequence(s)**, ideally quantifying impact (e.g., “may delay deliverables, increase costs, or compromise quality”).
+    • The description must follow the sequence: event → cause → consequence, as a single factual statement.
+    • Where possible, support the risk with a real, verifiable reference to studies or academic papers in Harvard style. Omit the reference field if none is available.
+
+  Project description: {business_context_project_description}
+  Domain knowledge: {business_context_domain_knowledge}
+  Existing risks: {existing_risks}
+
   Respond in the following language: {language}
 
   {format_instructions}

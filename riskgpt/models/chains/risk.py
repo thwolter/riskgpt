@@ -8,7 +8,7 @@ from typing import List, Optional
 
 from pydantic import BaseModel, ConfigDict, Field
 
-from riskgpt.models.base import BaseRequest, BaseResponse
+from riskgpt.models.base import BaseRequest
 from riskgpt.models.common import BusinessContext
 
 
@@ -58,7 +58,7 @@ class RiskRequest(BaseRequest):
     max_risks: Optional[int] = Field(
         default=5, description="Maximum number of risks to identify", ge=1, le=20
     )
-    existing_risks: Optional[List[str]] = Field(
+    existing_risks: Optional[List[Risk]] = Field(
         default=None, description="List of existing risks to consider"
     )
     document_refs: Optional[List[str]] = Field(
@@ -82,7 +82,15 @@ class RiskRequest(BaseRequest):
     )
 
 
-class RiskResponse(BaseResponse):
+class IdentifiedRisk(BaseModel):
+    title: str = Field(description="Short title of the identified risk")
+    description: str = Field(description="Detailed description of the identified risk")
+    reference: Optional[str] = Field(
+        default=None, description="Reference to the source of the risk information"
+    )
+
+
+class RiskResponse(BaseModel):
     """
     Output model for identified risks.
 
@@ -90,10 +98,8 @@ class RiskResponse(BaseResponse):
     The legacy references field is maintained for backward compatibility.
     """
 
-    risks: List[Risk] = Field(description="List of identified risks")
-    references: Optional[List[str]] = Field(
-        default=None, description="References used for risk identification"
-    )
+    risks: List[IdentifiedRisk]
+
     document_refs: Optional[List[str]] = Field(
         default=None,
         description="References to document UUIDs from the document microservice",
