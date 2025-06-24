@@ -1,51 +1,71 @@
 from unittest.mock import patch
 
 import pytest
+from models import Risk
+from models.chains.correlation import CorrelationTag
 
 from riskgpt.chains.get_correlation_tags import get_correlation_tags_chain
-from riskgpt.models.schemas import (
+from riskgpt.models import (
     BusinessContext,
     CorrelationTagRequest,
     CorrelationTagResponse,
-    ResponseInfo,
 )
 
 
-@pytest.mark.integration
-def test_get_correlation_tags_chain():
-    request = CorrelationTagRequest(
+@pytest.fixture
+def test_request():
+    """Fixture for a sample CorrelationTagRequest."""
+    return CorrelationTagRequest(
         business_context=BusinessContext(
-            project_id="test_tags", project_description="CRM rollout", language="en"
+            project_id="New Policy Project",
+            project_description="A project to develop and implement a new insurance policy",
+            domain_knowledge="The company operates in the energy sector.",
         ),
-        risk_titles=["Data loss", "Integration delay"],
-        known_drivers=["legacy systems"],
+        risks=[
+            Risk(
+                title="Data Breach",
+                description="Unauthorized access to sensitive data",
+                id="risk-1",
+            ),
+            Risk(
+                title="Regulatory Compliance",
+                description="Failure to comply with regulations",
+                id="risk-2",
+            ),
+            Risk(
+                title="Market Volatility",
+                description="Fluctuations in market prices affecting investments",
+                id="risk-3",
+            ),
+        ],
+        known_drivers=["economic downturn", "technological change"],
     )
-    response = get_correlation_tags_chain(request)
-    assert isinstance(response.tags, list)
+
+
+@pytest.mark.integration
+@pytest.mark.asyncio
+async def test_get_correlation_tags_chain(test_request):
+    response = await get_correlation_tags_chain(test_request)
+    assert isinstance(response.correlation_tags, list)
 
 
 @pytest.mark.asyncio
-async def test_get_correlation_tags_chain_with_mock():
+async def test_get_correlation_tags_chain_with_mock(test_request):
     """Test correlation tag chain with mocked BaseChain.invoke."""
-    request = CorrelationTagRequest(
-        business_context=BusinessContext(
-            project_id="mock", project_description="demo", language="en"
-        ),
-        risk_titles=["Data"],
-    )
+
     expected = CorrelationTagResponse(
-        tags=["finance"],
-        response_info=ResponseInfo(
-            consumed_tokens=5,
-            total_cost=0.0,
-            prompt_name="get_correlation_tags",
-            model_name="mock-model",
-        ),
+        correlation_tags=[
+            CorrelationTag(
+                tag="Data Security",
+                justification="Risks related to data security are often interconnected, especially in the context of regulatory compliance and data breaches.",
+                risk_ids=["risk-1", "risk-2"],
+            ),
+        ]
     )
 
     async def mock_invoke(*args, **kwargs):
         return expected
 
     with patch("riskgpt.chains.base.BaseChain.invoke", side_effect=mock_invoke):
-        resp = await get_correlation_tags_chain(request)
+        resp = await get_correlation_tags_chain(test_request)
         assert resp.tags == expected.tags

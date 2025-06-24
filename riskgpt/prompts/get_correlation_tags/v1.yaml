@@ -1,14 +1,26 @@
 version: "v1"
-description: "Suggest correlation tags for risks."
+description: "Suggest and justify correlation tags for risks."
 template: |
   {system_prompt}
-  Project description: {project_description}
-  Risk titles: {risk_titles}
-  Known drivers: {known_drivers}
-  {domain_section}
 
-  Provide short correlation tags that group related risks for modelling purposes.
+  Your task is to suggest correlation tags for the risks associated with the specific project described below.
+  - Tags are used to group risks that are likely to be correlated for risk modelling, aggregation, or scenario analysis purposes.
+  - For each correlation tag, provide:
+    - A short, descriptive tag name.
+    - A brief justification explaining the shared exposure, driver, or event that links the grouped risks.
+    - A list of risk IDs or titles from the provided risks input that are assigned to this tag (each tag must include at least two risks with a plausible correlation).
+  - Correlation tags should be based on shared risk drivers, dependencies, or observed historical correlations.
+  - Avoid unnecessary, spurious, or artificial groupings.
+  - Do not invent industry terms or use unknown jargon.
+  - Tags must be short, descriptive, and unambiguous.
+
+  Project description: {business_context_project_description}
+  Domain knowledge: {business_context_domain_knowledge}
+
+  Risks: {risks}
+  Known drivers: {known_drivers}
+
   Respond in the following language: {language}
 
   {format_instructions}
-  Output the result as a JSON object that conforms to the schema above and do not include any additional text
+  Output the result as a JSON object that conforms exactly to the schema above. Do not include any additional text or commentary.

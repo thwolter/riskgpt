@@ -8,20 +8,27 @@ from typing import List, Optional
 
 from pydantic import BaseModel
 
-from riskgpt.models.base import BaseResponse
+from riskgpt.models.base import BaseRequest
+from riskgpt.models.chains.risk import Risk
 from riskgpt.models.common import BusinessContext
 
 
-class CorrelationTagRequest(BaseModel):
+class CorrelationTag(BaseModel):
+    tag: str
+    justification: str
+    risk_ids: List[str]  # Use risk IDs or titles from the provided 'risks' input
+
+
+class CorrelationTagRequest(BaseRequest):
     """Input model for defining correlation tags."""
 
     business_context: BusinessContext
-    risk_titles: List[str]
+    risks: List[Risk]
     known_drivers: Optional[List[str]] = None
 
 
-class CorrelationTagResponse(BaseResponse):
+class CorrelationTagResponse(BaseModel):
     """Output model containing correlation tags."""
 
-    tags: List[str]
+    correlation_tags: List[CorrelationTag]
     rationale: Optional[str] = None

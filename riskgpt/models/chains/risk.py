@@ -20,6 +20,9 @@ class Risk(BaseModel):
     which contains UUIDs of documents from the document microservice.
     """
 
+    id: Optional[str] = Field(
+        default=None, description="Unique identifier for the risk"
+    )
     title: str = Field(description="Short title of the risk")
     description: str = Field(description="Detailed description of the risk")
     category: Optional[str] = Field(
