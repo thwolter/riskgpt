@@ -8,7 +8,7 @@ from typing import List, Optional
 
 from pydantic import BaseModel, ConfigDict
 
-from src.models.base import BaseRequest
+from src.models.base import BaseRequest, BaseResponse
 from src.models.chains.risk import Risk
 from src.models.common import BusinessContext
 
@@ -63,7 +63,7 @@ class CorrelationTagRequest(BaseRequest):
     )
 
 
-class CorrelationTagResponse(BaseModel):
+class CorrelationTagResponse(BaseResponse):
     """Output model containing correlation tags."""
 
     correlation_tags: List[CorrelationTag]

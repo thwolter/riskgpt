@@ -8,7 +8,7 @@ from typing import List, Optional
 
 from pydantic import BaseModel, ConfigDict, Field
 
-from src.models.base import BaseRequest
+from src.models.base import BaseRequest, BaseResponse
 from src.models.chains.risk import Risk
 from src.models.common import BusinessContext
 
@@ -62,7 +62,7 @@ class Opportunity(BaseModel):
     )
 
 
-class OpportunityResponse(BaseModel):
+class OpportunityResponse(BaseResponse):
     """Output model containing identified opportunities."""
 
     opportunities: List[Opportunity]

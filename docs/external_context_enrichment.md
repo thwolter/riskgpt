@@ -36,7 +36,7 @@ The search provider can be configured using environment variables:
 ## Example
 
 ```python
-from src.workflows import external_context_enrichment
+from src.workflows import enrich_context
 from src.models.schemas import ExternalContextRequest
 
 req = ExternalContextRequest(

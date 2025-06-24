@@ -12,10 +12,10 @@ from langsmith import traceable
 from src.config.settings import RiskGPTSettings
 from src.logger import logger
 from src.models.base import ResponseInfo
-from src.utils import load_system_prompt
 from src.utils.circuit_breaker import openai_breaker, with_fallback
 from src.utils.memory_factory import get_memory
 from src.utils.misc import flatten_dict
+from src.utils.prompt_loader import load_system_prompt
 
 
 class BaseChain:

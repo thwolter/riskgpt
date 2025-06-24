@@ -8,7 +8,7 @@ from typing import List, Optional
 
 from pydantic import BaseModel, ConfigDict, Field
 
-from src.models.base import BaseRequest
+from src.models.base import BaseRequest, BaseResponse
 from src.models.common import BusinessContext
 
 
@@ -90,7 +90,7 @@ class IdentifiedRisk(BaseModel):
     )
 
 
-class RiskResponse(BaseModel):
+class RiskResponse(BaseResponse):
     """
     Output model for identified risks.
 

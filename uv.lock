@@ -753,6 +753,22 @@ wheels = [
 ]
 
 [[package]]
+name = "langchain-tavily"
+version = "0.2.4"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "aiohttp" },
+    { name = "langchain" },
+    { name = "langchain-core" },
+    { name = "mypy" },
+    { name = "requests" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/15/df/faf9b205c93a048b96d013a88623bf31f974cf8d2785fc877d239861f1e8/langchain_tavily-0.2.4.tar.gz", hash = "sha256:68281a47e2e45e857a0d8087478f2638ea7e7c3a8a61a00cc0a2e3b7541240ea", size = 20722, upload-time = "2025-06-22T22:01:35.217Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/61/10/9c7fc924a4a099840d03cf7b58da337f9ca54949bb0cfd26fe5320959c6c/langchain_tavily-0.2.4-py3-none-any.whl", hash = "sha256:36a80f2dd331cd68e26f4f6e6c3602e2615df4da21da05d787b904f7a564d487", size = 24465, upload-time = "2025-06-22T22:01:33.987Z" },
+]
+
+[[package]]
 name = "langchain-text-splitters"
 version = "0.3.8"
 source = { registry = "https://pypi.org/simple" }
@@ -1548,6 +1564,7 @@ dependencies = [
     { name = "langchain-community" },
     { name = "langchain-google-community" },
     { name = "langchain-openai" },
+    { name = "langchain-tavily" },
     { name = "langgraph" },
     { name = "pybreaker" },
     { name = "pydantic" },
@@ -1576,6 +1593,7 @@ requires-dist = [
     { name = "langchain-community", specifier = ">=0.3.26" },
     { name = "langchain-google-community", specifier = ">=2.0.7" },
     { name = "langchain-openai", specifier = ">=0.3.25" },
+    { name = "langchain-tavily", specifier = ">=0.2.4" },
     { name = "langgraph", specifier = ">=0.4.8" },
     { name = "pybreaker", specifier = ">=1.3.0" },
     { name = "pydantic", specifier = ">=2.11.7" },

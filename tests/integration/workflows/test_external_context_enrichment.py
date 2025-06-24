@@ -3,9 +3,11 @@ from unittest.mock import patch
 
 import pydantic
 import pytest
+from workflows.enrich_context import enrich_context
 
-from src.models.schemas import BusinessContext, ExternalContextRequest
-from src.workflows import external_context_enrichment
+from src.models.common import BusinessContext
+from src.models.workflows.enrich_context import ExternalContextRequest
+from src.workflows import enrich_context
 
 
 @pytest.mark.integration
@@ -13,13 +15,13 @@ from src.workflows import external_context_enrichment
 async def test_external_context_enrichment_basic():
     req = ExternalContextRequest(
         business_context=BusinessContext(
-            project_id="test_basic",
-            project_description="Test Project",
-            domain_knowledge="infrastructure",
+            project_id="AI-Driven Risk Management",
+            project_description="A project focused on leveraging AI for risk management",
+            domain_knowledge="artificial intelligence and risk assessment",
         ),
         focus_keywords=["supply"],
     )
-    resp = await external_context_enrichment(req)
+    resp = await enrich_context(req)
     assert resp.sector_summary
     assert isinstance(resp.external_risks, list)
     assert isinstance(resp.source_table, list)
@@ -40,7 +42,7 @@ async def test_external_context_sources_have_url():
             domain_knowledge="tech",
         ),
     )
-    resp = await external_context_enrichment(req)
+    resp = await enrich_context(req)
     for src in resp.source_table:
         assert src.get("url")
 
@@ -56,15 +58,12 @@ async def test_external_context_demo_company():
         ),
         focus_keywords=["cyber"],
     )
-    resp = await external_context_enrichment(req)
+    resp = await enrich_context(req)
     assert resp.sector_summary
 
 
 @pytest.mark.skipif(
-    not os.environ.get("GOOGLE_API_KEY")
-    or not os.environ.get("GOOGLE_CSE_ID")
-    or not os.environ.get("INCLUDE_WIKIPEDIA")
-    or os.environ.get("INCLUDE_WIKIPEDIA", "").lower() != "true",
+    not os.environ.get("GOOGLE_API_KEY") or not os.environ.get("GOOGLE_CSE_ID"),
     reason="Google API key, CSE ID, or Wikipedia integration not set",
 )
 @pytest.mark.integration
@@ -89,7 +88,7 @@ async def test_external_context_with_google_and_wikipedia():
             ),
             focus_keywords=["ethics", "regulation"],
         )
-        resp = external_context_enrichment(req)
+        resp = enrich_context(req)
 
         # Verify the response
         assert resp.sector_summary
@@ -139,5 +138,5 @@ async def test_external_context_enrichment_with_mock():
         "src.workflows.external_context_enrichment.search_context",
         side_effect=mock_invoke,
     ):
-        resp = await external_context_enrichment(req)
+        resp = await enrich_context(req)
         assert resp.source_table[0]["title"] == "T"

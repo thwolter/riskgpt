@@ -6,9 +6,9 @@ This module contains models for checking and revising risk definitions.
 
 from typing import Optional
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import ConfigDict, Field
 
-from src.models.base import BaseRequest
+from src.models.base import BaseRequest, BaseResponse
 
 
 class DefinitionCheckRequest(BaseRequest):
@@ -27,7 +27,7 @@ class DefinitionCheckRequest(BaseRequest):
     )
 
 
-class DefinitionCheckResponse(BaseModel):
+class DefinitionCheckResponse(BaseResponse):
     """Output model for a revised risk definition."""
 
     revised_title: str = Field(description="Revised risk title")

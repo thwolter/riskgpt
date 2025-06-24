@@ -8,12 +8,12 @@ from typing import List, Literal, Optional
 
 from pydantic import BaseModel, ConfigDict, Field
 
-from src.models.base import BaseRequest
+from src.models.base import BaseRequest, BaseResponse
 from src.models.chains.risk import Risk
 from src.models.common import BusinessContext
 
 
-class MonitoringRequest(BaseRequest):
+class RiskIndicatorRequest(BaseRequest):
     """Input for deriving monitoring indicators."""
 
     business_context: BusinessContext = Field(
@@ -68,7 +68,7 @@ class RiskIndicator(BaseModel):
     )
 
 
-class MonitoringResponse(BaseModel):
+class RiskIndicatorResponse(BaseResponse):
     """Output model containing monitoring indicators."""
 
     indicators: List[RiskIndicator]

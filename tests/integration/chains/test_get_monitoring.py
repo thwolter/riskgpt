@@ -4,9 +4,9 @@ import pytest
 
 from src.chains.risk_indicators import risk_indicators_chain
 from src.models.chains.monitoring import (
-    MonitoringRequest,
-    MonitoringResponse,
     RiskIndicator,
+    RiskIndicatorRequest,
+    RiskIndicatorResponse,
 )
 from src.models.chains.risk import Risk
 from src.models.common import BusinessContext
@@ -15,7 +15,7 @@ from src.models.common import BusinessContext
 @pytest.fixture
 def test_request():
     """Fixture to create a sample MonitoringRequest."""
-    return MonitoringRequest(
+    return RiskIndicatorRequest(
         business_context=BusinessContext(
             project_id="FoundationProject",
             project_description="Founding a startup focused on AI-driven risk management solutions.",
@@ -38,7 +38,7 @@ async def test_get_monitoring_chain(test_request):
 
 @pytest.mark.asyncio
 async def test_get_monitoring_chain_with_mock(test_request):
-    expected = MonitoringResponse(
+    expected = RiskIndicatorResponse(
         indicators=[
             RiskIndicator(
                 indicator="Data Breach Frequency",

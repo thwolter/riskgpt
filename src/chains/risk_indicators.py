@@ -1,17 +1,17 @@
 from langchain_core.output_parsers import PydanticOutputParser
 
-from src.models.chains.monitoring import MonitoringRequest, MonitoringResponse
+from src.models.chains.monitoring import RiskIndicatorRequest, RiskIndicatorResponse
 from src.utils.prompt_loader import load_prompt
 
 from .base import BaseChain
 
 
-async def risk_indicators_chain(request: MonitoringRequest) -> MonitoringResponse:
+async def risk_indicators_chain(request: RiskIndicatorRequest) -> RiskIndicatorResponse:
     """Chain to get monitoring information based on the request."""
 
     prompt_data = load_prompt("get_monitoring")
 
-    parser = PydanticOutputParser(pydantic_object=MonitoringResponse)
+    parser = PydanticOutputParser(pydantic_object=RiskIndicatorResponse)
     chain = BaseChain(
         prompt_template=prompt_data["template"],
         parser=parser,

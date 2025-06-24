@@ -6,9 +6,9 @@ This module contains models for risk category identification.
 
 from typing import List, Optional
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import ConfigDict, Field
 
-from src.models.base import BaseRequest
+from src.models.base import BaseRequest, BaseResponse
 from src.models.common import BusinessContext
 
 
@@ -35,7 +35,7 @@ class CategoryRequest(BaseRequest):
     )
 
 
-class CategoryResponse(BaseModel):
+class CategoryResponse(BaseResponse):
     """Output model for identified categories."""
 
     categories: List[str] = Field(description="List of identified risk categories")

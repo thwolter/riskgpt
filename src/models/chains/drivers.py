@@ -8,7 +8,7 @@ from typing import List, Literal, Optional
 
 from pydantic import BaseModel, ConfigDict, Field
 
-from src.models.base import BaseRequest
+from src.models.base import BaseRequest, BaseResponse
 from src.models.chains.risk import Risk
 from src.models.common import BusinessContext
 
@@ -48,7 +48,7 @@ class RiskDriver(BaseModel):
     )
 
 
-class DriverResponse(BaseModel):
+class DriverResponse(BaseResponse):
     """Output model containing risk drivers."""
 
     drivers: List[RiskDriver]

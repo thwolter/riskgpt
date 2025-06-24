@@ -8,7 +8,7 @@ from typing import List, Optional
 
 from pydantic import BaseModel, ConfigDict, Field
 
-from src.models.base import BaseRequest
+from src.models.base import BaseRequest, BaseResponse
 from src.models.common import BusinessContext, Dist
 
 
@@ -80,7 +80,7 @@ class QuantitativeAssessment(BaseModel):
     )
 
 
-class AssessmentResponse(BaseModel):
+class AssessmentResponse(BaseResponse):
     """
     Output model for a risk impact assessment.
 

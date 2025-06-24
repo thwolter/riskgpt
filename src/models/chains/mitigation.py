@@ -8,7 +8,7 @@ from typing import List, Optional
 
 from pydantic import BaseModel, ConfigDict, Field
 
-from src.models.base import BaseRequest
+from src.models.base import BaseRequest, BaseResponse
 from src.models.chains.drivers import RiskDriver
 from src.models.chains.risk import Risk
 from src.models.common import BusinessContext
@@ -74,7 +74,7 @@ class Mitigation(BaseModel):
     )
 
 
-class MitigationResponse(BaseModel):
+class MitigationResponse(BaseResponse):
     """Output model containing mitigation measures."""
 
     mitigations: List[Mitigation]
@@ -160,7 +160,7 @@ class CostBenefit(BaseModel):
     )
 
 
-class CostBenefitResponse(BaseModel):
+class CostBenefitResponse(BaseResponse):
     """Output model containing cost-benefit analyses."""
 
     analyses: List[CostBenefit] = Field(
