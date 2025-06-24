@@ -1,13 +1,23 @@
 version: "v1"
-description: "Identify key risk drivers for a given risk."
+description: "Identify and explain key risk drivers for a given risk."
 
 template: |
   {system_prompt}
-  Risk description: {risk_description}
-  {domain_section}
 
-  List the main drivers that could increase the likelihood or impact of this risk.
-  Support your answer with references to studies or academic papers in Harvard style.
+  Your task is to identify the main drivers that could plausibly increase the likelihood or impact of the risk described below. Use only evidence-based, justifiable drivers; avoid generic or speculative entries.
+  
+  For each driver:
+    - State the driver clearly and concisely.
+    - Provide a brief explanation of how this factor increases the likelihood or impact of the risk.
+    - Indicate if the driver affects likelihood, impact, or both.
+    - Where possible, support your answer with real, verifiable references to studies or academic papers in Harvard style. Only include a reference if you are at least 90% sure it exists; otherwise, omit this field.
+  
+  Project description: {business_context_project_description}
+  Domain knowledge: {business_context_domain_knowledge}
+
+  Risk title: {risk_title}
+  Risk description: {risk_description}
+
   Respond in the following language: {language}
 
   {format_instructions}
