@@ -128,7 +128,7 @@ class AssessmentResponse(BaseResponse):
                 "response_info": {
                     "consumed_tokens": 1400,
                     "total_cost": 0.028,
-                    "prompt_name": "get_assessment",
+                    "prompt_name": "risk_assessment",
                     "model_name": "gpt-4",
                 },
             }

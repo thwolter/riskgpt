@@ -8,13 +8,13 @@ from .base import BaseChain
 
 async def risk_categories_chain(request: CategoryRequest) -> CategoryResponse:
     """Asynchronous wrapper around :func:`get_categories_chain`."""
-    prompt_data = load_prompt("get_categories")
+    prompt_data = load_prompt("risk_categories")
 
     parser = PydanticOutputParser(pydantic_object=CategoryResponse)
     chain = BaseChain(
         prompt_template=prompt_data["template"],
         parser=parser,
-        prompt_name="get_categories",
+        prompt_name="risk_categories",
     )
 
     inputs = request.model_dump(mode="json", exclude_none=True)

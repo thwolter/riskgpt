@@ -218,7 +218,7 @@ async def test_risk_workflow_with_mock(monkeypatch):
         response_info=ResponseInfo(
             consumed_tokens=5,
             total_cost=0.0,
-            prompt_name="get_risks",
+            prompt_name="risk_identification",
             model_name="mock-model",
         ),
     )
@@ -231,7 +231,7 @@ async def test_risk_workflow_with_mock(monkeypatch):
         response_info=ResponseInfo(
             consumed_tokens=5,
             total_cost=0.0,
-            prompt_name="get_assessment",
+            prompt_name="risk_assessment",
             model_name="mock-model",
         ),
     )

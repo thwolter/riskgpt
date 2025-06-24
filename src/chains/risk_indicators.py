@@ -9,13 +9,13 @@ from .base import BaseChain
 async def risk_indicators_chain(request: RiskIndicatorRequest) -> RiskIndicatorResponse:
     """Chain to get monitoring information based on the request."""
 
-    prompt_data = load_prompt("get_monitoring")
+    prompt_data = load_prompt("risk_indicators")
 
     parser = PydanticOutputParser(pydantic_object=RiskIndicatorResponse)
     chain = BaseChain(
         prompt_template=prompt_data["template"],
         parser=parser,
-        prompt_name="get_monitoring",
+        prompt_name="risk_indicators",
     )
 
     inputs = request.model_dump(mode="json", exclude_none=True)

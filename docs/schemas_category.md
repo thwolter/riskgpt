@@ -65,7 +65,7 @@ Output model for identified categories.
     "response_info": {
         "consumed_tokens": 1250,
         "total_cost": 0.025,
-        "prompt_name": "get_categories",
+        "prompt_name": "risk_categories",
         "model_name": "gpt-4",
     },
 }
@@ -136,7 +136,7 @@ Output model for correlation tags.
     "response_info": {
         "consumed_tokens": 1100,
         "total_cost": 0.022,
-        "prompt_name": "get_correlation_tags",
+        "prompt_name": "correlation_tags",
         "model_name": "gpt-4",
     },
 }

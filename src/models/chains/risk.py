@@ -128,7 +128,7 @@ class RiskResponse(BaseResponse):
                 "response_info": {
                     "consumed_tokens": 1500,
                     "total_cost": 0.03,
-                    "prompt_name": "get_risks",
+                    "prompt_name": "risk_identification",
                     "model_name": "gpt-4",
                 },
             }

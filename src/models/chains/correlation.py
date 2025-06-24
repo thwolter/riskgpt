@@ -89,7 +89,7 @@ class CorrelationTagResponse(BaseResponse):
                 "response_info": {
                     "consumed_tokens": 1300,
                     "total_cost": 0.026,
-                    "prompt_name": "get_correlation_tags",
+                    "prompt_name": "correlation_tags",
                     "model_name": "gpt-4",
                 },
             }

@@ -52,7 +52,7 @@ class CategoryResponse(BaseResponse):
                 "response_info": {
                     "consumed_tokens": 1250,
                     "total_cost": 0.025,
-                    "prompt_name": "get_categories",
+                    "prompt_name": "risk_categories",
                     "model_name": "gpt-4",
                 },
             }

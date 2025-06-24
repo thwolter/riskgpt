@@ -13,13 +13,13 @@ async def risk_drivers_chain(request: DriverRequest) -> DriverResponse:
     based on the business context and risk description provided in the request.
     """
 
-    prompt_data = load_prompt("get_drivers")
+    prompt_data = load_prompt("risk_drivers")
 
     parser = PydanticOutputParser(pydantic_object=DriverResponse)
     chain = BaseChain(
         prompt_template=prompt_data["template"],
         parser=parser,
-        prompt_name="get_drivers",
+        prompt_name="risk_drivers",
     )
 
     inputs = request.model_dump(mode="json", exclude_none=True)

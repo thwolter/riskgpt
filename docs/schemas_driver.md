@@ -72,7 +72,7 @@ Output model containing risk drivers.
     "response_info": {
         "consumed_tokens": 1300,
         "total_cost": 0.026,
-        "prompt_name": "get_drivers",
+        "prompt_name": "risk_drivers",
         "model_name": "gpt-4",
     },
 }
@@ -142,7 +142,7 @@ Output model containing mitigation measures.
     "response_info": {
         "consumed_tokens": 1350,
         "total_cost": 0.027,
-        "prompt_name": "get_mitigations",
+        "prompt_name": "risk_mitigations",
         "model_name": "gpt-4",
     },
 }

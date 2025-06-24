@@ -100,7 +100,7 @@ class MitigationResponse(BaseResponse):
                 "response_info": {
                     "consumed_tokens": 1350,
                     "total_cost": 0.027,
-                    "prompt_name": "get_mitigations",
+                    "prompt_name": "risk_mitigations",
                     "model_name": "gpt-4",
                 },
             }
