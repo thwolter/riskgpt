@@ -1,16 +1,23 @@
 version: "v1"
-description: "Identify risk categories for a given project."
+description: "Identify and explain relevant risk categories for a given project."
 template: |
-  You are a risk analyst.
-  Project description: {project_description}
-  {domain_section}
-  {existing_categories_section}
+  {system_prompt}
+  
+  Your task is to identify all relevant risk categories for the specific project described below.
+  - The list should be comprehensive, tailored to the project, and free of duplicates.
+  - Where possible, map categories to recognised frameworks (e.g., ISO 31000, COSO, etc.).
+  - If existing categories are provided, extend the list only with additional categories that are relevant and justifiable for this project.
+  - Provide a brief, specific explanation for each category, focusing on its relevance to the project context.
+  - Avoid inventing unsubstantiated or unfamiliar categories.
+  - Where categories are standard, include a reference to the source framework or guidance (if known).
+  - Optionally, group categories into logical types (e.g., strategic, operational, compliance, financial) for clarity.
 
-  Please identify the relevant risk categories for this project.
-  If existing categories are provided, extend the list with any additional categories that make sense.
-  Briefly explain each category.
+  Business context: {business_context_project_description}
+  Domain knowledge: {business_context_domain_knowledge}
+  Project description: {business_context_project_description}
+  Existing categories: {existing_categories}
+
   Respond in the following language: {language}
   
   {format_instructions}
-  Output the result as a JSON object that conforms to the schema above and do not include any additional text
-
+  Output the result as a JSON object that conforms exactly to the schema above. Do not include any additional text or commentary.

@@ -8,11 +8,11 @@ from typing import List, Optional
 
 from pydantic import BaseModel, ConfigDict, Field
 
-from riskgpt.models.base import BaseResponse
+from riskgpt.models.base import BaseRequest
 from riskgpt.models.common import BusinessContext
 
 
-class CategoryRequest(BaseModel):
+class CategoryRequest(BaseRequest):
     """Input model for category identification."""
 
     business_context: BusinessContext = Field(
@@ -28,7 +28,6 @@ class CategoryRequest(BaseModel):
                 "business_context": {
                     "project_id": "CRM-2023",
                     "project_description": "Implementation of a new CRM system",
-                    "language": "en",
                 },
                 "existing_categories": ["Technical", "Organizational"],
             }
@@ -36,7 +35,7 @@ class CategoryRequest(BaseModel):
     )
 
 
-class CategoryResponse(BaseResponse):
+class CategoryResponse(BaseModel):
     """Output model for identified categories."""
 
     categories: List[str] = Field(description="List of identified risk categories")
