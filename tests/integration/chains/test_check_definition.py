@@ -35,6 +35,7 @@ async def test_check_definition_chain_with_mock(test_request):
 
     # Define the expected response
     expected_response = DefinitionCheckResponse(
+        revised_title="Resource Allocation Risk",
         revised_description="The project will fail by 20% due to insufficient allocation of critical resources.",
         rationale="The original description was too vague and lacked specific quantifiers.",
     )
@@ -52,4 +53,3 @@ async def test_check_definition_chain_with_mock(test_request):
 
         # Check that the response matches our expectations
         assert response.revised_description == expected_response.revised_description
-        assert response.biases == expected_response.biases

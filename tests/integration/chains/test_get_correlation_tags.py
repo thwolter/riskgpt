@@ -68,4 +68,4 @@ async def test_get_correlation_tags_chain_with_mock(test_request):
 
     with patch("riskgpt.chains.base.BaseChain.invoke", side_effect=mock_invoke):
         resp = await get_correlation_tags_chain(test_request)
-        assert resp.tags == expected.tags
+        assert resp.correlation_tags == expected.correlation_tags

@@ -2,14 +2,14 @@ from unittest.mock import patch
 
 import pytest
 from models import Risk
-from models.chains.monitoring import RiskIndicator
 
 from riskgpt.chains.get_monitoring import get_monitoring_chain
-from riskgpt.models import (
-    BusinessContext,
+from riskgpt.models.chains.monitoring import (
     MonitoringRequest,
     MonitoringResponse,
+    RiskIndicator,
 )
+from riskgpt.models.common import BusinessContext
 
 
 @pytest.fixture

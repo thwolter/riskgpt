@@ -5,12 +5,13 @@ from riskgpt.models.chains.bias_check import BiasCheckRequest
 from riskgpt.models.common import BusinessContext
 
 
-def test_bias_check_chain():
+@pytest.mark.asyncio
+async def test_bias_check_chain():
     request = BiasCheckRequest(
         business_context=BusinessContext(project_id="test_bias"),
         risk_description="This will always fail due to recent issues.",
     )
-    response = bias_check_chain(request)
+    response = await bias_check_chain(request)
     assert isinstance(response.biases, list)
 
 

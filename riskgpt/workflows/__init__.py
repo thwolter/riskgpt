@@ -1,8 +1,9 @@
 """Workflow orchestrations using LangGraph."""
 
+from chains.check_context_quality import check_context_quality
+
 from riskgpt.api import fetch_documents
 
-from .check_context_quality import check_context_quality
 from .external_context_enrichment import (
     external_context_enrichment,
 )

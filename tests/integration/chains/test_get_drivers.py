@@ -2,14 +2,10 @@ from unittest.mock import patch
 
 import pytest
 from models import Risk
-from models.chains.drivers import RiskDriver
 
 from riskgpt.chains.get_drivers import get_drivers_chain
-from riskgpt.models import (
-    BusinessContext,
-    DriverRequest,
-    DriverResponse,
-)
+from riskgpt.models.chains.drivers import DriverRequest, DriverResponse, RiskDriver
+from riskgpt.models.common import BusinessContext
 
 
 @pytest.fixture

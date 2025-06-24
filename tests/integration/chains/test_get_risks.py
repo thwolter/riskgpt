@@ -1,15 +1,10 @@
 from unittest.mock import patch
 
 import pytest
-from models.chains.risk import IdentifiedRisk
 
 from riskgpt.chains.get_risks import get_risks_chain
-from riskgpt.models import (
-    BusinessContext,
-    Risk,
-    RiskRequest,
-    RiskResponse,
-)
+from riskgpt.models.chains.risk import IdentifiedRisk, Risk, RiskRequest, RiskResponse
+from riskgpt.models.common import BusinessContext
 
 
 @pytest.fixture

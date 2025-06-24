@@ -3,12 +3,13 @@ from unittest.mock import patch
 import pytest
 
 from riskgpt.chains import get_opportunities_chain
-from riskgpt.models import (
-    BusinessContext,
-    ResponseInfo,
+from riskgpt.models.chains.opportunity import (
+    Opportunity,
+    OpportunityRequest,
+    OpportunityResponse,
 )
-from riskgpt.models.chains.opportunity import OpportunityRequest, OpportunityResponse
 from riskgpt.models.chains.risk import Risk
+from riskgpt.models.common import BusinessContext
 
 
 @pytest.fixture
@@ -39,13 +40,12 @@ async def test_get_opportunities_chain(test_request):
 @pytest.mark.asyncio
 async def test_get_opportunities_chain_with_mock(test_request):
     expected = OpportunityResponse(
-        opportunities=["Mock opportunity 1", "Mock opportunity 2"],
-        response_info=ResponseInfo(
-            consumed_tokens=5,
-            total_cost=0.0,
-            prompt_name="get_opportunities",
-            model_name="mock-model",
-        ),
+        opportunities=[
+            Opportunity(
+                opportunity="Leverage alternative suppliers to mitigate supply chain risks.",
+                explanation="Identifying and engaging with alternative suppliers can help reduce dependency on a single source, thereby minimizing the impact of potential supply chain disruptions.",
+            )
+        ],
     )
 
     async def mock_invoke(*args, **kwargs):
