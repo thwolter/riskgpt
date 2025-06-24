@@ -11,6 +11,7 @@ from src.logger import logger
 from src.utils.circuit_breaker import (
     duckduckgo_breaker,
     google_search_breaker,
+    tavily_breaker,
     wikipedia_breaker,
     with_fallback,
 )
@@ -19,6 +20,7 @@ from src.utils.circuit_breaker import (
 DuckDuckGoSearchAPIWrapper: Any = None
 GoogleSearchAPIWrapper: Any = None
 WikipediaAPIWrapper: Any = None
+TavilySearchAPIWrapper: Any = None
 
 try:
     from langchain_community.utilities import (
@@ -54,6 +56,13 @@ except ImportError:  # pragma: no cover - optional dependency
         "wikipedia package not available, please install with 'pip install wikipedia'"
     )
     WikipediaAPIWrapper = None
+
+try:
+    from langchain_tavily import TavilySearchAPIWrapper as _TavilyWrapper
+
+    TavilySearchAPIWrapper = _TavilyWrapper
+except ImportError:  # pragma: no cover - optional dependency
+    logger.warning("langchain-tavily not available")
 
 
 def _search_fallback(query: str, source_type: str) -> Tuple[List[Dict[str, str]], bool]:
@@ -183,6 +192,60 @@ def _wikipedia_search(
     return results, True
 
 
+@tavily_breaker
+@with_fallback(_search_fallback)
+def _tavily_search(query: str, source_type: str) -> Tuple[List[Dict[str, str]], bool]:
+    """Perform a Tavily search and format results."""
+    results: List[Dict[str, str]] = []
+    if TavilySearchAPIWrapper is None:
+        logger.warning("langchain-tavily not available")
+        return results, False
+
+    settings = RiskGPTSettings()
+    if not settings.TAVILY_API_KEY:
+        logger.warning("Tavily API key not configured")
+        return results, False
+
+    try:
+        # Extract the API key from SecretStr
+        api_key = (
+            settings.TAVILY_API_KEY.get_secret_value()
+            if settings.TAVILY_API_KEY
+            else None
+        )
+
+        # Create the wrapper with the extracted API key
+        wrapper = TavilySearchAPIWrapper(
+            api_key=api_key,
+        )
+
+        # Get search results
+        search_results = wrapper.results(query, max_results=3)
+
+        # Check if we got valid results
+        if not search_results:
+            logger.warning("No valid search results returned")
+            return results, False
+
+        # Process the results
+        for item in search_results:
+            results.append(
+                {
+                    "title": item.get("title", ""),
+                    "url": item.get("url", ""),
+                    "date": "",  # Tavily doesn't provide date in the same way
+                    "type": source_type,
+                    "comment": item.get("content", ""),
+                }
+            )
+
+        # Return success only if we have results
+        return results, bool(results)
+    except Exception as exc:  # pragma: no cover - search failure should not crash
+        logger.error("Tavily search failed: %s", exc)
+        return results, False
+
+
 def search(query: str, source_type: str) -> Tuple[List[Dict[str, str]], bool]:
     """Perform a search using the configured search provider.
 
@@ -205,6 +268,8 @@ def search(query: str, source_type: str) -> Tuple[List[Dict[str, str]], bool]:
         primary_results, primary_success = _google_search(query, source_type)
     elif settings.SEARCH_PROVIDER == "wikipedia":
         primary_results, primary_success = _wikipedia_search(query, source_type)
+    elif settings.SEARCH_PROVIDER == "tavily":
+        primary_results, primary_success = _tavily_search(query, source_type)
 
     # Additional Wikipedia search if enabled
     wiki_results: List[Dict[str, str]] = []

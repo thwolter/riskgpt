@@ -3,11 +3,10 @@ from unittest.mock import patch
 
 import pydantic
 import pytest
-from workflows.enrich_context import enrich_context
 
 from src.models.common import BusinessContext
 from src.models.workflows.enrich_context import ExternalContextRequest
-from src.workflows import enrich_context
+from src.workflows.enrich_context import enrich_context
 
 
 @pytest.mark.integration

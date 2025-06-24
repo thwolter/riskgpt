@@ -10,7 +10,7 @@ from src.models.workflows.enrich_context import (
     ExternalContextRequest,
     ExternalContextResponse,
 )
-from src.utils import extract_key_points
+from src.utils.extraction import extract_key_points
 
 
 class State(TypedDict):

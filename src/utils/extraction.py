@@ -5,6 +5,7 @@ from pydantic import Field
 
 from src.chains.base import BaseChain
 from src.models.base import BaseResponse, ResponseInfo
+from src.utils.prompt_loader import load_prompt
 
 
 class KeyPoints(BaseResponse):
@@ -38,19 +39,10 @@ async def extract_key_points(
 
     parser = PydanticOutputParser(pydantic_object=KeyPoints)
 
-    prompt_template = """
-    You are an expert at extracting key points from {source_type} sources.
-
-    Please analyze the following {source_type} source and extract the most important key points.
-    Focus on facts, insights, and implications that would be relevant for risk assessment.
-
-    {content}
-
-    {format_instructions}
-    """
+    prompt_data = load_prompt("extract_key_points")
 
     chain = BaseChain(
-        prompt_template=prompt_template,
+        prompt_template=prompt_data["template"],
         parser=parser,
         prompt_name=f"extract_{source_type}_key_points",
     )
