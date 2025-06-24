@@ -1,15 +1,15 @@
 from unittest.mock import patch
 
 import pytest
-from models import Risk
-from models.chains.correlation import CorrelationTag
 
 from riskgpt.chains.get_correlation_tags import get_correlation_tags_chain
 from riskgpt.models import (
     BusinessContext,
     CorrelationTagRequest,
     CorrelationTagResponse,
+    Risk,
 )
+from riskgpt.models.chains.correlation import CorrelationTag
 
 
 @pytest.fixture

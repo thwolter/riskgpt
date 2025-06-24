@@ -1,12 +1,12 @@
 from unittest.mock import patch
 
 import pytest
-from models import (
+
+from riskgpt.chains.check_definition import check_definition_chain
+from riskgpt.models import (
     DefinitionCheckRequest,
     DefinitionCheckResponse,
 )
-
-from riskgpt.chains.check_definition import check_definition_chain
 
 
 @pytest.fixture
