@@ -2,10 +2,7 @@
 
 import functools
 
-import pytest
-
 from riskgpt.utils.circuit_breaker import (
-    PYBREAKER_AVAILABLE,
     duckduckgo_breaker,
     openai_breaker,
     with_fallback,
@@ -69,9 +66,6 @@ def test_circuit_breaker_decorator():
 
 def test_fallback_with_circuit_breaker():
     """Test that the fallback works with the circuit breaker."""
-    # Skip if pybreaker is not available
-    if not PYBREAKER_AVAILABLE:
-        pytest.skip("pybreaker not available")
 
     # Define a function that will fail
     @openai_breaker

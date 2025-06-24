@@ -5,17 +5,16 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class RiskGPTSettings(BaseSettings):
-
     model_config = SettingsConfigDict(
         env_file="../.env", env_ignore_empty=True, extra="ignore"
     )
 
-    MEMORY_TYPE: str = Field(default="buffer")
+    MEMORY_TYPE: Literal["none", "buffer", "redis"] = Field(default="buffer")
     REDIS_URL: Optional[str] = None
     OPENAI_API_KEY: Optional[SecretStr] = None
     TEMPERATURE: float = Field(default=0.7, ge=0.0, le=1.0)
     MAX_TOKENS: Optional[int] = None
-    OPENAI_MODEL_NAME: str = Field(default="gpt-4.1-nano")
+    OPENAI_MODEL_NAME: str = Field(default="openai:gpt-4.1-nano")
     DEFAULT_PROMPT_VERSION: str = Field(default="v1")
 
     # Search provider settings

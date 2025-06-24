@@ -9,7 +9,7 @@
       <excludeFolder url="file://$MODULE_DIR$/dist" />
       <excludeFolder url="file://$MODULE_DIR$/site" />
     </content>
-    <orderEntry type="jdk" jdkName="Poetry (riskgpt)" jdkType="Python SDK" />
+    <orderEntry type="jdk" jdkName="uv (riskgpt) (2)" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
   </component>
   <component name="PackageRequirementsSettings">

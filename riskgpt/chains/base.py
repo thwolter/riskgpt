@@ -3,12 +3,11 @@ from __future__ import annotations
 import typing
 from typing import Any, Dict, Optional
 
+from langchain.chat_models import init_chat_model
 from langchain_community.callbacks import get_openai_callback
-from langchain_community.llms import FakeListLLM
 from langchain_core.output_parsers import BaseOutputParser
 from langchain_core.prompts import ChatPromptTemplate
-from langchain_openai import ChatOpenAI
-from pydantic import BaseModel
+from langsmith import traceable
 
 from riskgpt.config.settings import RiskGPTSettings
 from riskgpt.logger import logger
@@ -38,57 +37,16 @@ class BaseChain:
         )
 
         if self.settings.OPENAI_API_KEY:
-            self.model = ChatOpenAI(
+            self.model = init_chat_model(
                 api_key=self.settings.OPENAI_API_KEY,
                 temperature=self.settings.TEMPERATURE,
                 model=self.settings.OPENAI_MODEL_NAME,
                 max_tokens=self.settings.MAX_TOKENS,  # type: ignore
             )
         else:
-            if hasattr(self.parser, "pydantic_object"):
-                data: Dict[str, Any] = {}
-                for name, field in self.parser.pydantic_object.model_fields.items():
-                    ann = field.annotation
-                    origin = typing.get_origin(ann) or ann
-                    args = typing.get_args(ann)
-                    if origin is list or any(
-                        typing.get_origin(a) is list for a in args
-                    ):
-                        item = args[0] if args else str
-                        item_origin = typing.get_origin(item) or item
-                        if isinstance(item_origin, type) and issubclass(
-                            item_origin, BaseModel
-                        ):
-                            item_cls = typing.cast(type[BaseModel], item_origin)
-                            item_data: Dict[str, Any] = {}
-                            for f_name, f in item_cls.model_fields.items():
-                                f_origin = (
-                                    typing.get_origin(f.annotation) or f.annotation
-                                )
-                                if f_origin is str:
-                                    item_data[f_name] = "dummy"
-                                elif f_origin in {int, float}:
-                                    item_data[f_name] = 0
-                                else:
-                                    item_data[f_name] = None
-                            item_instance = item_cls.model_validate(item_data)
-                            data[name] = [item_instance]
-                        elif item_origin is str:
-                            data[name] = ["dummy"]
-                        else:
-                            data[name] = []
-                    elif str in {origin, *args}:
-                        data[name] = "dummy"
-                    elif int in {origin, *args}:
-                        data[name] = 0
-                    elif float in {origin, *args}:
-                        data[name] = 0.0
-                    else:
-                        data[name] = None
-                dummy = self.parser.pydantic_object.model_validate(data)
-                self.model = FakeListLLM(responses=[dummy.model_dump_json()])
-            else:
-                self.model = FakeListLLM(responses=["{}"])
+            raise ValueError(
+                "OPENAI_API_KEY is not set. Please provide a valid API key."
+            )
 
         self.memory = get_memory(self.settings)
         self.chain = self.prompt | self.model | self.parser
@@ -145,6 +103,7 @@ class BaseChain:
 
     @openai_breaker
     @with_fallback(_fallback_response)
+    @traceable
     async def invoke(self, inputs: Dict[str, Any]):
         """Invoke the underlying chain asynchronously."""
         with get_openai_callback() as cb:

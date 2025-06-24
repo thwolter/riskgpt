@@ -47,7 +47,7 @@ async def cost_benefit_chain(request: CostBenefitRequest) -> CostBenefitResponse
         else ""
     )
     inputs["language"] = (
-        request.business_context.language.value
+        request.business_context.language.name
         if request.business_context.language
         else "en"
     )

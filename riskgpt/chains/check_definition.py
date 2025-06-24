@@ -65,9 +65,9 @@ async def check_definition_chain(
     inputs["domain_section"] = request.business_context.get_domain_section()
     # Handle missing language in BusinessContext
     language = (
-        request.business_context.language.value
+        request.business_context.language.name
         if request.business_context.language is not None
-        else "en"
+        else "english"
     )
     inputs["language"] = language
     response = await chain.invoke(inputs)

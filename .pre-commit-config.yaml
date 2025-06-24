@@ -8,12 +8,6 @@ repos:
       - id: ruff-format
         language_version: python3.12
 
-  - repo: https://github.com/pycqa/isort
-    rev: 5.13.2
-    hooks:
-      - id: isort
-        language_version: python3.12
-
   - repo: https://github.com/pre-commit/mirrors-mypy
     rev: v1.9.0
     hooks:

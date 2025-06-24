@@ -23,8 +23,7 @@ async def test_communicate_risks_chain():
             domain_knowledge="The company operates in the B2B sector.",
             language=LanguageEnum.english,
         ),
-        risks=["Data loss", "Integration failure"],
-        audience="executive",
+        summary="The project aims to implement a CRM system to improve customer relationship management.",
     )
     response = await communicate_risks_chain(request)
     assert response.summary is not None
