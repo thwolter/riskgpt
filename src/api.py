@@ -10,7 +10,7 @@ from __future__ import annotations
 from typing import Dict, List, Tuple
 
 from src.logger import logger
-from src.models.schemas import BusinessContext
+from src.models.common import BusinessContext
 from src.utils.search import search as _search
 
 
