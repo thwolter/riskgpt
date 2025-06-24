@@ -1,16 +1,17 @@
 repos:
-  - repo: https://github.com/psf/black
-    rev: 24.4.2
-    hooks:
-      - id: black
-        args: ["--line-length=88"]
-        language_version: python3.12
-
   - repo: https://github.com/charliermarsh/ruff-pre-commit
     rev: v0.4.2
     hooks:
       - id: ruff
         args: [--fix]
+        language_version: python3.12
+      - id: ruff-format
+        language_version: python3.12
+
+  - repo: https://github.com/pycqa/isort
+    rev: 5.13.2
+    hooks:
+      - id: isort
         language_version: python3.12
 
   - repo: https://github.com/pre-commit/mirrors-mypy
@@ -19,5 +20,5 @@ repos:
       - id: mypy
         language: system
         entry: poetry run mypy
-        stages: [commit, push]  # Lint bei commit UND push (alternativ nur "push")
+        stages: [pre-commit, pre-push]  # Lint bei commit UND push (alternativ nur "push")
 
