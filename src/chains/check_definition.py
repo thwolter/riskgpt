@@ -4,13 +4,11 @@ from src.models.chains.definition_check import (
     DefinitionCheckRequest,
     DefinitionCheckResponse,
 )
-from src.registry.chain_registry import register
 from src.utils.prompt_loader import load_prompt
 
 from .base import BaseChain
 
 
-@register("check_definition")
 async def check_definition_chain(
     request: DefinitionCheckRequest,
 ) -> DefinitionCheckResponse:

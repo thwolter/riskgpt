@@ -27,11 +27,6 @@ def test_google_search():
         assert result["type"] == source_type
 
 
-@pytest.mark.skipif(
-    not os.environ.get("INCLUDE_WIKIPEDIA")
-    or os.environ.get("INCLUDE_WIKIPEDIA", "").lower() != "true",
-    reason="Wikipedia integration not enabled",
-)
 @pytest.mark.integration
 def test_wikipedia_search():
     """Test Wikipedia search."""
@@ -51,10 +46,7 @@ def test_wikipedia_search():
 
 
 @pytest.mark.skipif(
-    not os.environ.get("GOOGLE_API_KEY")
-    or not os.environ.get("GOOGLE_CSE_ID")
-    or not os.environ.get("INCLUDE_WIKIPEDIA")
-    or os.environ.get("INCLUDE_WIKIPEDIA", "").lower() != "true",
+    not os.environ.get("GOOGLE_API_KEY") or not os.environ.get("GOOGLE_CSE_ID"),
     reason="Google API key, CSE ID, or Wikipedia integration not set",
 )
 @pytest.mark.integration

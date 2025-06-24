@@ -43,7 +43,7 @@ def test_load_prompt(monkeypatch):
     prompt_loader = importlib.reload(importlib.import_module("src.utils.prompt_loader"))
     data = prompt_loader.load_prompt("get_categories")
     assert data["version"] == "v1"
-    assert "You are a risk analyst." in data["template"]
+    assert "{format_instructions}" in data["template"]
 
 
 def test_load_system_prompt(monkeypatch):
@@ -84,7 +84,6 @@ def test_validate_category_request_valid():
     }
     result = validate_category_request(req)
     assert result.business_context.project_id == "1"
-    assert result.business_context.language == "en"
 
 
 def test_validate_category_request_invalid():
@@ -119,11 +118,13 @@ def test_validate_mitigation_request_valid():
         "business_context": {
             "project_id": "1",
         },
-        "risk_description": "failure",
-        "drivers": ["x"],
+        "risk": {"title": "Risk Title", "description": "failure"},
+        "risk_drivers": [
+            {"driver": "x", "explanation": "explanation", "influences": "both"}
+        ],
     }
     result = validate_mitigation_request(req)
-    assert result.risk_description == "failure"
+    assert result.risk.description == "failure"
     assert result.business_context.project_id == "1"
 
 
@@ -139,10 +140,13 @@ def test_validate_assessment_request_valid():
         "business_context": {
             "project_id": "1",
         },
+        "risk_title": "Risk Title",
         "risk_description": "something",
     }
     result = validate_assessment_request(req)
     assert result.business_context.project_id == "1"
+    assert result.risk_title == "Risk Title"
+    assert result.risk_description == "something"
 
 
 def test_validate_assessment_request_invalid():

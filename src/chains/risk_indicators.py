@@ -1,13 +1,11 @@
 from langchain_core.output_parsers import PydanticOutputParser
 
 from src.models.chains.monitoring import MonitoringRequest, MonitoringResponse
-from src.registry.chain_registry import register
 from src.utils.prompt_loader import load_prompt
 
 from .base import BaseChain
 
 
-@register("risk_monitoring")
 async def risk_indicators_chain(request: MonitoringRequest) -> MonitoringResponse:
     """Chain to get monitoring information based on the request."""
 

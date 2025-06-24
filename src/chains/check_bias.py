@@ -4,10 +4,8 @@ import re
 from typing import List
 
 from src.models.chains.bias_check import BiasCheckRequest, BiasCheckResponse
-from src.registry.chain_registry import register
 
 
-@register("bias_check")
 async def check_bias_chain(request: BiasCheckRequest) -> BiasCheckResponse:
     desc = request.risk_description.lower()
     biases: List[str] = []

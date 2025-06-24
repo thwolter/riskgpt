@@ -1,13 +1,11 @@
 from langchain_core.output_parsers import PydanticOutputParser
 
 from src.models.chains.opportunity import OpportunityRequest, OpportunityResponse
-from src.registry.chain_registry import register
 from src.utils.prompt_loader import load_prompt
 
 from .base import BaseChain
 
 
-@register("opportunities")
 async def opportunities_chain(
     request: OpportunityRequest,
 ) -> OpportunityResponse:

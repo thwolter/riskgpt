@@ -1,7 +1,6 @@
 from langchain_core.output_parsers import PydanticOutputParser
 
 from src.models.chains.mitigation import MitigationRequest, MitigationResponse
-from src.registry.chain_registry import register
 from src.utils.prompt_loader import load_prompt
 
 from .base import BaseChain

@@ -1,11 +1,9 @@
 from pydantic import ValidationError
 
-from src.models.schemas import (
-    AssessmentRequest,
-    CategoryRequest,
-    MitigationRequest,
-    RiskRequest,
-)
+from src.models.chains.assessment import AssessmentRequest
+from src.models.chains.categorization import CategoryRequest
+from src.models.chains.mitigation import MitigationRequest
+from src.models.chains.risk import RiskRequest
 
 
 def validate_category_request(data: dict) -> CategoryRequest:

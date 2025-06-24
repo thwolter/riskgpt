@@ -7,7 +7,8 @@ from langchain_core.output_parsers import BaseOutputParser
 
 from src.chains.base import BaseChain
 from src.logger import configure_logging
-from src.models.schemas import CategoryResponse, ResponseInfo
+from src.models.base import ResponseInfo
+from src.models.chains.categorization import CategoryResponse
 
 logger = logging.getLogger("src")
 
