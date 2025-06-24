@@ -6,7 +6,7 @@ This module contains the base models and common utilities used throughout the Ri
 
 from typing import Optional
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 
 from src.models.enums import LanguageEnum
 
@@ -60,4 +60,4 @@ class BaseRequest(BaseModel):
         default=LanguageEnum.english, description="Language for the response"
     )
 
-    model_config = {"use_enum_values": True}
+    model_config = ConfigDict(use_enum_values=True)

@@ -6,7 +6,7 @@ This module contains models for risk mitigation measures.
 
 from typing import List, Optional
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 
 from src.models.base import BaseRequest
 from src.models.chains.drivers import RiskDriver
@@ -26,6 +26,29 @@ class MitigationRequest(BaseRequest):
         description="List of risk drivers to consider for mitigation identification",
     )
 
+    model_config = ConfigDict(
+        json_schema_extra={
+            "example": {
+                "business_context": {
+                    "project_id": "CRM-2023",
+                    "project_description": "Implementation of a new CRM system",
+                },
+                "risk": {
+                    "title": "Data Migration Failure",
+                    "description": "Risk of losing critical customer data during migration to the new CRM system",
+                    "category": "Technical",
+                },
+                "risk_drivers": [
+                    {
+                        "driver": "Inadequate testing",
+                        "explanation": "Insufficient testing of the CRM system may lead to undetected bugs.",
+                        "influences": "both",
+                    }
+                ],
+            }
+        }
+    )
+
 
 class Mitigation(BaseModel):
     driver: str = Field(
@@ -39,11 +62,50 @@ class Mitigation(BaseModel):
         default=None, description="Reference for the mitigation measure"
     )
 
+    model_config = ConfigDict(
+        json_schema_extra={
+            "example": {
+                "driver": "Inadequate testing",
+                "mitigation": "Implement comprehensive testing strategy",
+                "explanation": "A comprehensive testing strategy including unit tests, integration tests, and user acceptance testing will help identify and fix issues before deployment.",
+                "reference": "https://example.com/testing-best-practices",
+            }
+        }
+    )
+
 
 class MitigationResponse(BaseModel):
     """Output model containing mitigation measures."""
 
     mitigations: List[Mitigation]
+
+    model_config = ConfigDict(
+        json_schema_extra={
+            "example": {
+                "mitigations": [
+                    {
+                        "driver": "Inadequate testing",
+                        "mitigation": "Implement comprehensive testing strategy",
+                        "explanation": "A comprehensive testing strategy including unit tests, integration tests, and user acceptance testing will help identify and fix issues before deployment.",
+                        "reference": "https://example.com/testing-best-practices",
+                    },
+                    {
+                        "driver": "Lack of data backup",
+                        "mitigation": "Implement automated backup system",
+                        "explanation": "An automated backup system will ensure that data is regularly backed up and can be restored in case of migration issues.",
+                        "reference": "https://example.com/data-backup-strategies",
+                    },
+                ],
+                "model_version": "1.0",
+                "response_info": {
+                    "consumed_tokens": 1350,
+                    "total_cost": 0.027,
+                    "prompt_name": "get_mitigations",
+                    "model_name": "gpt-4",
+                },
+            }
+        }
+    )
 
 
 class CostBenefitRequest(BaseRequest):
@@ -58,6 +120,23 @@ class CostBenefitRequest(BaseRequest):
     )
     mitigations: List[str] = Field(description="List of mitigation measures to analyze")
 
+    model_config = ConfigDict(
+        json_schema_extra={
+            "example": {
+                "business_context": {
+                    "project_id": "CRM-2023",
+                    "project_description": "Implementation of a new CRM system",
+                },
+                "risk_title": "Data Migration Failure",
+                "risk_description": "Risk of losing critical customer data during migration to the new CRM system",
+                "mitigations": [
+                    "Implement comprehensive testing strategy",
+                    "Implement automated backup system",
+                ],
+            }
+        }
+    )
+
 
 class CostBenefit(BaseModel):
     """Model for cost-benefit analysis of a single mitigation measure."""
@@ -70,6 +149,16 @@ class CostBenefit(BaseModel):
         default=None, description="Benefit estimate for the mitigation"
     )
 
+    model_config = ConfigDict(
+        json_schema_extra={
+            "example": {
+                "mitigation": "Implement comprehensive testing strategy",
+                "cost": "Medium - Requires additional resources and time",
+                "benefit": "High - Significantly reduces the risk of data loss during migration",
+            }
+        }
+    )
+
 
 class CostBenefitResponse(BaseModel):
     """Output model containing cost-benefit analyses."""
@@ -79,4 +168,34 @@ class CostBenefitResponse(BaseModel):
     )
     references: Optional[List[str]] = Field(
         default=None, description="References used for the analyses"
+    )
+
+    model_config = ConfigDict(
+        json_schema_extra={
+            "example": {
+                "analyses": [
+                    {
+                        "mitigation": "Implement comprehensive testing strategy",
+                        "cost": "Medium - Requires additional resources and time",
+                        "benefit": "High - Significantly reduces the risk of data loss during migration",
+                    },
+                    {
+                        "mitigation": "Implement automated backup system",
+                        "cost": "Low - Can be implemented with existing resources",
+                        "benefit": "High - Ensures data can be recovered in case of migration issues",
+                    },
+                ],
+                "references": [
+                    "Industry best practices for CRM implementations",
+                    "Internal cost-benefit analysis guidelines",
+                ],
+                "model_version": "1.0",
+                "response_info": {
+                    "consumed_tokens": 1400,
+                    "total_cost": 0.028,
+                    "prompt_name": "get_cost_benefit",
+                    "model_name": "gpt-4",
+                },
+            }
+        }
     )

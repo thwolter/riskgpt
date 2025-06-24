@@ -47,6 +47,19 @@ class BusinessContext(BaseModel):
         description="References to document UUIDs from the document microservice",
     )
 
+    model_config = ConfigDict(
+        json_schema_extra={
+            "example": {
+                "project_id": "CRM-2023",
+                "project_description": "Implementation of a new CRM system",
+                "domain_knowledge": "The company operates in the B2B sector",
+                "business_area": "Sales",
+                "industry_sector": "Technology",
+                "document_refs": ["doc-uuid-1", "doc-uuid-2"],
+            }
+        }
+    )
+
     def get_domain_section(self) -> str:
         """Return formatted domain knowledge section if available."""
         return (
@@ -88,3 +101,13 @@ class Prompt(BaseModel):
     version: str
     description: str
     template: str
+
+    model_config = ConfigDict(
+        json_schema_extra={
+            "example": {
+                "version": "1.0",
+                "description": "Template for generating risk assessments",
+                "template": "Given the following business context: {business_context}, assess the risk: {risk_description}",
+            }
+        }
+    )
