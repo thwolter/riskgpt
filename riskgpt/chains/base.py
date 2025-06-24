@@ -11,7 +11,7 @@ from langsmith import traceable
 
 from riskgpt.config.settings import RiskGPTSettings
 from riskgpt.logger import logger
-from riskgpt.models.schemas import ResponseInfo
+from riskgpt.models.base import ResponseInfo
 from riskgpt.utils import load_system_prompt
 from riskgpt.utils.circuit_breaker import openai_breaker, with_fallback
 from riskgpt.utils.memory_factory import get_memory

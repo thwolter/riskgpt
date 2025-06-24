@@ -3,14 +3,13 @@ from unittest.mock import patch
 import pytest
 
 from riskgpt.chains.communicate_risks import communicate_risks_chain
-from riskgpt.models.schemas import (
-    AudienceEnum,
-    BusinessContext,
+from riskgpt.models.chains.communication import (
     CommunicationRequest,
     CommunicationResponse,
-    LanguageEnum,
-    Risk,
 )
+from riskgpt.models.chains.risk import Risk
+from riskgpt.models.common import BusinessContext
+from riskgpt.models.enums import AudienceEnum, LanguageEnum
 
 
 @pytest.fixture

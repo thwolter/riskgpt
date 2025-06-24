@@ -1,13 +1,26 @@
 version: "v1"
-description: "Check and revise a risk definition using the event-cause-consequence structure."
-template: |
-  You are a risk analyst.
+description: "Check and revise a risk definition using the event–cause–consequence structure."
+template: | 
+  Provided risk title: {risk_title}
   Provided risk definition: {risk_description}
-  {domain_section}
 
-  Evaluate whether the definition follows the event, cause, consequence logic.
-  Rewrite it if necessary so that it clearly states the event, its cause and the consequence.
+  Your task is to generate a concise, specific risk title and a revised risk description using the event–cause–consequence structure.
+  • The risk title must be short but informative, directly relating to the event or condition that poses the risk (e.g., “Shortage of Critical Project Resources”).
+  • Avoid vague, generic, or single-word titles; ensure the title directly reflects the risk event.
+  • The risk description must fit the title and be formulated as a clear, factual statement.
+  • **Do not use conditional phrases or “if… then…” constructions.** Instead, state the risk as a present or potential situation of uncertainty.
+  • A high-quality risk description must:
+      – Clearly state the **event** or situation that could impact objectives (e.g., “Shortage of critical resources such as personnel, hardware, or funding”).
+      – Specify the **cause(s)** leading to the risk (e.g., “due to inaccurate resource planning or unforeseen constraints”).
+      – Describe the **consequence(s)**, ideally quantifying impact (e.g., “may delay deliverables, increase costs, or compromise quality”).
+  • The description must follow the sequence: event → cause → consequence, as a single factual statement.
+
   Respond in the following language: {language}
 
+  The output should be formatted as a JSON object conforming to the provided schema, which includes:
+    - "risk_title": string (the concise, specific title as instructed above)
+    - "description": string (the revised risk description following the event–cause–consequence logic)
+    - (optionally) "rationale": string (explanation for changes, if your schema supports it)
+
+  Validate your output against the schema before submission. Do not include any additional text or commentary.
   {format_instructions}
-  Output the result as a JSON object that conforms to the schema above and do not include any additional text

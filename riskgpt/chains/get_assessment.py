@@ -1,7 +1,7 @@
 from langchain_core.output_parsers import PydanticOutputParser
 
 from riskgpt.config.settings import RiskGPTSettings
-from riskgpt.models.schemas import AssessmentRequest, AssessmentResponse
+from riskgpt.models.chains.assessment import AssessmentRequest, AssessmentResponse
 from riskgpt.registry.chain_registry import register
 from riskgpt.utils.prompt_loader import load_prompt, load_system_prompt
 

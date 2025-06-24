@@ -3,7 +3,7 @@ from __future__ import annotations
 import re
 from typing import List
 
-from riskgpt.models.schemas import BiasCheckRequest, BiasCheckResponse
+from riskgpt.models.chains.bias_check import BiasCheckRequest, BiasCheckResponse
 from riskgpt.registry.chain_registry import register
 
 

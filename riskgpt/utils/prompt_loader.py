@@ -4,7 +4,7 @@ from typing import Any, Dict, Optional
 import yaml  # type: ignore
 
 from riskgpt.config.settings import RiskGPTSettings
-from riskgpt.models.schemas import Prompt
+from riskgpt.models.common import Prompt
 
 # ``PROMPT_DIR`` is defined in a way that allows tests to override it using
 # ``monkeypatch`` even when the module is reloaded.  On reload the module's

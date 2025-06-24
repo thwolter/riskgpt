@@ -1,7 +1,7 @@
 from langchain_core.output_parsers import PydanticOutputParser
 
 from riskgpt.config.settings import RiskGPTSettings
-from riskgpt.models.schemas import CategoryRequest, CategoryResponse
+from riskgpt.models.chains.categorization import CategoryRequest, CategoryResponse
 from riskgpt.registry.chain_registry import register
 from riskgpt.utils.prompt_loader import load_prompt
 

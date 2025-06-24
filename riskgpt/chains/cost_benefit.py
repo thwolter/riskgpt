@@ -1,7 +1,7 @@
 from langchain_core.output_parsers import PydanticOutputParser
 
 from riskgpt.config.settings import RiskGPTSettings
-from riskgpt.models.schemas import CostBenefitRequest, CostBenefitResponse
+from riskgpt.models.chains.mitigation import CostBenefitRequest, CostBenefitResponse
 from riskgpt.utils.prompt_loader import load_prompt, load_system_prompt
 
 from .base import BaseChain

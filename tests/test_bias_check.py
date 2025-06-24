@@ -1,10 +1,8 @@
 import pytest
 
 from riskgpt.chains.bias_check import bias_check_chain
-from riskgpt.models.schemas import (
-    BiasCheckRequest,
-    BusinessContext,
-)
+from riskgpt.models.chains.bias_check import BiasCheckRequest
+from riskgpt.models.common import BusinessContext
 
 
 def test_bias_check_chain():
