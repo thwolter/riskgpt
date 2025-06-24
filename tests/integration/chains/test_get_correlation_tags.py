@@ -3,13 +3,13 @@ from unittest.mock import patch
 import pytest
 
 from riskgpt.chains.get_correlation_tags import get_correlation_tags_chain
-from riskgpt.models import (
-    BusinessContext,
+from riskgpt.models.chains.correlation import (
+    CorrelationTag,
     CorrelationTagRequest,
     CorrelationTagResponse,
-    Risk,
 )
-from riskgpt.models.chains.correlation import CorrelationTag
+from riskgpt.models.chains.risk import Risk
+from riskgpt.models.common import BusinessContext
 
 
 @pytest.fixture

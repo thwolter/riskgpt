@@ -5,13 +5,12 @@ import pytest
 from riskgpt.chains.cost_benefit import (
     cost_benefit_chain,
 )
-from riskgpt.models import (
-    BusinessContext,
+from riskgpt.models.chains.mitigation import (
     CostBenefit,
     CostBenefitRequest,
     CostBenefitResponse,
-    ResponseInfo,
 )
+from riskgpt.models.common import BusinessContext
 
 
 @pytest.fixture
@@ -66,12 +65,6 @@ async def test_cost_benefit_chain_with_mock(test_request):
             ),
         ],
         references=["Project management best practices"],
-        response_info=ResponseInfo(
-            consumed_tokens=100,
-            total_cost=0.01,
-            prompt_name="cost_benefit",
-            model_name="mock-model",
-        ),
     )
 
     async def mock_invoke(*args, **kwargs):

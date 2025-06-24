@@ -2,7 +2,7 @@ from unittest.mock import patch
 
 import pytest
 
-from riskgpt.chains import get_opportunities_chain
+from riskgpt.chains.get_opportunities import get_opportunities_chain
 from riskgpt.models.chains.opportunity import (
     Opportunity,
     OpportunityRequest,

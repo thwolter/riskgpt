@@ -1,6 +1,6 @@
 from langchain_core.output_parsers import PydanticOutputParser
 
-from riskgpt.models import MonitoringRequest, MonitoringResponse
+from riskgpt.models.chains.monitoring import MonitoringRequest, MonitoringResponse
 from riskgpt.registry.chain_registry import register
 from riskgpt.utils.prompt_loader import load_prompt
 

@@ -3,11 +3,11 @@ from unittest.mock import patch
 import pytest
 
 from riskgpt.chains.get_assessment import get_assessment_chain
-from riskgpt.models import (
+from riskgpt.models.chains.assessment import (
     AssessmentRequest,
     AssessmentResponse,
-    BusinessContext,
 )
+from riskgpt.models.common import BusinessContext
 
 
 @pytest.fixture

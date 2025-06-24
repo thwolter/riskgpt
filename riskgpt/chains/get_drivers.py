@@ -1,6 +1,6 @@
 from langchain_core.output_parsers import PydanticOutputParser
 
-from riskgpt.models.chains import DriverRequest, DriverResponse
+from riskgpt.models.chains.drivers import DriverRequest, DriverResponse
 from riskgpt.utils.prompt_loader import load_prompt
 
 from .base import BaseChain

@@ -3,7 +3,7 @@ from unittest.mock import patch
 import pytest
 
 from riskgpt.chains.check_definition import check_definition_chain
-from riskgpt.models import (
+from riskgpt.models.chains.definition_check import (
     DefinitionCheckRequest,
     DefinitionCheckResponse,
 )

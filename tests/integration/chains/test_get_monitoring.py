@@ -1,7 +1,6 @@
 from unittest.mock import patch
 
 import pytest
-from models import Risk
 
 from riskgpt.chains.get_monitoring import get_monitoring_chain
 from riskgpt.models.chains.monitoring import (
@@ -9,6 +8,7 @@ from riskgpt.models.chains.monitoring import (
     MonitoringResponse,
     RiskIndicator,
 )
+from riskgpt.models.chains.risk import Risk
 from riskgpt.models.common import BusinessContext
 
 

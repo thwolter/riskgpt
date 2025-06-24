@@ -8,7 +8,7 @@ from typing import Optional
 
 from pydantic import BaseModel, ConfigDict, Field
 
-from riskgpt.models import BaseRequest
+from riskgpt.models.base import BaseRequest
 
 
 class DefinitionCheckRequest(BaseRequest):
