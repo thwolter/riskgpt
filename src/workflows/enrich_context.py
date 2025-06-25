@@ -12,8 +12,7 @@ from src.utils.extraction import extract_key_points
 from src.utils.search import search
 
 
-class State(dict[str, List[Any]]
-):
+class State(TypedDict):
     messages: Annotated[list, add_messages]
 
     sources: List[dict]
