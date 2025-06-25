@@ -7,9 +7,10 @@ point for web search and document retrieval.
 
 from __future__ import annotations
 
-from typing import Dict, List, Tuple
+from typing import List
 
 from models.utils.search import SearchRequest, SearchResponse
+
 from src.logger import logger
 from src.models.common import BusinessContext
 from src.utils.search import search as _search
