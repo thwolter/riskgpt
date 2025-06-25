@@ -5,6 +5,7 @@ from __future__ import annotations
 from typing import Any, Dict, List
 
 import requests
+from api import fetch_documents
 from chains.risk_assessment import risk_assessment_chain
 from chains.risk_identification import risk_identification_chain
 from langgraph.graph import END, StateGraph
@@ -12,8 +13,8 @@ from models.base import ResponseInfo
 from models.chains.assessment import AssessmentRequest
 from models.chains.risk import RiskRequest, RiskResponse
 from models.common import BusinessContext
+from utils.search import search
 
-from src.api import fetch_documents, search_context
 from src.config.settings import RiskGPTSettings
 from src.logger import logger
 from src.utils.circuit_breaker import document_service_breaker, with_fallback
@@ -97,7 +98,7 @@ def _build_risk_workflow_graph(request: RiskRequest, use_full_workflow: bool = T
         query = f"{req.business_context.project_description or req.business_context.project_id} {req.business_context.domain_knowledge or ''} {req.category} risks"
 
         # Perform search
-        search_results, success = search_context(query, "risk_context")
+        search_results, success = search(query, "risk_context")
         if success and search_results:
             state["search_results"] = search_results
             logger.info("Found %d search results", len(search_results))

@@ -35,7 +35,7 @@ def test_request():
 
 @pytest.mark.integration
 @pytest.mark.asyncio
-async def test_communicate_risks_chain(test_request):
+async def test_communicate_risks_chain(test_request) -> None:
     """Test the communicate_risks_chain function with real API calls."""
 
     response: CommunicationResponse = await communicate_risks_chain(test_request)

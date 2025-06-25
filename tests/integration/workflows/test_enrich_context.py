@@ -79,6 +79,7 @@ def mock_settings(monkeypatch):
     """Fixture to patch the settings to use tavily as the search provider."""
     monkeypatch.setattr("src.utils.search.settings.SEARCH_PROVIDER", "tavily")
     monkeypatch.setattr("src.utils.search.settings.INCLUDE_WIKIPEDIA", False)
+    monkeypatch.setattr("src.utils.search.settings.MAX_SEARCH_RESULTS", 2)
     yield
 
 
@@ -138,7 +139,7 @@ def mock_base_chain_invoke(mock_key_points):
 
 @pytest.mark.integration
 @pytest.mark.asyncio
-async def test_enrich_context_basic(test_request):
+async def test_enrich_context_basic(test_request, mock_settings):
     response = await enrich_context(test_request)
     assert response.sector_summary
     assert isinstance(response.key_points, list)
