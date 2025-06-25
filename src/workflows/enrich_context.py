@@ -1,28 +1,27 @@
 from __future__ import annotations
 
-from typing import Annotated, Any, List, TypedDict
+from typing import Annotated, List, TypedDict
 
 from langgraph.graph import END, StateGraph, add_messages
 from models.enums import TopicEnum
-from models.workflows.context import ExtractKeyPointsResponse
+from models.utils.search import SearchRequest, SearchResponse, Source
+from models.workflows.context import (
+    ExtractKeyPointsRequest,
+    ExtractKeyPointsResponse,
+    KeyPoint,
+)
 
 from src.models.base import ResponseInfo
 from src.models.workflows.context import ExternalContextRequest, ExternalContextResponse
 from src.utils.extraction import extract_key_points
-from src.utils.search import search
+from src.utils.search import search, settings
 
 
 class State(TypedDict):
     messages: Annotated[list, add_messages]
 
-    sources: List[dict]
-    news_sources: List[dict]
-    linkedin_sources: List[dict]
-    regulatory_sources: List[dict]
-
-    news_key_points: List[str]
-    linkedin_key_points: List[str]
-    regulatory_key_points: List[str]
+    sources: List[Source]
+    key_points: List[KeyPoint]
 
     search_failed: bool
     response_info_list: List[ResponseInfo]
@@ -30,37 +29,51 @@ class State(TypedDict):
 
 
 def topic_search(
-    state: State, request: ExternalContextRequest, topic: TopicEnum
+    state: State,
+    request: ExternalContextRequest,
+    topic: TopicEnum,
+    max_results: int | None = None,
 ) -> State:
-    query = f"{request.business_context.project_description} {request.business_context.domain_knowledge or ''} {topic.value}"
-    key = topic.source_key()
+    if max_results is None:
+        max_results = settings.MAX_SEARCH_RESULTS
 
-    if request.focus_keywords:
-        query += " " + " ".join(request.focus_keywords)
-    res, ok = search(query, topic.value)
+    query = request.create_search_query()
+    request = SearchRequest(
+        query=query,
+        source_type=topic.value,
+        max_results=max_results,
+    )
+    search_response: SearchResponse = search(request)
 
-    existing_urls = {item["url"] for item in state.get("sources", [])}
-    new_items = [item for item in res if item["url"] not in existing_urls]
+    sources: List[Source] = state.get("sources", [])
+    existing_urls = {source.url for source in sources}
 
-    state.setdefault("sources", []).extend(new_items)
-    state.setdefault(key, []).extend(new_items)  # type: ignore[misc]
+    # Convert SearchResult objects to Source objects
+    new_sources = [
+        Source.from_search_result(item, topic)
+        for item in search_response.results
+        if item.url not in existing_urls
+    ]
 
-    if not ok:
+    state.setdefault("sources", []).extend(new_sources)
+
+    if not search_response.success:
         state["search_failed"] = True
     return state
 
 
 async def extract_topic_key_points(state: State, topic: TopicEnum) -> State:
-    sources: List[Any] = state.get(topic.source_key(), [])  # type: ignore[misc]
-    key_points = []
+    # Filter sources by topic
+    sources: List[Source] = state.get("sources", [])
+    topic_sources = [source for source in sources if source.topic == topic]
 
-    for source in sources:
-        result: ExtractKeyPointsResponse = await extract_key_points(source, topic.value)
-        state.setdefault("response_info_list", []).append(result.response_info)
-        for point in result.points:
-            key_points.append(point)
+    for source in topic_sources:
+        request = ExtractKeyPointsRequest.from_source(source)
+        response: ExtractKeyPointsResponse = await extract_key_points(request)
+        state.setdefault("response_info_list", []).append(response.response_info)
 
-    state[topic.key_points_key()] = key_points  # type: ignore[misc]
+        state.setdefault("key_points", []).extend(response.points)
+
     return state
 
 
@@ -103,40 +116,41 @@ def _build_graph(request: ExternalContextRequest):
         return await extract_topic_key_points(state, TopicEnum.REGULATORY)
 
     async def summarise(state: State) -> State:
-        sources = state.get("sources", [])
+        sources: List[Source] = state.get("sources", [])
 
         for src in sources:
-            if src.get("comment") is None:
-                src["comment"] = ""
+            if src.content is None:
+                src.content = ""
 
-        # Collect all key points from different source types
-        all_key_points = (
-            state.get(f"{TopicEnum.NEWS.value.lower()}_key_points", [])
-            + state.get(f"{TopicEnum.LINKEDIN.value.lower()}_key_points", [])
-            + state.get(f"{TopicEnum.REGULATORY.value.lower()}_key_points", [])
-        )
+        # Get all key points
+        all_key_points: List[KeyPoint] = state.get("key_points", [])
 
         if not sources:
             if state.get("search_failed"):
                 summary = "No external data retrieved due to network restrictions or missing dependencies"
             else:
                 summary = "No recent relevant information found"
-            key_points = []
+            key_points_content = []
             recs: List[str] = []
+            sorted_sources = []
         else:
             summary = f"Collected {len(sources)} external sources for {request.business_context.project_id}."
-            # Use extracted key points for risks if available
-            if all_key_points:
-                key_points = all_key_points
-            else:
-                key_points = [f"Potential issue: {s['title']}" for s in sources[:3]]
 
-            recs = [f"Review source: {s['title']}" for s in sources[:2]]
+            # Use extracted key points if available
+            if all_key_points:
+                key_points_content = [kp.content for kp in all_key_points]
+            else:
+                key_points_content = [
+                    f"Potential issue: {s.title}" for s in sources[:3]
+                ]
+
+            sorted_sources = sorted(sources, key=lambda s: s.score, reverse=True)
+            recs = [f"Review source: {s.title} ({s.url})" for s in sorted_sources[:2]]
 
         resp = ExternalContextResponse(
             sector_summary=summary,
-            key_points=key_points,
-            source_table=sources,
+            key_points=key_points_content,
+            sources=sorted_sources,  # Convert Source objects to dicts
             workshop_recommendations=recs,
             full_report=None,
         )

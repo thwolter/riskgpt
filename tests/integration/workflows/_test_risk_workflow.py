@@ -115,14 +115,14 @@ async def test_risk_workflow_with_search(mock_search, test_request):
                 "url": "https://example.com/risks",
                 "date": "2023-01-01",
                 "type": "risk_context",
-                "comment": "Overview of technical risks in IT projects",
+                "content": "Overview of technical risks in IT projects",
             },
             {
                 "title": "CRM Implementation Challenges",
                 "url": "https://example.com/crm",
                 "date": "2023-02-01",
                 "type": "risk_context",
-                "comment": "Specific challenges in CRM implementations",
+                "content": "Specific challenges in CRM implementations",
             },
         ],
         True,  # Success flag
@@ -200,7 +200,7 @@ async def test_risk_workflow_with_mock(monkeypatch, test_request):
                         "url": "u",
                         "date": "",
                         "type": "risk_context",
-                        "comment": "",
+                        "content": "",
                     }
                 ],
                 True,

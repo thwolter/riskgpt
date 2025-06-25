@@ -125,7 +125,7 @@ def test_search_google_with_mock(monkeypatch):
                             "url": "u",
                             "date": "",
                             "type": "news",
-                            "comment": "c",
+                            "content": "c",
                         }
                     ],
                     True,
@@ -140,7 +140,7 @@ def test_search_google_with_mock(monkeypatch):
                             "url": "u",
                             "date": "",
                             "type": "news",
-                            "comment": "c",
+                            "content": "c",
                         }
                     ],
                     True,
@@ -163,7 +163,7 @@ def test_search_google_with_mock(monkeypatch):
                         "url": "u",
                         "date": "",
                         "type": "news",
-                        "comment": "c",
+                        "content": "c",
                     }
                 ],
                 True,
@@ -199,7 +199,7 @@ def test_search_duckduckgo_with_mock(monkeypatch):
                             "url": "u",
                             "date": "",
                             "type": "news",
-                            "comment": "c",
+                            "content": "c",
                         }
                     ],
                     True,
@@ -214,7 +214,7 @@ def test_search_duckduckgo_with_mock(monkeypatch):
                             "url": "u",
                             "date": "",
                             "type": "news",
-                            "comment": "c",
+                            "content": "c",
                         }
                     ],
                     True,
@@ -237,7 +237,7 @@ def test_search_duckduckgo_with_mock(monkeypatch):
                         "url": "u",
                         "date": "",
                         "type": "news",
-                        "comment": "c",
+                        "content": "c",
                     }
                 ],
                 True,
@@ -259,7 +259,7 @@ def test_search_wikipedia_with_mock(monkeypatch):
     with patch(
         "src.utils.search._wikipedia_search",
         return_value=(
-            [{"title": "W", "url": "u", "date": "", "type": "news", "comment": "c"}],
+            [{"title": "W", "url": "u", "date": "", "type": "news", "content": "c"}],
             True,
         ),
     ):

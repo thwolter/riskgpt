@@ -9,19 +9,20 @@ from __future__ import annotations
 
 from typing import Dict, List, Tuple
 
+from models.utils.search import SearchRequest, SearchResponse
 from src.logger import logger
 from src.models.common import BusinessContext
 from src.utils.search import search as _search
 
 
-def search_context(query: str, source_type: str) -> Tuple[List[Dict[str, str]], bool]:
+def search_context(search_request: SearchRequest) -> SearchResponse:
     """Search for contextual information using the configured provider.
 
     This is a simple wrapper around :func:`src.utils.search.search` that
     can be used directly in applications and workflows.
     """
 
-    return _search(query, source_type)
+    return _search(search_request)
 
 
 def fetch_documents(context: BusinessContext) -> List[str]:
