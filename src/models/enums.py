@@ -39,3 +39,18 @@ class AudienceEnum(str, Enum):
     project_owner = "project_owner"
     investor = "investor"
     operations = "operations"
+
+
+class TopicEnum(Enum):
+    """Types of topics for context enrichment."""
+
+    NEWS = "news"
+    LINKEDIN = "linkedin"
+    REGULATORY = "regulatory"
+    PEER = "peer"
+
+    def source_key(self) -> str:
+        return f"{self.value.lower()}_sources"
+
+    def key_points_key(self) -> str:
+        return f"{self.value.lower()}_key_points"

@@ -4,7 +4,15 @@ This module provides a unified interface for different search providers,
 including DuckDuckGo, Google Custom Search API, and Wikipedia.
 """
 
-from typing import Any, Dict, List, Tuple
+from typing import Dict, List, Tuple
+
+from langchain_community.utilities import (
+    DuckDuckGoSearchAPIWrapper,
+    WikipediaAPIWrapper,
+)
+from langchain_google_community import GoogleSearchAPIWrapper
+from langchain_tavily import TavilySearch
+from models.enums import TopicEnum
 
 from src.config.settings import RiskGPTSettings
 from src.logger import logger
@@ -16,53 +24,7 @@ from src.utils.circuit_breaker import (
     with_fallback,
 )
 
-# Import search providers if available
-DuckDuckGoSearchAPIWrapper: Any = None
-GoogleSearchAPIWrapper: Any = None
-WikipediaAPIWrapper: Any = None
-TavilySearchAPIWrapper: Any = None
-
-try:
-    from langchain_community.utilities import (
-        DuckDuckGoSearchAPIWrapper as _DuckDuckGoWrapper,
-    )
-
-    DuckDuckGoSearchAPIWrapper = _DuckDuckGoWrapper
-except ImportError:  # pragma: no cover - optional dependency
-    logger.warning("duckduckgo-search not available")
-
-try:
-    from langchain_google_community import GoogleSearchAPIWrapper as _GoogleWrapper
-
-    GoogleSearchAPIWrapper = _GoogleWrapper
-except ImportError:  # pragma: no cover - optional dependency
-    logger.warning("langchain-google-community not available")
-
-try:
-    # try to import the wrapper
-    try:
-        from langchain_community.utilities import (
-            WikipediaAPIWrapper as _WikipediaWrapper,
-        )
-
-        WikipediaAPIWrapper = _WikipediaWrapper
-    except ImportError:  # pragma: no cover - optional dependency
-        logger.warning(
-            "langchain_community.utilities.WikipediaAPIWrapper not available"
-        )
-        WikipediaAPIWrapper = None
-except ImportError:  # pragma: no cover - optional dependency
-    logger.warning(
-        "wikipedia package not available, please install with 'pip install wikipedia'"
-    )
-    WikipediaAPIWrapper = None
-
-try:
-    from langchain_tavily import TavilySearchAPIWrapper as _TavilyWrapper
-
-    TavilySearchAPIWrapper = _TavilyWrapper
-except ImportError:  # pragma: no cover - optional dependency
-    logger.warning("langchain-tavily not available")
+settings = RiskGPTSettings()
 
 
 def _search_fallback(query: str, source_type: str) -> Tuple[List[Dict[str, str]], bool]:
@@ -168,7 +130,7 @@ def _wikipedia_search(
         return results, False
 
     try:
-        wrapper = WikipediaAPIWrapper(top_k_results=3)
+        wrapper = WikipediaAPIWrapper(wiki_client=None, top_k_results=3)
         # Wikipedia API returns a single string with all results
         wiki_results = wrapper.run(query)
         if wiki_results:
@@ -194,48 +156,40 @@ def _wikipedia_search(
 
 @tavily_breaker
 @with_fallback(_search_fallback)
-def _tavily_search(query: str, source_type: str) -> Tuple[List[Dict[str, str]], bool]:
+def _tavily_search(
+    query: str, source_type: str, max_results: int = 3
+) -> Tuple[List[Dict[str, str]], bool]:
     """Perform a Tavily search and format results."""
     results: List[Dict[str, str]] = []
-    if TavilySearchAPIWrapper is None:
-        logger.warning("langchain-tavily not available")
-        return results, False
 
-    settings = RiskGPTSettings()
     if not settings.TAVILY_API_KEY:
         logger.warning("Tavily API key not configured")
         return results, False
 
     try:
-        # Extract the API key from SecretStr
-        api_key = (
-            settings.TAVILY_API_KEY.get_secret_value()
-            if settings.TAVILY_API_KEY
-            else None
+        tool = TavilySearch(
+            tavily_api_key=settings.TAVILY_API_KEY.get_secret_value(),
+            max_results=1,
+            topic="news" if source_type == TopicEnum.NEWS.value else "general",
+            include_answer="basic",
+            include_raw_content="text",
         )
 
-        # Create the wrapper with the extracted API key
-        wrapper = TavilySearchAPIWrapper(
-            api_key=api_key,
-        )
-
-        # Get search results
-        search_results = wrapper.results(query, max_results=3)
+        search_results = tool.invoke(query)
 
         # Check if we got valid results
         if not search_results:
             logger.warning("No valid search results returned")
             return results, False
 
-        # Process the results
-        for item in search_results:
+        for item in search_results.get("results", []):
             results.append(
                 {
                     "title": item.get("title", ""),
                     "url": item.get("url", ""),
-                    "date": "",  # Tavily doesn't provide date in the same way
+                    "date": item.get("published_date", ""),
                     "type": source_type,
-                    "comment": item.get("content", ""),
+                    "comment": item.get("raw_content", ""),
                 }
             )
 
@@ -246,17 +200,19 @@ def _tavily_search(query: str, source_type: str) -> Tuple[List[Dict[str, str]], 
         return results, False
 
 
-def search(query: str, source_type: str) -> Tuple[List[Dict[str, str]], bool]:
+def search(
+    query: str, source_type: str, max_results: int = 3
+) -> Tuple[List[Dict[str, str]], bool]:
     """Perform a search using the configured search provider.
 
     Args:
         query: The search query
         source_type: The type of source to search (e.g., "news", "social")
+        max_results: The maximum number of results to return (default is 3)
 
     Returns:
         A tuple containing a list of search results and a boolean indicating success
     """
-    settings = RiskGPTSettings()
 
     # Primary search
     primary_results: List[Dict[str, str]] = []
@@ -269,7 +225,9 @@ def search(query: str, source_type: str) -> Tuple[List[Dict[str, str]], bool]:
     elif settings.SEARCH_PROVIDER == "wikipedia":
         primary_results, primary_success = _wikipedia_search(query, source_type)
     elif settings.SEARCH_PROVIDER == "tavily":
-        primary_results, primary_success = _tavily_search(query, source_type)
+        primary_results, primary_success = _tavily_search(
+            query, source_type, max_results
+        )
 
     # Additional Wikipedia search if enabled
     wiki_results: List[Dict[str, str]] = []

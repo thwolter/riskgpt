@@ -18,8 +18,22 @@ class ExternalContextResponse(BaseResponse):
     """Output model containing summarised external information."""
 
     sector_summary: str
-    external_risks: List[str]
+    key_points: List[str]
     source_table: List[Dict[str, str]]
     workshop_recommendations: List[str]
     full_report: Optional[str] = None
     response_info: Optional[ResponseInfo] = None
+
+
+class ExtractKeyPointsResponse(BaseResponse):
+    """Model for key points extracted from a source."""
+
+    points: List[str] = []
+
+    class Config:
+        schema_extra = {
+            "example": {
+                "points": ["Key point 1", "Key point 2", "Key point 3"],
+                "response_info": {"token_usage": 100, "cost": 0.01},
+            }
+        }
