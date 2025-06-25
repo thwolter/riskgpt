@@ -11,8 +11,13 @@ from models.workflows.context import (
     KeyPoint,
 )
 
+from src.chains.keypoint_text import keypoint_text_chain
 from src.models.base import ResponseInfo
-from src.models.workflows.context import ExternalContextRequest, ExternalContextResponse
+from src.models.workflows.context import (
+    ExternalContextRequest,
+    ExternalContextResponse,
+    KeyPointTextResponse,
+)
 from src.utils.extraction import extract_key_points
 from src.utils.search import search, settings
 
@@ -25,6 +30,7 @@ class State(TypedDict):
 
     search_failed: bool
     response_info_list: List[ResponseInfo]
+    keypoint_text_response: KeyPointTextResponse
     response: ExternalContextResponse
 
 
@@ -70,8 +76,12 @@ async def extract_topic_key_points(state: State, topic: TopicEnum) -> State:
     for source in topic_sources:
         request = ExtractKeyPointsRequest.from_source(source)
         response: ExtractKeyPointsResponse = await extract_key_points(request)
-        state.setdefault("response_info_list", []).append(response.response_info)
 
+        # Attach source.url to each point in response.points
+        for point in response.points:
+            point.source_url = source.url
+
+        state.setdefault("response_info_list", []).append(response.response_info)
         state.setdefault("key_points", []).extend(response.points)
 
     return state
@@ -115,7 +125,7 @@ def _build_graph(request: ExternalContextRequest):
     async def extract_regulatory_key_points(state: State) -> State:
         return await extract_topic_key_points(state, TopicEnum.REGULATORY)
 
-    async def summarise(state: State) -> State:
+    async def aggregate(state: State) -> State:
         sources: List[Source] = state.get("sources", [])
 
         for src in sources:
@@ -133,16 +143,35 @@ def _build_graph(request: ExternalContextRequest):
             key_points_content = []
             recs: List[str] = []
             sorted_sources = []
+            full_report = None
         else:
             summary = f"Collected {len(sources)} external sources for {request.business_context.project_id}."
 
             # Use extracted key points if available
             if all_key_points:
+                # Generate text with Harvard-style citations from key points
+                keypoint_text_resp: KeyPointTextResponse = await keypoint_text_chain(
+                    all_key_points
+                )
+                state["keypoint_text_response"] = keypoint_text_resp
+                state.setdefault("response_info_list", []).append(
+                    keypoint_text_resp.response_info
+                )
+
+                # Use the generated text as the full report
+                full_report = (
+                    keypoint_text_resp.text
+                    + "\n\nReferences:\n"
+                    + "\n".join(keypoint_text_resp.references)
+                )
+
+                # Still keep the individual key points for backward compatibility
                 key_points_content = [kp.content for kp in all_key_points]
             else:
                 key_points_content = [
                     f"Potential issue: {s.title}" for s in sources[:3]
                 ]
+                full_report = None
 
             sorted_sources = sorted(sources, key=lambda s: s.score, reverse=True)
             recs = [f"Review source: {s.title} ({s.url})" for s in sorted_sources[:2]]
@@ -150,9 +179,9 @@ def _build_graph(request: ExternalContextRequest):
         resp = ExternalContextResponse(
             sector_summary=summary,
             key_points=key_points_content,
-            sources=sorted_sources,  # Convert Source objects to dicts
+            sources=sorted_sources,
             workshop_recommendations=recs,
-            full_report=None,
+            full_report=full_report,
         )
         resp.response_info = aggregate_response_info(state)
 
@@ -166,7 +195,7 @@ def _build_graph(request: ExternalContextRequest):
     graph.add_node("extract_news_key_points", extract_news_key_points)
     graph.add_node("extract_professional_key_points", extract_professional_key_points)
     graph.add_node("extract_regulatory_key_points", extract_regulatory_key_points)
-    graph.add_node("summarise", summarise)
+    graph.add_node("aggregate", aggregate)
 
     # Set up the graph with parallel processing
     graph.set_entry_point("news")
@@ -179,9 +208,9 @@ def _build_graph(request: ExternalContextRequest):
     graph.add_edge("extract_professional_key_points", "regulatory")
 
     graph.add_edge("regulatory", "extract_regulatory_key_points")
-    graph.add_edge("extract_regulatory_key_points", "summarise")
+    graph.add_edge("extract_regulatory_key_points", "aggregate")
 
-    graph.add_edge("summarise", END)
+    graph.add_edge("aggregate", END)
 
     return graph.compile()
 

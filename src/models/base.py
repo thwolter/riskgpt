@@ -44,8 +44,8 @@ class BaseResponse(BaseModel):
     model_version: str = Field(
         default="1.0", description="Schema version for backward compatibility"
     )
-    response_info: Optional[ResponseInfo] = Field(
-        default=None,
+    response_info: ResponseInfo = Field(
+        default_factory=default_response_info,
         description="Information about the response processing",
     )
 

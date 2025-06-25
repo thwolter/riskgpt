@@ -20,10 +20,10 @@ def test_request():
     return ExternalContextRequest(
         business_context=BusinessContext(
             project_id="AI-Driven Risk Management",
-            project_description="A project focused on leveraging AI for risk management",
+            project_description="A project focused on leveraging AI for risk registration and management.",
             domain_knowledge="artificial intelligence and risk assessment",
         ),
-        focus_keywords=["supply"],
+        focus_keywords=["AI", "risk management", "data-driven insights"],
     )
 
 

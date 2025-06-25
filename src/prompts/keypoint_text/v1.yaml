@@ -1,0 +1,23 @@
+version: "v1"
+description: "Generate text from key points with Harvard-style citations."
+template: |
+  You are an expert at creating coherent text from key points with proper academic citations.
+
+  Please create a well-structured text based on the following key points. The text should:
+  - Incorporate all the provided key points
+  - Include Harvard-style inline citations (Author, Year) for each key point
+  - Be concise and to the point without adding information beyond what's in the key points
+  - Include a "References" section at the end with Harvard-style references
+  - Be written in a professional, academic tone
+
+  Key Points:
+  {key_points}
+
+  For Harvard-style citations:
+  1. For inline citations, use the format (Author, Year)
+  2. If the author name is not available, use the website domain name
+  3. For the references section, use the format:
+     Author/Organization (Year). Title. [Online] Available at: URL [Accessed: Current Date]
+
+  {format_instructions}
+  Output the result as a JSON object conforming to the schema above. Do not include any additional text or commentary.

@@ -4,7 +4,7 @@ from models.enums import TopicEnum
 from models.utils.search import Source
 from pydantic import BaseModel
 
-from src.models.base import BaseResponse, ResponseInfo
+from src.models.base import BaseResponse
 from src.models.common import BusinessContext
 
 
@@ -90,4 +90,10 @@ class ExternalContextResponse(BaseResponse):
     sources: List[Source]
     workshop_recommendations: List[str]
     full_report: Optional[str] = None
-    response_info: Optional[ResponseInfo] = None
+
+
+class KeyPointTextResponse(BaseResponse):
+    """Output model containing text generated from key points with Harvard-style citations."""
+
+    text: str
+    references: List[str]
