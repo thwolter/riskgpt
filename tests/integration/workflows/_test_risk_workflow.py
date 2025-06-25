@@ -1,35 +1,39 @@
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
+from models.base import ResponseInfo
+from models.chains.assessment import AssessmentResponse
+from models.chains.risk import IdentifiedRisk, Risk, RiskRequest, RiskResponse
+from models.common import BusinessContext
 
 from src.api import fetch_documents
-from src.models.schemas import (
-    AssessmentResponse,
-    BusinessContext,
-    LanguageEnum,
-    ResponseInfo,
-    Risk,
-    RiskRequest,
-    RiskResponse,
-)
-from src.workflows import risk_workflow
+from src.workflows.risk_workflow import risk_workflow
 
 
-@pytest.mark.integration
-@pytest.mark.asyncio
-async def test_risk_workflow_basic():
-    """Test the basic functionality of the risk workflow."""
-    request = RiskRequest(
+@pytest.fixture
+def test_request():
+    """Fixture to create a sample RiskRequest."""
+    return RiskRequest(
         business_context=BusinessContext(
             project_id="123",
             project_description="A new IT project to implement a CRM system.",
             domain_knowledge="The company operates in the B2B sector.",
-            language=LanguageEnum.english,
         ),
         category="Technical",
-        existing_risks=["Data loss"],
+        existing_risks=[
+            Risk(
+                title="Data loss",
+                description="Risk of losing critical customer data during migration to the new CRM system",
+            ),
+        ],
     )
-    response = await risk_workflow(request)
+
+
+@pytest.mark.integration
+@pytest.mark.asyncio
+async def test_risk_workflow_basic(test_request):
+    """Test the basic functionality of the risk workflow."""
+    response = await risk_workflow(test_request)
     assert isinstance(response.risks, list)
     assert len(response.risks) > 0
     assert response.risks[0].title
@@ -39,23 +43,10 @@ async def test_risk_workflow_basic():
 
 @pytest.mark.integration
 @pytest.mark.asyncio
-async def test_risk_workflow_with_document_refs():
+async def test_risk_workflow_with_document_refs(test_request):
     """Test the risk workflow with document references."""
-    # Create a request with document_refs
-    request = RiskRequest(
-        business_context=BusinessContext(
-            project_id="123",
-            project_description="A new IT project to implement a CRM system.",
-            domain_knowledge="The company operates in the B2B sector.",
-            language=LanguageEnum.english,
-            document_refs=["doc-uuid-001", "doc-uuid-002"],
-        ),
-        category="Technical",
-        existing_risks=["Data loss"],
-    )
-
     # Run the workflow
-    response = await risk_workflow(request)
+    response = await risk_workflow(test_request)
 
     # Check that document_refs are in the response
     assert hasattr(response, "document_refs")
@@ -67,32 +58,18 @@ async def test_risk_workflow_with_document_refs():
 
 @pytest.mark.asyncio
 @pytest.mark.integration
-async def test_risk_workflow():
-    """Test the async version of the risk workflow."""
-    request = RiskRequest(
-        business_context=BusinessContext(
-            project_id="123",
-            project_description="A new IT project to implement a CRM system.",
-            domain_knowledge="The company operates in the B2B sector.",
-            language=LanguageEnum.english,
-        ),
-        category="Technical",
-        existing_risks=["Data loss"],
-    )
-    response = await risk_workflow(request)
+async def test_risk_workflow(test_request):
+    response = await risk_workflow(test_request)
     assert isinstance(response.risks, list)
     assert len(response.risks) > 0
 
 
 @pytest.mark.integration
 def test_fetch_documents():
-    """Test the placeholder function for fetching documents."""
-
     context = BusinessContext(
         project_id="123",
         project_description="A new IT project to implement a CRM system.",
         domain_knowledge="The company operates in the B2B sector.",
-        language=LanguageEnum.english,
     )
 
     # The function should return a list of document UUIDs
@@ -105,25 +82,13 @@ def test_fetch_documents():
 @patch("src.workflows.risk_workflow.fetch_documents")
 @pytest.mark.integration
 @pytest.mark.asyncio
-async def test_risk_workflow_with_mocked_document_service(mock_fetch):
+async def test_risk_workflow_with_mocked_document_service(mock_fetch, test_request):
     """Test the risk workflow with a mocked document service."""
     # Mock the document service to return specific UUIDs
     mock_fetch.return_value = ["mock-doc-001", "mock-doc-002", "mock-doc-003"]
 
-    # Create a request
-    request = RiskRequest(
-        business_context=BusinessContext(
-            project_id="123",
-            project_description="A new IT project to implement a CRM system.",
-            domain_knowledge="The company operates in the B2B sector.",
-            language=LanguageEnum.english,
-        ),
-        category="Technical",
-        existing_risks=["Data loss"],
-    )
-
     # Run the workflow
-    response = await risk_workflow(request)
+    response = await risk_workflow(test_request)
 
     # Check that the mock was called
     mock_fetch.assert_called_once()
@@ -140,7 +105,7 @@ async def test_risk_workflow_with_mocked_document_service(mock_fetch):
 @patch("src.workflows.risk_workflow.search_context")
 @pytest.mark.integration
 @pytest.mark.asyncio
-async def test_risk_workflow_with_search(mock_search):
+async def test_risk_workflow_with_search(mock_search, test_request):
     """Test the risk workflow with search functionality."""
     # Mock the search function to return specific results
     mock_search.return_value = (
@@ -163,20 +128,8 @@ async def test_risk_workflow_with_search(mock_search):
         True,  # Success flag
     )
 
-    # Create a request
-    request = RiskRequest(
-        business_context=BusinessContext(
-            project_id="123",
-            project_description="A new IT project to implement a CRM system.",
-            domain_knowledge="The company operates in the B2B sector.",
-            language=LanguageEnum.english,
-        ),
-        category="Technical",
-        existing_risks=["Data loss"],
-    )
-
     # Run the workflow
-    response = await risk_workflow(request)
+    response = await risk_workflow(test_request)
 
     # Check that the mock was called
     mock_search.assert_called_once()
@@ -196,25 +149,10 @@ async def test_risk_workflow_with_search(mock_search):
 
 
 @pytest.mark.asyncio
-async def test_risk_workflow_with_mock(monkeypatch):
-    """Run workflow with external API calls patched."""
-    request = RiskRequest(
-        business_context=BusinessContext(
-            project_id="mock", language=LanguageEnum.english, document_refs=None
-        ),
-        category="Technical",
-        max_risks=1,
-        document_refs=None,
-    )
-
+async def test_risk_workflow_with_mock(monkeypatch, test_request):
     # Mock response for get_risks_chain
     risk_response = RiskResponse(
-        risks=[
-            Risk(
-                title="Mock Risk", description="Mock Description", category="Technical"
-            )
-        ],
-        references=["Mock Reference"],
+        risks=[IdentifiedRisk(title="Mock Risk", description="Mock Description")],
         response_info=ResponseInfo(
             consumed_tokens=5,
             total_cost=0.0,
@@ -238,12 +176,7 @@ async def test_risk_workflow_with_mock(monkeypatch):
 
     # Mock final response
     final_response = RiskResponse(
-        risks=[
-            Risk(
-                title="Mock Risk", description="Mock Description", category="Technical"
-            )
-        ],
-        references=["Mock Reference"],
+        risks=[IdentifiedRisk(title="Mock Risk", description="Mock Description")],
         document_refs=["doc1"],
         response_info=ResponseInfo(
             consumed_tokens=10,
@@ -284,7 +217,7 @@ async def test_risk_workflow_with_mock(monkeypatch):
             return_value=mock_graph,
         ),
     ):
-        resp = await risk_workflow(request)
+        resp = await risk_workflow(test_request)
         assert isinstance(resp.risks, list)
         assert len(resp.risks) > 0
         assert resp.risks[

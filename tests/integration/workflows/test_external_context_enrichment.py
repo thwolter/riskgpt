@@ -5,7 +5,7 @@ import pydantic
 import pytest
 
 from src.models.common import BusinessContext
-from src.models.workflows.enrich_context import ExternalContextRequest
+from src.models.workflows.context import ExternalContextRequest
 from src.workflows.enrich_context import enrich_context
 
 

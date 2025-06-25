@@ -6,10 +6,7 @@ from langgraph.graph import END, StateGraph, add_messages
 
 from src.api import search_context
 from src.models.base import ResponseInfo
-from src.models.workflows.enrich_context import (
-    ExternalContextRequest,
-    ExternalContextResponse,
-)
+from src.models.workflows.context import ExternalContextRequest, ExternalContextResponse
 from src.utils.extraction import extract_key_points
 
 

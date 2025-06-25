@@ -1,15 +1,11 @@
 import os
 
 import pytest
+from models.workflows.presentation import PresentationRequest, PresentationResponse
 
-from src.models.schemas import (
-    AudienceEnum,
-    BusinessContext,
-    LanguageEnum,
-    PresentationRequest,
-    PresentationResponse,
-    ResponseInfo,
-)
+from src.models.base import ResponseInfo
+from src.models.common import BusinessContext
+from src.models.enums import AudienceEnum, LanguageEnum
 from src.workflows import prepare_presentation_output
 
 audiences = [
@@ -18,10 +14,24 @@ audiences = [
 ]
 
 
+@pytest.fixture
+def test_request():
+    return PresentationRequest(
+        business_context=BusinessContext(
+            project_id="CRM-2023",
+            project_description="Development of a new CRM system",
+            domain_knowledge="Customer relationship management",
+        ),
+        audience=AudienceEnum.executive,
+        focus_areas=["Technical"],
+        language=LanguageEnum.english,
+    )
+
+
 @pytest.mark.parametrize("audience", audiences)
 @pytest.mark.integration
 @pytest.mark.asyncio
-async def test_prepare_presentation_all_audiences(audience, monkeypatch):
+async def test_prepare_presentation_all_audiences(monkeypatch, test_request):
     # If OPENAI_API_KEY is not set, mock the prepare_presentation_output function
     if not os.environ.get("OPENAI_API_KEY"):
 
@@ -42,16 +52,7 @@ async def test_prepare_presentation_all_audiences(audience, monkeypatch):
             mock_prepare_presentation_output,
         )
 
-    request = PresentationRequest(
-        business_context=BusinessContext(
-            project_id="p1",
-            project_description="CRM rollout",
-            language=LanguageEnum.english,
-        ),
-        audience=audience,
-        focus_areas=["Technical"],
-    )
-    resp = await prepare_presentation_output(request)
+    resp = await prepare_presentation_output(test_request)
     assert resp.executive_summary
     assert resp.main_risks
     assert resp.response_info is not None

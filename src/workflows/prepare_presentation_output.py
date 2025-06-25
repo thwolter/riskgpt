@@ -1,29 +1,28 @@
 from __future__ import annotations
 
-from typing import Any, Dict, List
+from typing import Any, Dict, List, TypedDict
 
-from src.chains import (
-    communicate_risks_chain,
-    get_assessment_chain,
-    get_correlation_tags_chain,
-    get_drivers_chain,
-    get_mitigations_chain,
-    get_risks_chain,
-)
+from chains.communicate_risks import communicate_risks_chain
+from chains.correlation_tags import correlation_tags_chain
+from chains.risk_assessment import risk_assessment_chain
+from chains.risk_drivers import risk_drivers_chain
+from chains.risk_identification import risk_identification_chain
+from chains.risk_mitigations import risk_mitigations_chain
+from langgraph.graph import END, StateGraph
+from models.base import ResponseInfo
+from models.chains.assessment import AssessmentRequest
+from models.chains.communication import CommunicationRequest
+from models.chains.correlation import CorrelationTag, CorrelationTagRequest
+from models.chains.drivers import DriverRequest, RiskDriver
+from models.chains.mitigation import Mitigation, MitigationRequest
+from models.chains.risk import Risk, RiskRequest
+from models.enums import AudienceEnum
+from models.workflows.presentation import PresentationRequest, PresentationResponse
+
 from src.config.settings import RiskGPTSettings
 from src.logger import logger
-from src.models.schemas import (
-    AssessmentRequest,
-    AudienceEnum,
-    CommunicationRequest,
-    CorrelationTagRequest,
-    DriverRequest,
-    MitigationRequest,
-    PresentationRequest,
-    PresentationResponse,
-    ResponseInfo,
-    RiskRequest,
-)
+
+settings = RiskGPTSettings()
 
 
 def apply_audience_formatting(
@@ -51,26 +50,20 @@ def apply_audience_formatting(
     return resp
 
 
-END: Any
-StateGraph: Any
-try:
-    from langgraph.graph import END as _END
-    from langgraph.graph import StateGraph as _StateGraph
-
-    END = _END
-    StateGraph = _StateGraph
-except Exception:  # pragma: no cover - optional dependency
-    END = None
-    StateGraph = None
+class State(TypedDict):
+    request: PresentationRequest
+    risks: List[Risk]
+    assessments: List[AssessmentRequest]
+    drivers: List[List[RiskDriver]]
+    mitigations: List[List[Mitigation]]
+    correlation_tags: List[CorrelationTag]
+    response: PresentationResponse
+    response_info: ResponseInfo
 
 
 def _build_graph(request: PresentationRequest):
-    if StateGraph is None:
-        raise ImportError("langgraph is required for this workflow")
+    graph = StateGraph(State)
 
-    graph = StateGraph(Dict[str, Any])
-
-    settings = RiskGPTSettings()
     totals: Dict[str, float | int] = {"tokens": 0, "cost": 0.0}
 
     def initialize_state(state: Dict[str, Any]) -> Dict[str, Any]:
@@ -87,7 +80,7 @@ def _build_graph(request: PresentationRequest):
         req = state["request"]
         category = (req.focus_areas or ["General"])[0]
         logger.info("Identify risks for category '%s'", category)
-        res = await get_risks_chain(
+        res = await risk_identification_chain(
             RiskRequest(
                 business_context=req.business_context,
                 category=category,
@@ -104,7 +97,7 @@ def _build_graph(request: PresentationRequest):
         assessments = []
         for risk in state.get("risks", []):
             logger.info("Assess risk '%s'", risk.title)
-            assess = await get_assessment_chain(
+            assess = await risk_assessment_chain(
                 AssessmentRequest(
                     business_context=req.business_context,
                     risk_description=risk.description,
@@ -122,10 +115,10 @@ def _build_graph(request: PresentationRequest):
         driver_lists: List[List[str]] = []
         for risk in state.get("risks", []):
             logger.info("Get drivers for '%s'", risk.title)
-            res = await get_drivers_chain(
+            res = await risk_drivers_chain(
                 DriverRequest(
                     business_context=req.business_context,
-                    risk_description=risk.description,
+                    risk=risk,
                 )
             )
             if res.response_info:
@@ -140,11 +133,11 @@ def _build_graph(request: PresentationRequest):
         mitigation_lists: List[List[str]] = []
         for risk, drv in zip(state.get("risks", []), state.get("drivers", [])):
             logger.info("Get mitigations for '%s'", risk.title)
-            res = await get_mitigations_chain(
+            res = await risk_mitigations_chain(
                 MitigationRequest(
                     business_context=req.business_context,
-                    risk_description=risk.description,
-                    drivers=drv,
+                    risk=risk,
+                    risk_drivers=drv,
                 )
             )
             if res.response_info:
@@ -156,13 +149,12 @@ def _build_graph(request: PresentationRequest):
 
     async def correlation(state: Dict[str, Any]) -> Dict[str, Any]:
         req = state["request"]
-        titles = [r.title for r in state.get("risks", [])]
         known = [d for lst in state.get("drivers", []) for d in lst]
         logger.info("Define correlation tags")
-        res = await get_correlation_tags_chain(
+        res = await correlation_tags_chain(
             CorrelationTagRequest(
                 business_context=req.business_context,
-                risk_titles=titles,
+                risks=state.get("risks", []),
                 known_drivers=known or None,
             )
         )
@@ -182,7 +174,8 @@ def _build_graph(request: PresentationRequest):
         com = await communicate_risks_chain(
             CommunicationRequest(
                 business_context=req.business_context,
-                summary=text,
+                audience=req.audience,
+                risks=state.get("risks", []),
             )
         )
         if com.response_info:

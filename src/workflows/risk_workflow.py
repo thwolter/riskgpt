@@ -5,32 +5,18 @@ from __future__ import annotations
 from typing import Any, Dict, List
 
 import requests
+from chains.risk_assessment import risk_assessment_chain
+from chains.risk_identification import risk_identification_chain
+from langgraph.graph import END, StateGraph
+from models.base import ResponseInfo
+from models.chains.assessment import AssessmentRequest
+from models.chains.risk import RiskRequest, RiskResponse
+from models.common import BusinessContext
 
 from src.api import fetch_documents, search_context
-from src.chains import get_assessment_chain, get_risks_chain
 from src.config.settings import RiskGPTSettings
 from src.logger import logger
-from src.models.schemas import (
-    AssessmentRequest,
-    BusinessContext,
-    ResponseInfo,
-    RiskRequest,
-    RiskResponse,
-)
 from src.utils.circuit_breaker import document_service_breaker, with_fallback
-
-# Import LangGraph components
-END: Any
-StateGraph: Any
-try:
-    from langgraph.graph import END as _END
-    from langgraph.graph import StateGraph as _StateGraph
-
-    END = _END
-    StateGraph = _StateGraph
-except Exception:  # pragma: no cover - optional dependency
-    END = None
-    StateGraph = None
 
 
 def _documents_fallback(context: BusinessContext) -> List[str]:
@@ -157,7 +143,7 @@ def _build_risk_workflow_graph(request: RiskRequest, use_full_workflow: bool = T
         if "document_refs" in state and state["document_refs"]:
             risk_request.document_refs = state["document_refs"]
 
-        res = await get_risks_chain(risk_request)
+        res = await risk_identification_chain(risk_request)
 
         if res.response_info:
             totals["tokens"] += res.response_info.consumed_tokens
@@ -205,7 +191,7 @@ def _build_risk_workflow_graph(request: RiskRequest, use_full_workflow: bool = T
                 )
                 assessment_request.risk_description += additional_context
 
-            assess = await get_assessment_chain(assessment_request)
+            assess = await risk_assessment_chain(assessment_request)
 
             if assess.response_info:
                 totals["tokens"] += assess.response_info.consumed_tokens
@@ -234,12 +220,10 @@ def _build_risk_workflow_graph(request: RiskRequest, use_full_workflow: bool = T
             # If risk_response is None, create a response with empty lists
             response = RiskResponse(
                 risks=[],
-                references=[],
             )
         else:
             response = RiskResponse(
                 risks=risk_response.risks,
-                references=risk_response.references,
             )
 
         # Add document_refs if they exist in the state
