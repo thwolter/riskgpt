@@ -4,13 +4,14 @@ import pytest
 from models.base import ResponseInfo
 from models.enums import TopicEnum
 from models.utils.search import SearchResponse, SearchResult
-
-from src.models.common import BusinessContext
-from src.models.workflows.context import (
+from models.workflows.context import (
     ExternalContextRequest,
     ExtractKeyPointsResponse,
     KeyPoint,
+    KeyPointTextResponse,
 )
+
+from src.models.common import BusinessContext
 from src.workflows.enrich_context import enrich_context
 
 
@@ -127,13 +128,43 @@ def mock_key_points():
 
 
 @pytest.fixture
-def mock_base_chain_invoke(mock_key_points):
-    """Fixture to patch the BaseChain.invoke method."""
+def keypoint_text_resp():
+    return KeyPointTextResponse(
+        model_version="1.0",
+        response_info=ResponseInfo(
+            consumed_tokens=1068,
+            total_cost=0.00018570000000000001,
+            prompt_name="keypoint_text",
+            model_name="openai:gpt-4.1-nano",
+            error=None,
+        ).model_dump(),
+        text="Years of extreme volatility, driven by pandemic shocks, trade wars, and climate-related disruptions, have exposed the intricate complexity of global logistics networks (maritime-executive.com, 2023). Advances in AI technologies and the growing availability of multi-source data now offer organizations unprecedented opportunities to analyze and manage these complexities effectively (maritime-executive.com, 2023). Furthermore, by harnessing collective intelligence derived from these data sources, organizations can achieve both cost efficiencies and significant reductions in emissions, contributing to more sustainable and resilient supply chain operations (maritime-executive.com, 2023).",
+        references=[
+            "maritime-executive.com (2023). Two new chapters in supply chain data-driven intelligence. [Online] Available at: https://www.maritime-executive.com/editorials/two-new-chapters-in-supply-chain-data-driven-intelligence [Accessed: 27 April 2024]"
+        ],
+    )
 
-    async def mock_invoke(*args, **kwargs):
-        return mock_key_points
 
-    with patch("src.chains.base.BaseChain.invoke", side_effect=mock_invoke) as mock:
+@pytest.fixture
+def mock_extract_key_points(mock_key_points):
+    """Fixture to patch extract_key_points function used by enrich_context."""
+
+    # Patch at the location where enrich_context imports/calls it
+    with patch(
+        "src.workflows.enrich_context.extract_key_points", return_value=mock_key_points
+    ) as mock:
+        yield mock
+
+
+@pytest.fixture
+def mock_keypoint_text_chain(keypoint_text_resp):
+    """Fixture to patch the keypoint text chain."""
+
+    # Patch the keypoint_text_chain to return mock_key_points
+    with patch(
+        "src.workflows.enrich_context.keypoint_text_chain",
+        return_value=keypoint_text_resp,
+    ) as mock:
         yield mock
 
 
@@ -148,11 +179,15 @@ async def test_enrich_context_basic(test_request, mock_settings):
 
 @pytest.mark.asyncio
 async def test_enrich_context_with_mock(
-    test_request, mock_settings, mock_search, mock_base_chain_invoke
+    test_request,
+    mock_settings,
+    mock_search,
+    mock_extract_key_points,
+    mock_keypoint_text_chain,
 ):
     """Test enrich_context with mocked search results and key points extraction."""
 
     response = await enrich_context(test_request)
 
     # Verify the results
-    assert len(response.sources) > 0
+    assert len(response.sector_summary) > 0

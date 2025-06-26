@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Annotated, List, TypedDict
+from typing import Annotated, List, TypedDict, TypeVar
 
 from langgraph.graph import END, StateGraph, add_messages
 from models.enums import TopicEnum
@@ -9,6 +9,7 @@ from models.workflows.context import (
     ExtractKeyPointsRequest,
     ExtractKeyPointsResponse,
     KeyPoint,
+    KeyPointTextRequest,
 )
 
 from src.chains.keypoint_text import keypoint_text_chain
@@ -21,15 +22,32 @@ from src.models.workflows.context import (
 from src.utils.extraction import extract_key_points
 from src.utils.search import search, settings
 
+# Define reducer functions for lists
+T = TypeVar("T")
+
+
+def extend_list(existing: List[T] | None, new: List[T]) -> List[T]:
+    """Combine two lists by extending the existing list with the new one."""
+    if existing is None:
+        return new
+    return existing + new
+
+
+def append_to_list(existing: List[T] | None, new: T) -> List[T]:
+    """Append a single item to a list."""
+    if existing is None:
+        return [new]
+    return existing + [new]
+
 
 class State(TypedDict):
     messages: Annotated[list, add_messages]
 
-    sources: List[Source]
-    key_points: List[KeyPoint]
+    sources: Annotated[List[Source], extend_list]
+    key_points: Annotated[List[KeyPoint], extend_list]
+    response_info_list: Annotated[List[ResponseInfo], extend_list]
 
     search_failed: bool
-    response_info_list: List[ResponseInfo]
     keypoint_text_response: KeyPointTextResponse
     response: ExternalContextResponse
 
@@ -61,7 +79,7 @@ def topic_search(
         if item.url not in existing_urls
     ]
 
-    state.setdefault("sources", []).extend(new_sources)
+    state["sources"] = new_sources
 
     if not search_response.success:
         state["search_failed"] = True
@@ -125,70 +143,58 @@ def _build_graph(request: ExternalContextRequest):
     async def extract_regulatory_key_points(state: State) -> State:
         return await extract_topic_key_points(state, TopicEnum.REGULATORY)
 
+    async def summarize_key_points(state: State) -> State:
+        """Summarize key points for a specific topic."""
+
+        kp_text_request = KeyPointTextRequest(
+            key_points=state.get("key_points", []),
+        )
+        response: KeyPointTextResponse = await keypoint_text_chain(kp_text_request)
+
+        state["keypoint_text_response"] = response
+
+        if response.response_info:
+            state.setdefault("response_info_list", []).append(response.response_info)
+        return state
+
     async def aggregate(state: State) -> State:
         sources: List[Source] = state.get("sources", [])
-
-        for src in sources:
-            if src.content is None:
-                src.content = ""
-
-        # Get all key points
-        all_key_points: List[KeyPoint] = state.get("key_points", [])
 
         if not sources:
             if state.get("search_failed"):
                 summary = "No external data retrieved due to network restrictions or missing dependencies"
             else:
                 summary = "No recent relevant information found"
-            key_points_content = []
-            recs: List[str] = []
-            sorted_sources = []
             full_report = None
+            recommendation = None
         else:
             summary = f"Collected {len(sources)} external sources for {request.business_context.project_id}."
 
-            # Use extracted key points if available
-            if all_key_points:
-                # Generate text with Harvard-style citations from key points
-                keypoint_text_resp: KeyPointTextResponse = await keypoint_text_chain(
-                    all_key_points
-                )
-                state["keypoint_text_response"] = keypoint_text_resp
-                state.setdefault("response_info_list", []).append(
-                    keypoint_text_resp.response_info
-                )
-
-                # Use the generated text as the full report
-                full_report = (
-                    keypoint_text_resp.text
-                    + "\n\nReferences:\n"
-                    + "\n".join(keypoint_text_resp.references)
-                )
-
-                # Still keep the individual key points for backward compatibility
-                key_points_content = [kp.content for kp in all_key_points]
-            else:
-                key_points_content = [
-                    f"Potential issue: {s.title}" for s in sources[:3]
-                ]
-                full_report = None
+            kp_text_response = state.get("keypoint_text_response")
+            full_report = kp_text_response.format_output() if kp_text_response else None
 
             sorted_sources = sorted(sources, key=lambda s: s.score, reverse=True)
-            recs = [f"Review source: {s.title} ({s.url})" for s in sorted_sources[:2]]
+            recommendation = [
+                f"Review source: {s.title} ({s.url})" for s in sorted_sources[:2]
+            ]
 
-        resp = ExternalContextResponse(
+        response = ExternalContextResponse(
             sector_summary=summary,
-            key_points=key_points_content,
-            sources=sorted_sources,
-            workshop_recommendations=recs,
+            workshop_recommendations=recommendation if recommendation else [],
             full_report=full_report,
         )
-        resp.response_info = aggregate_response_info(state)
+        response.response_info = aggregate_response_info(state)
 
-        state["response"] = resp
+        state["response"] = response
+        return state
+
+    # Define a start node that will be the entry point
+    def start(state: State) -> State:
+        # Initialize state if needed
         return state
 
     # Add nodes to the graph
+    graph.add_node("start", start)
     graph.add_node("news", news_search)
     graph.add_node("professional", professional_search)
     graph.add_node("regulatory", regulatory_search)
@@ -196,22 +202,29 @@ def _build_graph(request: ExternalContextRequest):
     graph.add_node("extract_professional_key_points", extract_professional_key_points)
     graph.add_node("extract_regulatory_key_points", extract_regulatory_key_points)
     graph.add_node("aggregate", aggregate)
+    graph.add_node("summarize_key_points", summarize_key_points)
 
     # Set up the graph with parallel processing
-    graph.set_entry_point("news")
+    graph.set_entry_point("start")
+
+    # Branch from start to all three search operations
+    graph.add_edge("start", "news")
+    graph.add_edge("start", "professional")
+    graph.add_edge("start", "regulatory")
 
     # After each search, extract key points from that source type
     graph.add_edge("news", "extract_news_key_points")
-    graph.add_edge("extract_news_key_points", "professional")
-
     graph.add_edge("professional", "extract_professional_key_points")
-    graph.add_edge("extract_professional_key_points", "regulatory")
-
     graph.add_edge("regulatory", "extract_regulatory_key_points")
-    graph.add_edge("extract_regulatory_key_points", "aggregate")
 
+    # Join all extraction results to summarize key points
+    graph.add_edge("extract_news_key_points", "summarize_key_points")
+    graph.add_edge("extract_professional_key_points", "summarize_key_points")
+    graph.add_edge("extract_regulatory_key_points", "summarize_key_points")
+
+    # Final steps
+    graph.add_edge("summarize_key_points", "aggregate")
     graph.add_edge("aggregate", END)
-
     return graph.compile()
 
 

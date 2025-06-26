@@ -86,10 +86,14 @@ class ExternalContextResponse(BaseResponse):
     """Output model containing summarised external information."""
 
     sector_summary: str
-    key_points: List[str]
-    sources: List[Source]
     workshop_recommendations: List[str]
     full_report: Optional[str] = None
+
+
+class KeyPointTextRequest(BaseModel):
+    """Request model for generating text from key points."""
+
+    key_points: List[KeyPoint]
 
 
 class KeyPointTextResponse(BaseResponse):
@@ -97,3 +101,8 @@ class KeyPointTextResponse(BaseResponse):
 
     text: str
     references: List[str]
+
+    def format_output(self) -> str:
+        """Format the output text with references."""
+        formatted_references = "\n".join(self.references)
+        return f"{self.text}\n\nReferences:\n{formatted_references}"
