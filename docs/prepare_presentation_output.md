@@ -18,8 +18,8 @@ This workflow is designed to create presentation-ready outputs for different aud
 ## Usage
 
 ```python
-from src.models.schemas import BusinessContext, PresentationRequest, AudienceEnum
-from src.workflows import prepare_presentation_output
+from src import BusinessContext, PresentationRequest, AudienceEnum
+from src import prepare_presentation_output
 
 # Create a request
 request = PresentationRequest(

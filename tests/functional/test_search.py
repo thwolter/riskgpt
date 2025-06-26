@@ -3,8 +3,8 @@ from unittest.mock import patch
 
 import pytest
 
-from src.models.utils.search import SearchRequest, SearchResponse
-from src.utils.search import _google_search, _wikipedia_search, search
+from src import SearchRequest, SearchResponse
+from src import _google_search, _wikipedia_search, search
 
 
 @pytest.mark.skipif(
@@ -93,7 +93,7 @@ def search_request():
 @pytest.fixture
 def mock_google_search():
     """Fixture to mock Google search function."""
-    from src.models.utils.search import SearchResponse, SearchResult
+    from src import SearchResponse, SearchResult
 
     return SearchResponse(
         results=[
@@ -113,7 +113,7 @@ def mock_google_search():
 @pytest.fixture
 def mock_wikipedia_search():
     """Fixture to mock Wikipedia search function."""
-    from src.models.utils.search import SearchResponse, SearchResult
+    from src import SearchResponse, SearchResult
 
     return SearchResponse(
         results=[
@@ -133,7 +133,7 @@ def mock_wikipedia_search():
 @pytest.fixture
 def mock_duckduckgo_search():
     """Fixture to mock DuckDuckGo search function."""
-    from src.models.utils.search import SearchResponse, SearchResult
+    from src import SearchResponse, SearchResult
 
     return SearchResponse(
         results=[

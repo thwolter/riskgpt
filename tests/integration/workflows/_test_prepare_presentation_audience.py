@@ -2,11 +2,11 @@ import os
 
 import pytest
 
-from src.models.base import ResponseInfo
-from src.models.common import BusinessContext
-from src.models.enums import AudienceEnum, LanguageEnum
-from src.models.workflows.presentation import PresentationRequest, PresentationResponse
-from src.workflows import prepare_presentation_output
+from src import ResponseInfo
+from src import BusinessContext
+from src import AudienceEnum, LanguageEnum
+from src import PresentationRequest, PresentationResponse
+from src import prepare_presentation_output
 
 audiences = [
     AudienceEnum.executive,

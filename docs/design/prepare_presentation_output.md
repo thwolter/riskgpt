@@ -8,8 +8,8 @@ described in [Audience Output Matrix](audience_output.md).
 ## Usage
 
 ```python
-from src.workflows import prepare_presentation_output
-from src.models.schemas import PresentationRequest, AudienceEnum
+from src import prepare_presentation_output
+from src import PresentationRequest, AudienceEnum
 
 req = PresentationRequest(
     project_id="p42",

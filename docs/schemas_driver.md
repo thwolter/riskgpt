@@ -155,8 +155,8 @@ These models are used in the driver identification and mitigation chains to iden
 ### Driver Identification
 
 ```python
-from src.models.schemas import BusinessContext, DriverRequest
-from src.chains import get_drivers_chain
+from src import BusinessContext, DriverRequest
+from src import get_drivers_chain
 
 # Create a request
 request = DriverRequest(
@@ -180,8 +180,8 @@ for driver in response.drivers:
 ### Mitigation Identification
 
 ```python
-from src.models.schemas import BusinessContext, MitigationRequest
-from src.chains import get_mitigations_chain
+from src import BusinessContext, MitigationRequest
+from src import get_mitigations_chain
 
 # Create a request
 request = MitigationRequest(
@@ -212,8 +212,8 @@ for mitigation in response.mitigations:
 The driver models are also used in the prepare_presentation_output workflow:
 
 ```python
-from src.models.schemas import BusinessContext, PresentationRequest, AudienceEnum
-from src.workflows import prepare_presentation_output
+from src import BusinessContext, PresentationRequest, AudienceEnum
+from src import prepare_presentation_output
 
 # Create a request
 request = PresentationRequest(

@@ -2,7 +2,7 @@
 
 import functools
 
-from src.utils.circuit_breaker import duckduckgo_breaker, openai_breaker, with_fallback
+from src import duckduckgo_breaker, openai_breaker, with_fallback
 
 
 def test_circuit_breaker_imports():

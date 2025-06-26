@@ -2,14 +2,14 @@ from unittest.mock import patch
 
 import pytest
 
-from src.chains.risk_indicators import risk_indicators_chain
-from src.models.chains.monitoring import (
+from src import risk_indicators_chain
+from src import (
     RiskIndicator,
     RiskIndicatorRequest,
     RiskIndicatorResponse,
 )
-from src.models.chains.risk import Risk
-from src.models.common import BusinessContext
+from src import Risk
+from src import BusinessContext
 
 
 @pytest.fixture

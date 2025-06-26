@@ -2,15 +2,15 @@ from unittest.mock import AsyncMock, patch
 
 import pytest
 
-from src.chains.challenge_risks import challenge_risks_chain
-from src.models.chains.questions import (
+from src import challenge_risks_chain
+from src import (
     ChallengeRisksRequest,
     ChallengeRisksResponse,
     RiskQuestions,
 )
-from src.models.chains.risk import Risk
-from src.models.common import BusinessContext
-from src.models.enums import AudienceEnum
+from src import Risk
+from src import BusinessContext
+from src import AudienceEnum
 
 
 @pytest.fixture

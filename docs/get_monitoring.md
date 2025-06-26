@@ -18,8 +18,8 @@ The `get_monitoring` chain derives indicators for ongoing risk monitoring.
 ## Example
 
 ```python
-from src.chains.risk_indicators import risk_indicators_chain
-from src.models.schemas import BusinessContext, MonitoringRequest
+from src import risk_indicators_chain
+from src import BusinessContext, MonitoringRequest
 
 request = MonitoringRequest(
     business_context=BusinessContext(

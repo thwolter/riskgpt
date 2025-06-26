@@ -5,10 +5,10 @@ import pytest
 from langchain_community.callbacks import get_openai_callback
 from langchain_core.output_parsers import BaseOutputParser
 
-from src.chains.base import BaseChain
-from src.logger import configure_logging
-from src.models.base import ResponseInfo
-from src.models.chains.categorization import CategoryResponse
+from src import BaseChain
+from src import configure_logging
+from src import ResponseInfo
+from src import CategoryResponse
 
 logger = logging.getLogger("src")
 

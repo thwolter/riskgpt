@@ -20,8 +20,8 @@ The `check_context_quality` workflow evaluates whether the provided context info
 ## Example
 
 ```python
-from src.workflows import check_context_quality
-from src.models.schemas import ContextQualityRequest
+from src import check_context_quality
+from src import ContextQualityRequest
 
 req = ContextQualityRequest(
     context_knowledge="We plan to update our CRM system.",

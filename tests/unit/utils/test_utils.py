@@ -4,7 +4,7 @@ import types
 
 import pytest
 
-from src.processors.input_validator import (
+from src import (
     validate_assessment_request,
     validate_category_request,
     validate_mitigation_request,
@@ -47,7 +47,7 @@ def test_load_prompt(monkeypatch):
 
 
 def test_load_system_prompt(monkeypatch):
-    from src.utils import prompt_loader
+    from src import prompt_loader
 
     monkeypatch.setattr(
         prompt_loader, "load_prompt", lambda name, version=None: {"template": "sys"}
@@ -63,7 +63,7 @@ def test_load_prompt_default_version(monkeypatch, tmp_path):
 
     import importlib
 
-    from src.utils import prompt_loader
+    from src import prompt_loader
 
     monkeypatch.setattr(prompt_loader, "PROMPT_DIR", tmp_path / "prompts")
     monkeypatch.setenv("DEFAULT_PROMPT_VERSION", "v2")

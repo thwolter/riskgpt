@@ -2,8 +2,8 @@ from unittest.mock import patch
 
 import pytest
 
-from src.chains.check_definition import check_definition_chain
-from src.models.chains.definition_check import (
+from src import check_definition_chain
+from src import (
     DefinitionCheckRequest,
     DefinitionCheckResponse,
 )

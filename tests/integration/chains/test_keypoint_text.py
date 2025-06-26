@@ -3,9 +3,9 @@ from unittest.mock import patch
 
 import pytest
 
-from src.chains.keypoint_text import keypoint_text_chain
-from src.models.enums import TopicEnum
-from src.models.workflows.context import (
+from src import keypoint_text_chain
+from src import TopicEnum
+from src import (
     KeyPoint,
     KeyPointTextRequest,
     KeyPointTextResponse,

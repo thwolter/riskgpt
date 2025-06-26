@@ -25,8 +25,8 @@ The `get_assessment` chain evaluates the potential impact of a risk. It either r
 ## Example
 
 ```python
-from src.chains.risk_assessment import risk_assessment_chain
-from src.models.schemas import AssessmentRequest, BusinessContext
+from src import risk_assessment_chain
+from src import AssessmentRequest, BusinessContext
 
 request = AssessmentRequest(
     business_context=BusinessContext(

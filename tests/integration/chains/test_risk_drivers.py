@@ -2,10 +2,10 @@ from unittest.mock import patch
 
 import pytest
 
-from src.chains.risk_drivers import risk_drivers_chain
-from src.models.chains.drivers import DriverRequest, DriverResponse, RiskDriver
-from src.models.chains.risk import Risk
-from src.models.common import BusinessContext
+from src import risk_drivers_chain
+from src import DriverRequest, DriverResponse, RiskDriver
+from src import Risk
+from src import BusinessContext
 
 
 @pytest.fixture
