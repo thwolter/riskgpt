@@ -20,8 +20,8 @@ reference sources the model is confident actually exist.
 ## Example
 
 ```python
-from src.chains.risk_drivers import risk_drivers_chain
-from src.models.schemas import BusinessContext, DriverRequest
+from src import risk_drivers_chain
+from src import BusinessContext, DriverRequest
 
 request = DriverRequest(
     business_context=BusinessContext(

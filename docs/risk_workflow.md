@@ -17,8 +17,8 @@ This workflow is designed to replace the individual chains with a more integrate
 ## Usage
 
 ```python
-from src.models.schemas import BusinessContext, RiskRequest
-from src.workflows import risk_workflow
+from src import BusinessContext, RiskRequest
+from src import risk_workflow
 
 # Create a request
 request = RiskRequest(
@@ -59,7 +59,8 @@ if response.references:
 
 ```python
 import asyncio
-from src.workflows import async_risk_workflow
+from src import async_risk_workflow
+
 
 async def main():
     # Create a request (same as above)
@@ -70,6 +71,7 @@ async def main():
 
     # Access the results (same as above)
     # ...
+
 
 asyncio.run(main())
 ```
@@ -96,7 +98,7 @@ The search query is constructed from the business context and risk category, and
 The workflow includes integration with a document microservice that provides relevant documents based on the business context. This integration is currently implemented as a placeholder that will be replaced with actual API calls in the future. Set the `DOCUMENT_SERVICE_URL` environment variable to the base URL of this microservice.
 
 ```python
-from src.api import fetch_documents
+from src import fetch_documents
 
 # Fetch relevant documents for a business context
 document_refs = fetch_documents(business_context)

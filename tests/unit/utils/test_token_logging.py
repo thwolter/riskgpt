@@ -2,13 +2,12 @@ import logging
 from unittest.mock import AsyncMock
 
 import pytest
+from chains.base import BaseChain
 from langchain_community.callbacks import get_openai_callback
 from langchain_core.output_parsers import BaseOutputParser
-
-from src.chains.base import BaseChain
-from src.logger import configure_logging
-from src.models.base import ResponseInfo
-from src.models.chains.categorization import CategoryResponse
+from logger import configure_logging
+from models.base import ResponseInfo
+from models.chains.categorization import CategoryResponse
 
 logger = logging.getLogger("src")
 

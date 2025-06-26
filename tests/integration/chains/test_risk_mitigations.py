@@ -1,16 +1,15 @@
 from unittest.mock import patch
 
 import pytest
-
-from src.chains.risk_mitigations import risk_mitigations_chain
-from src.models.chains.drivers import RiskDriver
-from src.models.chains.mitigation import (
+from chains.risk_mitigations import risk_mitigations_chain
+from models.chains.drivers import RiskDriver
+from models.chains.mitigation import (
     Mitigation,
     MitigationRequest,
     MitigationResponse,
 )
-from src.models.chains.risk import Risk
-from src.models.common import BusinessContext
+from models.chains.risk import Risk
+from models.common import BusinessContext
 
 
 @pytest.fixture
@@ -62,6 +61,6 @@ async def test_get_mitigations_chain_with_mock(test_request):
     async def mock_invoke(*args, **kwargs):
         return expected
 
-    with patch("src.chains.base.BaseChain.invoke", side_effect=mock_invoke):
+    with patch("chains.base.BaseChain.invoke", side_effect=mock_invoke):
         resp = await risk_mitigations_chain(test_request)
         assert resp.mitigations == expected.mitigations

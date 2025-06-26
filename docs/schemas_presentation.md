@@ -198,8 +198,8 @@ These models are used in the prepare_presentation_output workflow to create pres
 ### Presentation Output
 
 ```python
-from src.models.schemas import BusinessContext, PresentationRequest, AudienceEnum
-from src.workflows import prepare_presentation_output
+from src import BusinessContext, PresentationRequest, AudienceEnum
+from src import prepare_presentation_output
 
 # Create a request
 request = PresentationRequest(
@@ -276,8 +276,8 @@ risk_internal_response = prepare_presentation_output(risk_internal_request)
 The communication models can be used directly:
 
 ```python
-from src.models.schemas import BusinessContext, CommunicationRequest
-from src.chains import communicate_risks_chain
+from src import BusinessContext, CommunicationRequest
+from src import communicate_risks_chain
 
 # Create a request
 request = CommunicationRequest(

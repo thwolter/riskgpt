@@ -18,8 +18,8 @@ The `get_opportunities` chain identifies potential positive developments based o
 ## Example
 
 ```python
-from src.chains.opportunities import opportunities_chain
-from src.models.schemas import BusinessContext, OpportunityRequest
+from src import opportunities_chain
+from src import BusinessContext, OpportunityRequest
 
 request = OpportunityRequest(
     business_context=BusinessContext(

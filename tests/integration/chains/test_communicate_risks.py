@@ -1,12 +1,14 @@
 from unittest.mock import patch
 
 import pytest
-
-from src.chains.communicate_risks import communicate_risks_chain
-from src.models.chains.communication import CommunicationRequest, CommunicationResponse
-from src.models.chains.risk import Risk
-from src.models.common import BusinessContext
-from src.models.enums import AudienceEnum, LanguageEnum
+from chains.communicate_risks import communicate_risks_chain
+from models.chains.communication import (
+    CommunicationRequest,
+    CommunicationResponse,
+)
+from models.chains.risk import Risk
+from models.common import BusinessContext
+from models.enums import AudienceEnum
 
 
 @pytest.fixture
@@ -17,7 +19,6 @@ def test_request():
             project_id="test_project",
             project_description="A new IT project to implement a CRM system.",
             domain_knowledge="The company operates in the B2B sector.",
-            language=LanguageEnum.english,
         ),
         risks=[
             Risk(
@@ -56,7 +57,7 @@ async def test_communicate_risks_chain_with_mock(test_request):
     async def mock_invoke(*args, **kwargs):
         return expected
 
-    with patch("src.chains.base.BaseChain.invoke", side_effect=mock_invoke):
+    with patch("chains.base.BaseChain.invoke", side_effect=mock_invoke):
         resp = await communicate_risks_chain(test_request)
         assert resp.summary == expected.summary
         assert resp.key_points == expected.key_points

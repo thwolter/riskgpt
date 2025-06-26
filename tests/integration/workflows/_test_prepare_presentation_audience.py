@@ -1,12 +1,11 @@
 import os
 
 import pytest
-
-from src.models.base import ResponseInfo
-from src.models.common import BusinessContext
-from src.models.enums import AudienceEnum, LanguageEnum
-from src.models.workflows.presentation import PresentationRequest, PresentationResponse
-from src.workflows import prepare_presentation_output
+from models.base import ResponseInfo
+from models.common import BusinessContext
+from models.enums import AudienceEnum, LanguageEnum
+from models.workflows.presentation import PresentationRequest, PresentationResponse
+from workflows.prepare_presentation_output import prepare_presentation_output
 
 audiences = [
     AudienceEnum.executive,
@@ -48,7 +47,7 @@ async def test_prepare_presentation_all_audiences(monkeypatch, test_request):
             )
 
         monkeypatch.setattr(
-            "src.workflows.prepare_presentation_output.prepare_presentation_output",
+            "workflows.prepare_presentation_output.prepare_presentation_output",
             mock_prepare_presentation_output,
         )
 

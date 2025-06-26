@@ -3,8 +3,8 @@ import sys
 import types
 
 import pytest
-
-from src.processors.input_validator import (
+from helpers import prompt_loader
+from processors.input_validator import (
     validate_assessment_request,
     validate_category_request,
     validate_mitigation_request,
@@ -40,15 +40,13 @@ def test_load_prompt(monkeypatch):
     yaml_stub.safe_load = safe_load
     monkeypatch.setitem(sys.modules, "yaml", yaml_stub)
 
-    prompt_loader = importlib.reload(importlib.import_module("src.utils.prompt_loader"))
+    prompt_loader = importlib.reload(importlib.import_module("helpers.prompt_loader"))
     data = prompt_loader.load_prompt("risk_categories")
     assert data["version"] == "v1"
     assert "{format_instructions}" in data["template"]
 
 
 def test_load_system_prompt(monkeypatch):
-    from src.utils import prompt_loader
-
     monkeypatch.setattr(
         prompt_loader, "load_prompt", lambda name, version=None: {"template": "sys"}
     )
@@ -60,10 +58,6 @@ def test_load_prompt_default_version(monkeypatch, tmp_path):
     prompts_dir.mkdir(parents=True)
     file = prompts_dir / "v2.yaml"
     file.write_text('version: "v2"\ndescription: "d"\ntemplate: |\n  test')
-
-    import importlib
-
-    from src.utils import prompt_loader
 
     monkeypatch.setattr(prompt_loader, "PROMPT_DIR", tmp_path / "prompts")
     monkeypatch.setenv("DEFAULT_PROMPT_VERSION", "v2")

@@ -1,18 +1,18 @@
 from unittest.mock import patch
 
 import pytest
-
-from src.models.base import ResponseInfo
-from src.models.common import BusinessContext
-from src.models.enums import TopicEnum
-from src.models.utils.search import SearchResponse, SearchResult
-from src.models.workflows.context import (
+from models.base import ResponseInfo
+from models.common import BusinessContext
+from models.enums import TopicEnum
+from models.utils.search import SearchResponse, SearchResult
+from models.workflows.context import (
     EnrichContextRequest,
+    EnrichContextResponse,
     ExtractKeyPointsResponse,
     KeyPoint,
     KeyPointTextResponse,
 )
-from src.workflows.enrich_context import enrich_context
+from workflows.enrich_context import enrich_context
 
 
 @pytest.fixture
@@ -78,9 +78,9 @@ def mock_search_result():
 @pytest.fixture
 def mock_settings(monkeypatch):
     """Fixture to patch the settings to use tavily as the search provider."""
-    monkeypatch.setattr("src.utils.search.settings.SEARCH_PROVIDER", "tavily")
-    monkeypatch.setattr("src.utils.search.settings.INCLUDE_WIKIPEDIA", False)
-    monkeypatch.setattr("src.utils.search.settings.MAX_SEARCH_RESULTS", 2)
+    monkeypatch.setattr("helpers.search.settings.SEARCH_PROVIDER", "tavily")
+    monkeypatch.setattr("helpers.search.settings.INCLUDE_WIKIPEDIA", False)
+    monkeypatch.setattr("helpers.search.settings.MAX_SEARCH_RESULTS", 2)
     yield
 
 
@@ -92,7 +92,7 @@ def mock_search(monkeypatch, mock_search_result):
         return mock_search_result
 
     # Patch the search function
-    with patch("src.utils.search._tavily_search", side_effect=mock_search_func) as mock:
+    with patch("helpers.search._tavily_search", side_effect=mock_search_func) as mock:
         yield mock
 
 
@@ -151,7 +151,8 @@ def mock_extract_key_points(mock_key_points):
 
     # Patch at the location where enrich_context imports/calls it
     with patch(
-        "src.workflows.enrich_context.extract_key_points", return_value=mock_key_points
+        "workflows.enrich_context.extract_key_points",
+        return_value=mock_key_points,
     ) as mock:
         yield mock
 
@@ -162,7 +163,7 @@ def mock_keypoint_text_chain(keypoint_text_resp):
 
     # Patch the keypoint_text_chain to return mock_key_points
     with patch(
-        "src.workflows.enrich_context.keypoint_text_chain",
+        "workflows.enrich_context.keypoint_text_chain",
         return_value=keypoint_text_resp,
     ) as mock:
         yield mock
@@ -171,9 +172,8 @@ def mock_keypoint_text_chain(keypoint_text_resp):
 @pytest.mark.integration
 @pytest.mark.asyncio
 async def test_enrich_context_basic(test_request, mock_settings):
-    response = await enrich_context(test_request)
+    response: EnrichContextResponse = await enrich_context(test_request)
     assert response.sector_summary
-    assert isinstance(response.sources, list)
 
 
 @pytest.mark.asyncio

@@ -3,10 +3,9 @@ import sys
 
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parents[1]))
 
+from config.settings import RiskGPTSettings
+from helpers.memory_factory import get_memory, register_memory_backend
 from langchain.memory import ConversationBufferMemory
-
-from src.config.settings import RiskGPTSettings
-from src.utils.memory_factory import get_memory, register_memory_backend
 
 
 def test_get_memory_buffer():

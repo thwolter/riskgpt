@@ -40,11 +40,10 @@ import logging
 from types import SimpleNamespace
 
 import pytest
+from chains.base import BaseChain
 from langchain_core.output_parsers import BaseOutputParser
-
-from src.chains.base import BaseChain
-from src.logger import configure_logging
-from src.models.chains.categorization import CategoryResponse
+from logger import configure_logging
+from models.chains.categorization import CategoryResponse
 
 
 class DummyParser(BaseOutputParser):

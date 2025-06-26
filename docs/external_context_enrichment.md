@@ -36,8 +36,8 @@ The search provider can be configured using environment variables:
 ## Example
 
 ```python
-from src.workflows import enrich_context
-from src.models.schemas import ExternalContextRequest
+from src import enrich_context
+from src import ExternalContextRequest
 
 req = ExternalContextRequest(
     project_name="SEFE Energy",
