@@ -46,8 +46,17 @@ requires = ["setuptools>=68", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [tool.setuptools.packages.find]
-where = ["."]
-include = ["riskgpt*"]
+where    = ["src"]        # or ["."]
+include  = [
+    "riskgpt*",
+    "models*",
+    "workflows*",
+    "chains*",
+    "utils*",
+    "processors*",
+    "config*",
+    "prompts*",
+]
 
 [tool.ruff]
 line-length = 88
