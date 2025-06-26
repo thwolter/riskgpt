@@ -99,6 +99,40 @@ This script will:
 - Help you set up your OpenAI API key
 - Provide a basic usage example
 
+### GitHub Codespaces Usage
+
+To use RiskGPT in GitHub Codespaces, follow these steps:
+
+#### Option 1: Step-by-step guide
+
+See the [Codespaces usage guide](examples/codespaces_usage_guide.ipynb) which provides detailed instructions for:
+
+- Installing RiskGPT directly from GitHub
+- Setting up the OpenAI API key in Codespaces
+- Running basic and advanced examples
+- Local development in Codespaces
+- Troubleshooting common issues
+
+#### Option 2: Setting up OpenAI API key as a Codespaces secret
+
+For better security, you can add your OpenAI API key as a Codespaces secret:
+
+1. Go to your GitHub repository
+2. Navigate to Settings > Secrets and variables > Codespaces
+3. Click "New repository secret"
+4. Name: `OPENAI_API_KEY`
+5. Value: Your OpenAI API key
+6. Click "Add secret"
+
+Then in your Codespaces Jupyter notebook or Python script:
+
+```python
+# Install RiskGPT directly from GitHub
+!pip install git+https://github.com/thwolter/riskgpt.git
+
+# The API key will be automatically available as an environment variable
+```
+
 Validation helpers are available in `riskgpt.processors.input_validator` to convert dictionaries into request objects:
 
 ```python
