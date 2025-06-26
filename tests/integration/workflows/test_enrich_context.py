@@ -1,18 +1,18 @@
 from unittest.mock import patch
 
 import pytest
-from models.base import ResponseInfo
-from models.common import BusinessContext
-from models.enums import TopicEnum
-from models.utils.search import SearchResponse, SearchResult
-from models.workflows.context import (
+from riskgpt.models.base import ResponseInfo
+from riskgpt.models.common import BusinessContext
+from riskgpt.models.enums import TopicEnum
+from riskgpt.models.utils.search import SearchResponse, SearchResult
+from riskgpt.models.workflows.context import (
     EnrichContextRequest,
     EnrichContextResponse,
     ExtractKeyPointsResponse,
     KeyPoint,
     KeyPointTextResponse,
 )
-from workflows.enrich_context import enrich_context
+from riskgpt.workflows.enrich_context import enrich_context
 
 
 @pytest.fixture
@@ -78,9 +78,9 @@ def mock_search_result():
 @pytest.fixture
 def mock_settings(monkeypatch):
     """Fixture to patch the settings to use tavily as the search provider."""
-    monkeypatch.setattr("helpers.search.settings.SEARCH_PROVIDER", "tavily")
-    monkeypatch.setattr("helpers.search.settings.INCLUDE_WIKIPEDIA", False)
-    monkeypatch.setattr("helpers.search.settings.MAX_SEARCH_RESULTS", 2)
+    monkeypatch.setattr("riskgpt.helpers.search.settings.SEARCH_PROVIDER", "tavily")
+    monkeypatch.setattr("riskgpt.helpers.search.settings.INCLUDE_WIKIPEDIA", False)
+    monkeypatch.setattr("riskgpt.helpers.search.settings.MAX_SEARCH_RESULTS", 2)
     yield
 
 
@@ -92,7 +92,9 @@ def mock_search(monkeypatch, mock_search_result):
         return mock_search_result
 
     # Patch the search function
-    with patch("helpers.search._tavily_search", side_effect=mock_search_func) as mock:
+    with patch(
+        "riskgpt.helpers.search._tavily_search", side_effect=mock_search_func
+    ) as mock:
         yield mock
 
 
@@ -151,7 +153,7 @@ def mock_extract_key_points(mock_key_points):
 
     # Patch at the location where enrich_context imports/calls it
     with patch(
-        "workflows.enrich_context.extract_key_points",
+        "riskgpt.workflows.enrich_context.extract_key_points",
         return_value=mock_key_points,
     ) as mock:
         yield mock
@@ -163,7 +165,7 @@ def mock_keypoint_text_chain(keypoint_text_resp):
 
     # Patch the keypoint_text_chain to return mock_key_points
     with patch(
-        "workflows.enrich_context.keypoint_text_chain",
+        "riskgpt.workflows.enrich_context.keypoint_text_chain",
         return_value=keypoint_text_resp,
     ) as mock:
         yield mock

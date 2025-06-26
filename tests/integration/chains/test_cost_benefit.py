@@ -1,13 +1,13 @@
 from unittest.mock import patch
 
 import pytest
-from chains.cost_benefit import cost_benefit_chain
-from models.chains.mitigation import (
+from riskgpt.chains.cost_benefit import cost_benefit_chain
+from riskgpt.models.chains.mitigation import (
     CostBenefit,
     CostBenefitRequest,
     CostBenefitResponse,
 )
-from models.common import BusinessContext
+from riskgpt.models.common import BusinessContext
 
 
 @pytest.fixture
@@ -69,7 +69,7 @@ async def test_cost_benefit_chain_with_mock(test_request):
         return expected_response
 
     # Mock the chain.invoke method to return our expected response
-    with patch("chains.base.BaseChain.invoke", side_effect=mock_invoke):
+    with patch("riskgpt.chains.base.BaseChain.invoke", side_effect=mock_invoke):
         response = await cost_benefit_chain(test_request)
 
         # Check that the response matches our expectations

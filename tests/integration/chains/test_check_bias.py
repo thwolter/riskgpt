@@ -1,7 +1,7 @@
 import pytest
-from chains.check_bias import check_bias_chain
-from models.chains.bias_check import BiasCheckRequest
-from models.common import BusinessContext
+from riskgpt.chains.check_bias import check_bias_chain
+from riskgpt.models.chains.bias_check import BiasCheckRequest
+from riskgpt.models.common import BusinessContext
 
 
 @pytest.mark.asyncio

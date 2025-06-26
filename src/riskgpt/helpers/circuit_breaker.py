@@ -13,7 +13,8 @@ import functools
 from typing import Any, Callable, TypeVar
 
 import pybreaker
-from logger import logger
+
+from riskgpt.logger import logger
 
 # Type variable for function return type
 T = TypeVar("T")

@@ -1,7 +1,8 @@
-from chains.base import BaseChain
-from helpers.prompt_loader import load_prompt
 from langchain_core.output_parsers import PydanticOutputParser
-from models.chains.mitigation import MitigationRequest, MitigationResponse
+
+from riskgpt.chains.base import BaseChain
+from riskgpt.helpers.prompt_loader import load_prompt
+from riskgpt.models.chains.mitigation import MitigationRequest, MitigationResponse
 
 
 async def risk_mitigations_chain(request: MitigationRequest) -> MitigationResponse:

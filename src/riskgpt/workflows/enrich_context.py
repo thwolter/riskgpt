@@ -2,14 +2,15 @@ from __future__ import annotations
 
 from typing import Annotated, List, TypedDict, TypeVar
 
-from chains.keypoint_text import keypoint_text_chain
-from helpers.extraction import extract_key_points
-from helpers.search import search, settings
 from langgraph.graph import END, StateGraph, add_messages
-from models.base import ResponseInfo
-from models.enums import TopicEnum
-from models.utils.search import SearchRequest, SearchResponse, Source
-from models.workflows.context import (
+
+from riskgpt.chains.keypoint_text import keypoint_text_chain
+from riskgpt.helpers.extraction import extract_key_points
+from riskgpt.helpers.search import search, settings
+from riskgpt.models.base import ResponseInfo
+from riskgpt.models.enums import TopicEnum
+from riskgpt.models.utils.search import SearchRequest, SearchResponse, Source
+from riskgpt.models.workflows.context import (
     EnrichContextRequest,
     EnrichContextResponse,
     ExtractKeyPointsRequest,

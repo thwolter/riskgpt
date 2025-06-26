@@ -1,7 +1,8 @@
-from chains.base import BaseChain
-from helpers.prompt_loader import load_prompt
 from langchain_core.output_parsers import PydanticOutputParser
-from models.chains.risk import RiskRequest, RiskResponse
+
+from riskgpt.chains.base import BaseChain
+from riskgpt.helpers.prompt_loader import load_prompt
+from riskgpt.models.chains.risk import RiskRequest, RiskResponse
 
 
 async def risk_identification_chain(request: RiskRequest) -> RiskResponse:

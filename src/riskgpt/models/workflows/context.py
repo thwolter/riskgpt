@@ -1,10 +1,11 @@
 from typing import List, Optional
 
-from models.base import BaseResponse
-from models.common import BusinessContext
-from models.enums import TopicEnum
-from models.utils.search import Source
 from pydantic import BaseModel
+
+from riskgpt.models.base import BaseResponse
+from riskgpt.models.common import BusinessContext
+from riskgpt.models.enums import TopicEnum
+from riskgpt.models.utils.search import Source
 
 
 class KeyPoint(BaseModel):

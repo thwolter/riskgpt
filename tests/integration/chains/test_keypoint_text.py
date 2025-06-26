@@ -2,9 +2,9 @@ from typing import List
 from unittest.mock import patch
 
 import pytest
-from chains.keypoint_text import keypoint_text_chain
-from models.enums import TopicEnum
-from models.workflows.context import (
+from riskgpt.chains.keypoint_text import keypoint_text_chain
+from riskgpt.models.enums import TopicEnum
+from riskgpt.models.workflows.context import (
     KeyPoint,
     KeyPointTextRequest,
     KeyPointTextResponse,
@@ -74,7 +74,7 @@ async def test_keypoint_text_chain_with_mock(test_key_points):
     async def mock_invoke(*args, **kwargs):
         return expected
 
-    with patch("chains.base.BaseChain.invoke", side_effect=mock_invoke):
+    with patch("riskgpt.chains.base.BaseChain.invoke", side_effect=mock_invoke):
         request = KeyPointTextRequest(key_points=test_key_points)
         resp = await keypoint_text_chain(request)
         assert resp.text == resp.text

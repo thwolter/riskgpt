@@ -6,9 +6,10 @@ This module contains models for risk identification and representation.
 
 from typing import List, Optional
 
-from models.base import BaseRequest, BaseResponse
-from models.common import BusinessContext
 from pydantic import BaseModel, ConfigDict, Field
+
+from riskgpt.models.base import BaseRequest, BaseResponse
+from riskgpt.models.common import BusinessContext
 
 
 class Risk(BaseModel):

@@ -1,7 +1,8 @@
-from chains.base import BaseChain
-from helpers.prompt_loader import load_prompt
 from langchain_core.output_parsers import PydanticOutputParser
-from models.chains.categorization import CategoryRequest, CategoryResponse
+
+from riskgpt.chains.base import BaseChain
+from riskgpt.helpers.prompt_loader import load_prompt
+from riskgpt.models.chains.categorization import CategoryRequest, CategoryResponse
 
 
 async def risk_categories_chain(request: CategoryRequest) -> CategoryResponse:

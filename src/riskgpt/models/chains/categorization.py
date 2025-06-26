@@ -6,9 +6,10 @@ This module contains models for risk category identification.
 
 from typing import List, Optional
 
-from models.base import BaseRequest, BaseResponse
-from models.common import BusinessContext
 from pydantic import ConfigDict, Field
+
+from riskgpt.models.base import BaseRequest, BaseResponse
+from riskgpt.models.common import BusinessContext
 
 
 class CategoryRequest(BaseRequest):

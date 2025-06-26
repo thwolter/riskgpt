@@ -10,9 +10,10 @@ from __future__ import annotations
 from typing import List
 
 import logger
-from helpers.search import search
-from models.common import BusinessContext
-from models.utils.search import SearchRequest, SearchResponse
+
+from riskgpt.helpers.search import search
+from riskgpt.models.common import BusinessContext
+from riskgpt.models.utils.search import SearchRequest, SearchResponse
 
 
 def search_context(search_request: SearchRequest) -> SearchResponse:

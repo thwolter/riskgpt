@@ -6,23 +6,24 @@ including DuckDuckGo, Google Custom Search API, and Wikipedia.
 
 from typing import List
 
-from config.settings import RiskGPTSettings
-from helpers.circuit_breaker import (
-    duckduckgo_breaker,
-    google_search_breaker,
-    tavily_breaker,
-    wikipedia_breaker,
-    with_fallback,
-)
 from langchain_community.utilities import (
     DuckDuckGoSearchAPIWrapper,
     WikipediaAPIWrapper,
 )
 from langchain_google_community import GoogleSearchAPIWrapper
 from langchain_tavily import TavilySearch
-from logger import logger
-from models.enums import TopicEnum
-from models.utils.search import SearchRequest, SearchResponse, SearchResult
+
+from riskgpt.config.settings import RiskGPTSettings
+from riskgpt.helpers.circuit_breaker import (
+    duckduckgo_breaker,
+    google_search_breaker,
+    tavily_breaker,
+    wikipedia_breaker,
+    with_fallback,
+)
+from riskgpt.logger import logger
+from riskgpt.models.enums import TopicEnum
+from riskgpt.models.utils.search import SearchRequest, SearchResponse, SearchResult
 
 settings = RiskGPTSettings()
 

@@ -6,10 +6,11 @@ This module contains models for correlation analysis between risks.
 
 from typing import List, Optional
 
-from models.base import BaseRequest, BaseResponse
-from models.chains.risk import Risk
-from models.common import BusinessContext
 from pydantic import BaseModel, ConfigDict
+
+from riskgpt.models.base import BaseRequest, BaseResponse
+from riskgpt.models.chains.risk import Risk
+from riskgpt.models.common import BusinessContext
 
 
 class CorrelationTag(BaseModel):

@@ -2,17 +2,18 @@ from __future__ import annotations
 
 from typing import Any, Dict, List, TypedDict
 
-from chains.communicate_risks import communicate_risks_chain
-from chains.correlation_tags import correlation_tags_chain
-from chains.risk_assessment import risk_assessment_chain
-from chains.risk_drivers import risk_drivers_chain
-from chains.risk_identification import risk_identification_chain
-from chains.risk_mitigations import risk_mitigations_chain
-from config.settings import RiskGPTSettings
 from langgraph.graph import END, StateGraph
-from logger import logger
-from models.base import ResponseInfo
-from models.chains import (
+
+from riskgpt.chains.communicate_risks import communicate_risks_chain
+from riskgpt.chains.correlation_tags import correlation_tags_chain
+from riskgpt.chains.risk_assessment import risk_assessment_chain
+from riskgpt.chains.risk_drivers import risk_drivers_chain
+from riskgpt.chains.risk_identification import risk_identification_chain
+from riskgpt.chains.risk_mitigations import risk_mitigations_chain
+from riskgpt.config.settings import RiskGPTSettings
+from riskgpt.logger import logger
+from riskgpt.models.base import ResponseInfo
+from riskgpt.models.chains import (
     CommunicationRequest,
     CorrelationTag,
     CorrelationTagRequest,
@@ -21,10 +22,10 @@ from models.chains import (
     Risk,
     RiskRequest,
 )
-from models.chains.assessment import AssessmentRequest
-from models.chains.drivers import DriverRequest, RiskDriver
-from models.enums import AudienceEnum
-from models.workflows.presentation import (
+from riskgpt.models.chains.assessment import AssessmentRequest
+from riskgpt.models.chains.drivers import DriverRequest, RiskDriver
+from riskgpt.models.enums import AudienceEnum
+from riskgpt.models.workflows.presentation import (
     PresentationRequest,
     PresentationResponse,
 )

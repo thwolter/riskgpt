@@ -1,14 +1,14 @@
 from unittest.mock import patch
 
 import pytest
-from chains.communicate_risks import communicate_risks_chain
-from models.chains.communication import (
+from riskgpt.chains.communicate_risks import communicate_risks_chain
+from riskgpt.models.chains.communication import (
     CommunicationRequest,
     CommunicationResponse,
 )
-from models.chains.risk import Risk
-from models.common import BusinessContext
-from models.enums import AudienceEnum
+from riskgpt.models.chains.risk import Risk
+from riskgpt.models.common import BusinessContext
+from riskgpt.models.enums import AudienceEnum
 
 
 @pytest.fixture
@@ -57,7 +57,7 @@ async def test_communicate_risks_chain_with_mock(test_request):
     async def mock_invoke(*args, **kwargs):
         return expected
 
-    with patch("chains.base.BaseChain.invoke", side_effect=mock_invoke):
+    with patch("riskgpt.chains.base.BaseChain.invoke", side_effect=mock_invoke):
         resp = await communicate_risks_chain(test_request)
         assert resp.summary == expected.summary
         assert resp.key_points == expected.key_points

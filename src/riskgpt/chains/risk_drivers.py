@@ -1,7 +1,8 @@
-from chains.base import BaseChain
-from helpers.prompt_loader import load_prompt
 from langchain_core.output_parsers import PydanticOutputParser
-from models.chains.drivers import DriverRequest, DriverResponse
+
+from riskgpt.chains.base import BaseChain
+from riskgpt.helpers.prompt_loader import load_prompt
+from riskgpt.models.chains.drivers import DriverRequest, DriverResponse
 
 
 async def risk_drivers_chain(request: DriverRequest) -> DriverResponse:

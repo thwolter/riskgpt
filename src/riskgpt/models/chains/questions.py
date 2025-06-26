@@ -1,10 +1,11 @@
 from typing import List, Optional
 
-from models.base import BaseResponse
-from models.chains.risk import Risk
-from models.common import BusinessContext
-from models.enums import AudienceEnum
 from pydantic import BaseModel, Field
+
+from riskgpt.models.base import BaseResponse
+from riskgpt.models.chains.risk import Risk
+from riskgpt.models.common import BusinessContext
+from riskgpt.models.enums import AudienceEnum
 
 
 class ChallengeQuestionsRequest(BaseModel):
@@ -27,7 +28,7 @@ class ChallengeQuestionsRequest(BaseModel):
     )
 
     class Config:
-        schema_extra = {
+        json_schema_extra = {
             "example": {
                 "business_context": {
                     "project_id": "CRM-2023",
@@ -49,7 +50,7 @@ class ChallengeQuestionsResponse(BaseResponse):
     questions: List[str]
 
     class Config:
-        schema_extra = {
+        json_schema_extra = {
             "example": {
                 "questions": [
                     "What are the potential data security risks when migrating customer data to the new CRM system?",
@@ -84,7 +85,7 @@ class ChallengeRiskRequest(BaseModel):
     )
 
     class Config:
-        schema_extra = {
+        json_schema_extra = {
             "example": {
                 "risk": {
                     "title": "Data Migration Failure",

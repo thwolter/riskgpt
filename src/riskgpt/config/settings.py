@@ -33,7 +33,7 @@ class RiskGPTSettings(BaseSettings):
     @field_validator("MEMORY_TYPE")
     @classmethod
     def validate_memory_type(cls, v: str) -> str:
-        from helpers.memory_factory import _CREATORS
+        from riskgpt.helpers.memory_factory import _CREATORS
 
         allowed = {"none", "buffer", "redis"}.union(_CREATORS.keys())
         if v not in allowed:

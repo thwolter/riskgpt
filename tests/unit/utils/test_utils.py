@@ -40,7 +40,9 @@ def test_load_prompt(monkeypatch):
     yaml_stub.safe_load = safe_load
     monkeypatch.setitem(sys.modules, "yaml", yaml_stub)
 
-    prompt_loader = importlib.reload(importlib.import_module("helpers.prompt_loader"))
+    prompt_loader = importlib.reload(
+        importlib.import_module("riskgpt.helpers.prompt_loader")
+    )
     data = prompt_loader.load_prompt("risk_categories")
     assert data["version"] == "v1"
     assert "{format_instructions}" in data["template"]

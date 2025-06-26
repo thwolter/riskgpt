@@ -6,10 +6,11 @@ This module contains models for presentation-oriented risk summaries.
 
 from typing import List, Optional
 
-from models.base import BaseRequest, BaseResponse
-from models.common import BusinessContext
-from models.enums import AudienceEnum
 from pydantic import Field
+
+from riskgpt.models.base import BaseRequest, BaseResponse
+from riskgpt.models.common import BusinessContext
+from riskgpt.models.enums import AudienceEnum
 
 
 class PresentationRequest(BaseRequest):

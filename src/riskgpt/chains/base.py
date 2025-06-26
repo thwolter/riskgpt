@@ -3,18 +3,19 @@ from __future__ import annotations
 import typing
 from typing import Any, Dict, Optional
 
-from config.settings import RiskGPTSettings
-from helpers.circuit_breaker import openai_breaker, with_fallback
-from helpers.memory_factory import get_memory
-from helpers.misc import flatten_dict
-from helpers.prompt_loader import load_system_prompt
 from langchain.chat_models import init_chat_model
 from langchain_community.callbacks import get_openai_callback
 from langchain_core.output_parsers import BaseOutputParser
 from langchain_core.prompts import ChatPromptTemplate
 from langsmith import traceable
-from logger import logger
-from models.base import ResponseInfo
+
+from riskgpt.config.settings import RiskGPTSettings
+from riskgpt.helpers.circuit_breaker import openai_breaker, with_fallback
+from riskgpt.helpers.memory_factory import get_memory
+from riskgpt.helpers.misc import flatten_dict
+from riskgpt.helpers.prompt_loader import load_system_prompt
+from riskgpt.logger import logger
+from riskgpt.models.base import ResponseInfo
 
 
 class BaseChain:

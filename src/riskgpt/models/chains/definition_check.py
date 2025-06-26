@@ -6,8 +6,9 @@ This module contains models for checking and revising risk definitions.
 
 from typing import Optional
 
-from models.base import BaseRequest, BaseResponse
 from pydantic import ConfigDict, Field
+
+from riskgpt.models.base import BaseRequest, BaseResponse
 
 
 class DefinitionCheckRequest(BaseRequest):

@@ -6,9 +6,10 @@ This module contains models for checking biases in risk descriptions.
 
 from typing import List, Optional
 
-from models.base import BaseResponse
-from models.common import BusinessContext
 from pydantic import BaseModel, ConfigDict
+
+from riskgpt.models.base import BaseResponse
+from riskgpt.models.common import BusinessContext
 
 
 class BiasCheckRequest(BaseModel):

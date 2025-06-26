@@ -1,9 +1,9 @@
 from unittest.mock import AsyncMock, patch
 
 import pytest
-from chains.risk_categories import risk_categories_chain
-from models.chains.categorization import CategoryRequest, CategoryResponse
-from models.common import BusinessContext
+from riskgpt.chains.risk_categories import risk_categories_chain
+from riskgpt.models.chains.categorization import CategoryRequest, CategoryResponse
+from riskgpt.models.common import BusinessContext
 
 
 @pytest.fixture
@@ -33,7 +33,7 @@ async def test_get_categories_chain_with_mock(test_request):
         categories=["Technical", "Operational"],
     )
     with patch(
-        "chains.base.BaseChain.invoke",
+        "riskgpt.chains.base.BaseChain.invoke",
         new_callable=AsyncMock,
         return_value=expected,
     ):

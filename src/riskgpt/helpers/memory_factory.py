@@ -2,9 +2,10 @@
 
 from typing import Callable, Dict, Optional
 
-from config.settings import RiskGPTSettings
 from langchain.memory import ConversationBufferMemory
 from langchain_community.chat_message_histories import RedisChatMessageHistory
+
+from riskgpt.config.settings import RiskGPTSettings
 
 # Mapping of memory backend names to creator callables
 _CREATORS: Dict[str, Callable[[RiskGPTSettings], Optional[object]]] = {}
