@@ -40,17 +40,14 @@ def _search_fallback(payload: SearchRequest) -> SearchResponse:
 @with_fallback(_search_fallback)
 def _duckduckgo_search(payload: SearchRequest) -> SearchResponse:
     """Perform a DuckDuckGo search and format results."""
+
     results: List[SearchResult] = []
-    if DuckDuckGoSearchAPIWrapper is None:
-        logger.warning("duckduckgo-search not available")
-        return SearchResponse(
-            results=results,
-            success=False,
-            error_message="DuckDuckGo search not available",
-        )
     try:
         wrapper = DuckDuckGoSearchAPIWrapper()
-        for item in wrapper.results(payload.query, max_results=payload.max_results):
+        search_results = wrapper.results(
+            query=payload.query, max_results=payload.max_results
+        )
+        for item in search_results:
             results.append(
                 SearchResult(
                     title=item.get("title", ""),
@@ -75,11 +72,6 @@ def _duckduckgo_search(payload: SearchRequest) -> SearchResponse:
 def _google_search(payload: SearchRequest) -> SearchResponse:
     """Perform a Google Custom Search and format results."""
     results: List[SearchResult] = []
-    if GoogleSearchAPIWrapper is None:
-        logger.warning("langchain-google-community not available")
-        return SearchResponse(
-            results=results, success=False, error_message="Google search not available"
-        )
 
     if not settings.GOOGLE_CSE_ID or not settings.GOOGLE_API_KEY:
         logger.warning("Google CSE ID or API key not configured")
@@ -90,23 +82,14 @@ def _google_search(payload: SearchRequest) -> SearchResponse:
         )
 
     try:
-        # Extract the API key from SecretStr
-        api_key = (
-            settings.GOOGLE_API_KEY.get_secret_value()
-            if settings.GOOGLE_API_KEY
-            else None
-        )
-
-        # Create the wrapper with the extracted API key
+        api_key = settings.GOOGLE_API_KEY.get_secret_value()
         wrapper = GoogleSearchAPIWrapper(
             google_api_key=api_key,
             google_cse_id=settings.GOOGLE_CSE_ID,
         )
 
-        # Get search results
         search_results = wrapper.results(payload.query, num_results=payload.max_results)
 
-        # Check if we got valid results
         if not search_results or (
             len(search_results) == 1 and "Result" in search_results[0]
         ):
@@ -140,34 +123,23 @@ def _google_search(payload: SearchRequest) -> SearchResponse:
 @with_fallback(_search_fallback)
 def _wikipedia_search(payload: SearchRequest) -> SearchResponse:
     """Perform a Wikipedia search and format results."""
+
     results: List[SearchResult] = []
-    if WikipediaAPIWrapper is None:
-        logger.warning("wikipedia not available")
-        return SearchResponse(
-            results=results,
-            success=False,
-            error_message="Wikipedia search not available",
-        )
 
     try:
         wrapper = WikipediaAPIWrapper(
             wiki_client=None, top_k_results=payload.max_results
         )
         # Wikipedia API returns a single string with all results
-        wiki_results = wrapper.run(payload.query)
-        if wiki_results:
-            # Create a single result with the Wikipedia content
+        wiki_results = wrapper.load(payload.query)
+        for item in wiki_results:
             results.append(
                 SearchResult(
-                    title=f"Wikipedia: {payload.query}",
-                    url=f"https://en.wikipedia.org/wiki/{payload.query.replace(' ', '_')}",
-                    date="",
+                    title=item.metadata.get("title", ""),
+                    url=item.metadata.get("source", ""),
+                    date="",  # Wikipedia doesn't provide date in the same way
                     type=payload.source_type,
-                    content=(
-                        wiki_results[:500] + "..."
-                        if len(wiki_results) > 500
-                        else wiki_results
-                    ),
+                    content=item.metadata.get("summary", ""),
                 )
             )
     except Exception as exc:  # pragma: no cover - search failure should not crash

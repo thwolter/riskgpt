@@ -38,6 +38,13 @@ def append_to_list(existing: List[T] | None, new: T) -> List[T]:
     return existing + [new]
 
 
+def combine_bool_or(existing: bool | None, new: bool) -> bool:
+    """Combine two boolean values using logical OR."""
+    if existing is None:
+        return new
+    return existing or new
+
+
 class State(TypedDict):
     messages: Annotated[list, add_messages]
 
@@ -45,7 +52,7 @@ class State(TypedDict):
     key_points: Annotated[List[KeyPoint], extend_list]
     response_info_list: Annotated[List[ResponseInfo], extend_list]
 
-    search_failed: bool
+    search_failed: Annotated[bool, combine_bool_or]
     keypoint_text_response: KeyPointTextResponse
     response: EnrichContextResponse
 

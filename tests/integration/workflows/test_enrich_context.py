@@ -173,7 +173,10 @@ def mock_keypoint_text_chain(keypoint_text_resp):
 
 @pytest.mark.integration
 @pytest.mark.asyncio
-async def test_enrich_context_tavili(test_request, mock_settings):
+async def test_enrich_context_tavili(monkeypatch, test_request, mock_settings):
+    monkeypatch.setattr("riskgpt.helpers.search.settings.SEARCH_PROVIDER", "tavily")
+    monkeypatch.setattr("riskgpt.helpers.search.settings.INCLUDE_WIKIPEDIA", False)
+    monkeypatch.setattr("riskgpt.helpers.search.settings.MAX_SEARCH_RESULTS", 2)
     response: EnrichContextResponse = await enrich_context(test_request)
     assert response.sector_summary
 
@@ -182,6 +185,30 @@ async def test_enrich_context_tavili(test_request, mock_settings):
 @pytest.mark.asyncio
 async def test_enrich_context_duckduckgo(monkeypatch, test_request, mock_settings):
     monkeypatch.setattr("riskgpt.helpers.search.settings.SEARCH_PROVIDER", "duckduckgo")
+    monkeypatch.setattr("riskgpt.helpers.search.settings.INCLUDE_WIKIPEDIA", False)
+    monkeypatch.setattr("riskgpt.helpers.search.settings.MAX_SEARCH_RESULTS", 2)
+    response: EnrichContextResponse = await enrich_context(test_request)
+    assert response.sector_summary
+
+
+@pytest.mark.integration
+@pytest.mark.asyncio
+async def test_enrich_context_google(monkeypatch, test_request, mock_settings):
+    monkeypatch.setattr("riskgpt.helpers.search.settings.SEARCH_PROVIDER", "google")
+    monkeypatch.setattr("riskgpt.helpers.search.settings.INCLUDE_WIKIPEDIA", False)
+    monkeypatch.setattr("riskgpt.helpers.search.settings.MAX_SEARCH_RESULTS", 2)
+    response: EnrichContextResponse = await enrich_context(test_request)
+    assert response.sector_summary
+
+
+@pytest.mark.integration
+@pytest.mark.asyncio
+async def test_enrich_context_duckduckgo_and_wikipedia(
+    monkeypatch, test_request, mock_settings
+):
+    monkeypatch.setattr("riskgpt.helpers.search.settings.SEARCH_PROVIDER", "duckduckgo")
+    monkeypatch.setattr("riskgpt.helpers.search.settings.INCLUDE_WIKIPEDIA", True)
+    monkeypatch.setattr("riskgpt.helpers.search.settings.MAX_SEARCH_RESULTS", 2)
     response: EnrichContextResponse = await enrich_context(test_request)
     assert response.sector_summary
 

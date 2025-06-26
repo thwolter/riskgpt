@@ -19,7 +19,7 @@ class RiskGPTSettings(BaseSettings):
 
     # Search provider settings
     SEARCH_PROVIDER: Literal["duckduckgo", "google", "wikipedia", "tavily"] = Field(
-        default="duckduckgo"
+        default="tavily"
     )
     MAX_SEARCH_RESULTS: int = Field(default=3, ge=1, le=100)
     INCLUDE_WIKIPEDIA: bool = Field(default=False)

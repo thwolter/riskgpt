@@ -1,3 +1,4 @@
 /.env
 /dist/
 /site/
+/examples/explore.py
