@@ -22,7 +22,7 @@ jobs:
       - name: Install dependencies
         run: |
           pip install uv
-          uv pip install mkdocs mkdocs-material
+          uv pip install --system mkdocs mkdocs-material
 
       - name: Deploy to GitHub Pages
         run: |
