@@ -2,9 +2,9 @@ from typing import List
 from unittest.mock import patch
 
 import pytest
-from src.models.enums import TopicEnum
 
 from src.chains.keypoint_text import keypoint_text_chain
+from src.models.enums import TopicEnum
 from src.models.workflows.context import KeyPoint, KeyPointTextResponse
 
 

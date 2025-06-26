@@ -1,12 +1,12 @@
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
+
+from src.api import fetch_documents
 from src.models.base import ResponseInfo
 from src.models.chains.assessment import AssessmentResponse
 from src.models.chains.risk import IdentifiedRisk, Risk, RiskRequest, RiskResponse
 from src.models.common import BusinessContext
-
-from src.api import fetch_documents
 from src.workflows.risk_workflow import risk_workflow
 
 

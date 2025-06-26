@@ -9,14 +9,14 @@ from api import fetch_documents
 from chains.risk_assessment import risk_assessment_chain
 from chains.risk_identification import risk_identification_chain
 from langgraph.graph import END, StateGraph
-from src.models.base import ResponseInfo
-from src.models.chains.assessment import AssessmentRequest
-from src.models.chains.risk import RiskRequest, RiskResponse
-from src.models.common import BusinessContext
 from utils.search import search
 
 from src.config.settings import RiskGPTSettings
 from src.logger import logger
+from src.models.base import ResponseInfo
+from src.models.chains.assessment import AssessmentRequest
+from src.models.chains.risk import RiskRequest, RiskResponse
+from src.models.common import BusinessContext
 from src.utils.circuit_breaker import document_service_breaker, with_fallback
 
 

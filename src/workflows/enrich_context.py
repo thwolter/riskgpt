@@ -3,20 +3,18 @@ from __future__ import annotations
 from typing import Annotated, List, TypedDict, TypeVar
 
 from langgraph.graph import END, StateGraph, add_messages
+
+from src.chains.keypoint_text import keypoint_text_chain
+from src.models.base import ResponseInfo
 from src.models.enums import TopicEnum
 from src.models.utils.search import SearchRequest, SearchResponse, Source
 from src.models.workflows.context import (
+    ExternalContextRequest,
+    ExternalContextResponse,
     ExtractKeyPointsRequest,
     ExtractKeyPointsResponse,
     KeyPoint,
     KeyPointTextRequest,
-)
-
-from src.chains.keypoint_text import keypoint_text_chain
-from src.models.base import ResponseInfo
-from src.models.workflows.context import (
-    ExternalContextRequest,
-    ExternalContextResponse,
     KeyPointTextResponse,
 )
 from src.utils.extraction import extract_key_points
@@ -62,12 +60,12 @@ def topic_search(
         max_results = settings.MAX_SEARCH_RESULTS
 
     query = request.create_search_query()
-    request = SearchRequest(
+    search_request = SearchRequest(
         query=query,
         source_type=topic.value,
         max_results=max_results,
     )
-    search_response: SearchResponse = search(request)
+    search_response: SearchResponse = search(search_request)
 
     sources: List[Source] = state.get("sources", [])
     existing_urls = {source.url for source in sources}
@@ -179,9 +177,7 @@ def get_enrich_context_graph(request: ExternalContextRequest):
     async def summarize_key_points(state: State) -> State:
         """Summarize key points for a specific topic."""
 
-        kp_text_request = KeyPointTextRequest(
-            key_points=state.get("key_points", [])
-        )
+        kp_text_request = KeyPointTextRequest(key_points=state.get("key_points", []))
         response: KeyPointTextResponse = await keypoint_text_chain(kp_text_request)
 
         state["keypoint_text_response"] = response

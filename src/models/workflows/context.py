@@ -1,11 +1,11 @@
 from typing import List, Optional
 
-from src.models.enums import TopicEnum
-from src.models.utils.search import Source
 from pydantic import BaseModel
 
 from src.models.base import BaseResponse
 from src.models.common import BusinessContext
+from src.models.enums import TopicEnum
+from src.models.utils.search import Source
 
 
 class KeyPoint(BaseModel):

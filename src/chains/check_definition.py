@@ -1,12 +1,11 @@
 from langchain_core.output_parsers import PydanticOutputParser
 
+from src.chains.base import BaseChain
 from src.models.chains.definition_check import (
     DefinitionCheckRequest,
     DefinitionCheckResponse,
 )
 from src.utils.prompt_loader import load_prompt
-
-from src.chains.base import BaseChain
 
 
 async def check_definition_chain(

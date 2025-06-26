@@ -12,11 +12,11 @@ from langchain_community.utilities import (
 )
 from langchain_google_community import GoogleSearchAPIWrapper
 from langchain_tavily import TavilySearch
-from src.models.enums import TopicEnum
-from src.models.utils.search import SearchRequest, SearchResponse, SearchResult
 
 from src.config.settings import RiskGPTSettings
 from src.logger import logger
+from src.models.enums import TopicEnum
+from src.models.utils.search import SearchRequest, SearchResponse, SearchResult
 from src.utils.circuit_breaker import (
     duckduckgo_breaker,
     google_search_breaker,

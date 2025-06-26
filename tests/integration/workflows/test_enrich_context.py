@@ -1,7 +1,9 @@
 from unittest.mock import patch
 
 import pytest
+
 from src.models.base import ResponseInfo
+from src.models.common import BusinessContext
 from src.models.enums import TopicEnum
 from src.models.utils.search import SearchResponse, SearchResult
 from src.models.workflows.context import (
@@ -10,8 +12,6 @@ from src.models.workflows.context import (
     KeyPoint,
     KeyPointTextResponse,
 )
-
-from src.models.common import BusinessContext
 from src.workflows.enrich_context import enrich_context
 
 

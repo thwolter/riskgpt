@@ -13,6 +13,7 @@ To install the required dependencies:
 """
 
 from IPython.display import Image, display
+
 from src.models.common import BusinessContext
 from src.models.workflows.context import ExternalContextRequest
 from src.workflows.enrich_context import get_enrich_context_graph
@@ -38,7 +39,7 @@ try:
 except Exception as e:
     print(f"Could not visualize graph: {e}")
     print("Make sure you have graphviz installed.")
-    
+
     # Alternative: Save the graph as a file
     try:
         graph_png = graph.get_graph().draw_mermaid_png()

@@ -1,9 +1,8 @@
 from langchain_core.output_parsers import PydanticOutputParser
 
+from src.chains.base import BaseChain
 from src.models.chains.correlation import CorrelationTagRequest, CorrelationTagResponse
 from src.utils.prompt_loader import load_prompt
-
-from src.chains.base import BaseChain
 
 
 async def correlation_tags_chain(
