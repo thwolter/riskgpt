@@ -41,10 +41,13 @@ Documentation = "https://thwolter.github.io/riskgpt/"
 Source = "https://github.com/thwolter/riskgpt.git"
 Tracker = "https://github.com/thwolter/riskgpt/issues"
 
-[tool.setuptools]
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
 
 [tool.setuptools.packages.find]
-where = ["src"]
+where = ["."]
+include = ["riskgpt*"]
 
 [tool.ruff]
 line-length = 88
