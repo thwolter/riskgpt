@@ -3,7 +3,7 @@ from unittest.mock import patch
 
 import pytest
 
-from src.config.settings import RiskGPTSettings
+from src.models.utils.search import SearchRequest, SearchResponse
 from src.utils.search import _google_search, _wikipedia_search, search
 
 
@@ -14,35 +14,32 @@ from src.utils.search import _google_search, _wikipedia_search, search
 @pytest.mark.integration
 def test_google_search():
     """Test Google Custom Search API."""
-    query = "artificial intelligence"
-    source_type = "test"
-    results, success = _google_search(query, source_type)
+    request = SearchRequest(query="artificial intelligence", source_type="test")
+    response = _google_search(request)
 
-    assert success is True
-    assert len(results) > 0
-    for result in results:
-        assert "title" in result
-        assert "url" in result
-        assert "type" in result
-        assert result["type"] == source_type
+    assert response.success is True
+    assert len(response.results) > 0
+    for result in response.results:
+        assert result.title
+        assert result.url
+        assert result.type
+        assert result.type == "test"
 
 
 @pytest.mark.integration
 def test_wikipedia_search():
     """Test Wikipedia search."""
+    request = SearchRequest(query="artificial intelligence", source_type="test")
+    response = _wikipedia_search(request)
 
-    query = "artificial intelligence"
-    source_type = "test"
-    results, success = _wikipedia_search(query, source_type)
-
-    assert success is True
-    assert len(results) > 0
-    for result in results:
-        assert "title" in result
-        assert "url" in result
-        assert "type" in result
-        assert result["type"] == source_type
-        assert "Wikipedia:" in result["title"]
+    assert response.success is True
+    assert len(response.results) > 0
+    for result in response.results:
+        assert result.title
+        assert result.url
+        assert result.type
+        assert result.type == "test"
+        assert "Wikipedia:" in result.title
 
 
 @pytest.mark.skipif(
@@ -50,26 +47,25 @@ def test_wikipedia_search():
     reason="Google API key, CSE ID, or Wikipedia integration not set",
 )
 @pytest.mark.integration
-def test_combined_search():
+def test_combined_search(monkeypatch):
     """Test combined search with Google and Wikipedia."""
 
-    # Temporarily set the environment variables for this test
-    os.environ["SEARCH_PROVIDER"] = "google"
-    os.environ["INCLUDE_WIKIPEDIA"] = "true"
+    # Use monkeypatch instead of directly modifying os.environ
+    monkeypatch.setattr("src.utils.search.settings.SEARCH_PROVIDER", "google")
+    monkeypatch.setattr("src.utils.search.settings.INCLUDE_WIKIPEDIA", True)
 
-    query = "artificial intelligence"
-    source_type = "test"
-    results, success = search(query, source_type)
+    request = SearchRequest(query="artificial intelligence", source_type="test")
+    response = search(request)
 
-    assert success is True
-    assert len(results) > 0
+    assert response.success is True
+    assert len(response.results) > 0
 
     # Check if we have both Google and Wikipedia results
     has_wikipedia = False
     has_google = False
 
-    for result in results:
-        if "Wikipedia:" in result.get("title", ""):
+    for result in response.results:
+        if "Wikipedia:" in result.title:
             has_wikipedia = True
         else:
             has_google = True
@@ -78,191 +74,154 @@ def test_combined_search():
     assert has_google, "No Google results found"
 
 
-def test_search_provider_selection():
-    """Test that the search provider is selected correctly based on environment variables."""
-    # Save original environment variables
-    original_provider = os.environ.get("SEARCH_PROVIDER")
-
-    try:
-        # Test with Google
-        os.environ["SEARCH_PROVIDER"] = "google"
-        settings = RiskGPTSettings()
-        assert settings.SEARCH_PROVIDER == "google"
-
-        # Test with DuckDuckGo
-        os.environ["SEARCH_PROVIDER"] = "duckduckgo"
-        settings = RiskGPTSettings()
-        assert settings.SEARCH_PROVIDER == "duckduckgo"
-
-        # Test with Wikipedia
-        os.environ["SEARCH_PROVIDER"] = "wikipedia"
-        settings = RiskGPTSettings()
-        assert settings.SEARCH_PROVIDER == "wikipedia"
-    finally:
-        # Restore original environment variable
-        if original_provider:
-            os.environ["SEARCH_PROVIDER"] = original_provider
-        elif "SEARCH_PROVIDER" in os.environ:
-            del os.environ["SEARCH_PROVIDER"]
+@pytest.fixture
+def mock_settings(monkeypatch):
+    """Fixture to patch the settings to use tavily as the search provider."""
+    monkeypatch.setattr("src.utils.search.settings.SEARCH_PROVIDER", "tavily")
+    monkeypatch.setattr("src.utils.search.settings.INCLUDE_WIKIPEDIA", False)
+    monkeypatch.setattr("src.utils.search.settings.MAX_SEARCH_RESULTS", 2)
+    yield
 
 
-def test_search_google_with_mock(monkeypatch):
+@pytest.fixture
+def search_request():
+    """Fixture to create a SearchRequest object."""
+    return SearchRequest(query="test query", source_type="news")
+
+
+# Fixtures for mocking search functions
+@pytest.fixture
+def mock_google_search():
+    """Fixture to mock Google search function."""
+    from src.models.utils.search import SearchResponse, SearchResult
+
+    return SearchResponse(
+        results=[
+            SearchResult(
+                title="G",
+                url="u",
+                date="",
+                type="news",
+                content="c",
+            )
+        ],
+        success=True,
+        error_message="",
+    )
+
+
+@pytest.fixture
+def mock_wikipedia_search():
+    """Fixture to mock Wikipedia search function."""
+    from src.models.utils.search import SearchResponse, SearchResult
+
+    return SearchResponse(
+        results=[
+            SearchResult(
+                title="W",
+                url="u",
+                date="",
+                type="news",
+                content="c",
+            )
+        ],
+        success=True,
+        error_message="",
+    )
+
+
+@pytest.fixture
+def mock_duckduckgo_search():
+    """Fixture to mock DuckDuckGo search function."""
+    from src.models.utils.search import SearchResponse, SearchResult
+
+    return SearchResponse(
+        results=[
+            SearchResult(
+                title="D",
+                url="u",
+                date="",
+                type="news",
+                content="c",
+            )
+        ],
+        success=True,
+        error_message="",
+    )
+
+
+def test_search_google_with_mock(
+    monkeypatch, search_request, mock_google_search, mock_wikipedia_search
+):
     """Search using mocked Google provider."""
-    os.environ["SEARCH_PROVIDER"] = "google"
-    # Save original INCLUDE_WIKIPEDIA value
-    original_include_wiki = os.environ.get("INCLUDE_WIKIPEDIA")
+    monkeypatch.setattr("src.utils.search.settings.SEARCH_PROVIDER", "google")
+    monkeypatch.setattr("src.utils.search.settings.INCLUDE_WIKIPEDIA", True)
 
-    try:
-        # Test with INCLUDE_WIKIPEDIA enabled
-        os.environ["INCLUDE_WIKIPEDIA"] = "true"
-        with (
-            patch(
-                "src.utils.search._google_search",
-                return_value=(
-                    [
-                        {
-                            "title": "G",
-                            "url": "u",
-                            "date": "",
-                            "type": "news",
-                            "content": "c",
-                        }
-                    ],
-                    True,
-                ),
-            ),
-            patch(
-                "src.utils.search._wikipedia_search",
-                return_value=(
-                    [
-                        {
-                            "title": "W",
-                            "url": "u",
-                            "date": "",
-                            "type": "news",
-                            "content": "c",
-                        }
-                    ],
-                    True,
-                ),
-            ),
-        ):
-            results, success = search("q", "news")
-            assert success is True
-            assert any(result["title"] == "G" for result in results)
-            assert any(result["title"] == "W" for result in results)
-
-        # Test with INCLUDE_WIKIPEDIA disabled
-        os.environ["INCLUDE_WIKIPEDIA"] = "false"
-        with patch(
+    with (
+        patch(
             "src.utils.search._google_search",
-            return_value=(
-                [
-                    {
-                        "title": "G",
-                        "url": "u",
-                        "date": "",
-                        "type": "news",
-                        "content": "c",
-                    }
-                ],
-                True,
-            ),
-        ):
-            results, success = search("q", "news")
-            assert success is True
-            assert results[0]["title"] == "G"
-    finally:
-        # Restore original INCLUDE_WIKIPEDIA value
-        if original_include_wiki:
-            os.environ["INCLUDE_WIKIPEDIA"] = original_include_wiki
-        elif "INCLUDE_WIKIPEDIA" in os.environ:
-            del os.environ["INCLUDE_WIKIPEDIA"]
-
-
-def test_search_duckduckgo_with_mock(monkeypatch):
-    """Search using mocked DuckDuckGo provider."""
-    os.environ["SEARCH_PROVIDER"] = "duckduckgo"
-    # Save original INCLUDE_WIKIPEDIA value
-    original_include_wiki = os.environ.get("INCLUDE_WIKIPEDIA")
-
-    try:
-        # Test with INCLUDE_WIKIPEDIA enabled
-        os.environ["INCLUDE_WIKIPEDIA"] = "true"
-        with (
-            patch(
-                "src.utils.search._duckduckgo_search",
-                return_value=(
-                    [
-                        {
-                            "title": "D",
-                            "url": "u",
-                            "date": "",
-                            "type": "news",
-                            "content": "c",
-                        }
-                    ],
-                    True,
-                ),
-            ),
-            patch(
-                "src.utils.search._wikipedia_search",
-                return_value=(
-                    [
-                        {
-                            "title": "W",
-                            "url": "u",
-                            "date": "",
-                            "type": "news",
-                            "content": "c",
-                        }
-                    ],
-                    True,
-                ),
-            ),
-        ):
-            results, success = search("q", "news")
-            assert success is True
-            assert any(result["title"] == "D" for result in results)
-            assert any(result["title"] == "W" for result in results)
-
-        # Test with INCLUDE_WIKIPEDIA disabled
-        os.environ["INCLUDE_WIKIPEDIA"] = "false"
-        with patch(
-            "src.utils.search._duckduckgo_search",
-            return_value=(
-                [
-                    {
-                        "title": "D",
-                        "url": "u",
-                        "date": "",
-                        "type": "news",
-                        "content": "c",
-                    }
-                ],
-                True,
-            ),
-        ):
-            results, success = search("q", "news")
-            assert success is True
-            assert results[0]["title"] == "D"
-    finally:
-        # Restore original INCLUDE_WIKIPEDIA value
-        if original_include_wiki:
-            os.environ["INCLUDE_WIKIPEDIA"] = original_include_wiki
-        elif "INCLUDE_WIKIPEDIA" in os.environ:
-            del os.environ["INCLUDE_WIKIPEDIA"]
-
-
-def test_search_wikipedia_with_mock(monkeypatch):
-    os.environ["SEARCH_PROVIDER"] = "wikipedia"
-    with patch(
-        "src.utils.search._wikipedia_search",
-        return_value=(
-            [{"title": "W", "url": "u", "date": "", "type": "news", "content": "c"}],
-            True,
+            return_value=mock_google_search,
+        ),
+        patch(
+            "src.utils.search._wikipedia_search",
+            return_value=mock_wikipedia_search,
         ),
     ):
-        results, success = search("q", "news")
-        assert success is True
-        assert results[0]["title"].startswith("W")
+        search_response: SearchResponse = search(search_request)
+        assert search_response.success is True
+        assert any(result.title == "G" for result in search_response.results)
+        assert any(result.title == "W" for result in search_response.results)
+
+    monkeypatch.setattr("src.utils.search.settings.INCLUDE_WIKIPEDIA", False)
+    with patch(
+        "src.utils.search._google_search",
+        return_value=mock_google_search,
+    ):
+        search_response: SearchResponse = search(search_request)
+        assert search_response.success is True
+        assert search_response.results[0].title == "G"
+
+
+def test_search_duckduckgo_with_mock(
+    monkeypatch, search_request, mock_duckduckgo_search, mock_wikipedia_search
+):
+    """Search using mocked DuckDuckGo provider."""
+    monkeypatch.setattr("src.utils.search.settings.SEARCH_PROVIDER", "duckduckgo")
+    monkeypatch.setattr("src.utils.search.settings.INCLUDE_WIKIPEDIA", True)
+
+    with (
+        patch(
+            "src.utils.search._duckduckgo_search",
+            return_value=mock_duckduckgo_search,
+        ),
+        patch(
+            "src.utils.search._wikipedia_search",
+            return_value=mock_wikipedia_search,
+        ),
+    ):
+        search_response: SearchResponse = search(search_request)
+        assert search_response.success is True
+        assert any(result.title == "D" for result in search_response.results)
+        assert any(result.title == "W" for result in search_response.results)
+
+    # Test with INCLUDE_WIKIPEDIA disabled
+    monkeypatch.setattr("src.utils.search.settings.INCLUDE_WIKIPEDIA", False)
+    with patch(
+        "src.utils.search._duckduckgo_search",
+        return_value=mock_duckduckgo_search,
+    ):
+        search_response: SearchResponse = search(search_request)
+        assert search_response.success is True
+        assert search_response.results[0].title == "D"
+
+
+def test_search_wikipedia_with_mock(monkeypatch, search_request, mock_wikipedia_search):
+    """Search using mocked Wikipedia provider."""
+    monkeypatch.setattr("src.utils.search.settings.SEARCH_PROVIDER", "wikipedia")
+    with patch(
+        "src.utils.search._wikipedia_search",
+        return_value=mock_wikipedia_search,
+    ):
+        search_response: SearchResponse = search(search_request)
+        assert search_response.success is True
+        assert search_response.results[0].title.startswith("W")

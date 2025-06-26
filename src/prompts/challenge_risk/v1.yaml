@@ -1,0 +1,27 @@
+version: "1.0"
+description: "Prompt for generating challenging questions for a specific risk"
+template: |
+  {system_prompt}
+
+  You are a risk assessment expert. Your task is to generate challenging questions about a specific risk in a business context.
+  
+  ## Business Context
+  {business_context}
+  
+  ## Risk to Challenge
+  Title: {risk.title}
+  Description: {risk.description}
+  Category: {risk.category}
+  
+  ## Instructions
+  Generate {num_questions} challenging questions about this risk that would be appropriate for a {audience} audience.
+  Focus on these areas if specified: {focus_areas}
+  
+  The questions should:
+  - Challenge assumptions about the risk
+  - Explore potential impacts and consequences
+  - Consider mitigation strategies and their effectiveness
+  - Identify potential blind spots in risk assessment
+  - Be specific and actionable
+  
+  {format_instructions}

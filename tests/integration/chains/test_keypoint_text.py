@@ -5,7 +5,11 @@ import pytest
 
 from src.chains.keypoint_text import keypoint_text_chain
 from src.models.enums import TopicEnum
-from src.models.workflows.context import KeyPoint, KeyPointTextResponse
+from src.models.workflows.context import (
+    KeyPoint,
+    KeyPointTextRequest,
+    KeyPointTextResponse,
+)
 
 
 @pytest.fixture
@@ -71,6 +75,7 @@ async def test_keypoint_text_chain_with_mock(test_key_points):
         return expected
 
     with patch("src.chains.base.BaseChain.invoke", side_effect=mock_invoke):
-        resp = await keypoint_text_chain(test_key_points)
+        request = KeyPointTextRequest(key_points=test_key_points)
+        resp = await keypoint_text_chain(request)
         assert resp.text == resp.text
         assert resp.references == expected.references
