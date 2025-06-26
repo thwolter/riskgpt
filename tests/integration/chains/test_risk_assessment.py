@@ -2,12 +2,9 @@ from unittest.mock import patch
 
 import pytest
 
-from src import (
-    AssessmentRequest,
-    AssessmentResponse,
-    BusinessContext,
-    risk_assessment_chain,
-)
+from src.riskgpt.chains.risk_assessment import risk_assessment_chain
+from src.riskgpt.models.chains.assessment import AssessmentRequest, AssessmentResponse
+from src.riskgpt.models.common import BusinessContext
 
 
 @pytest.fixture
@@ -42,7 +39,7 @@ async def test_get_assessment_chain_with_mock(test_request):
     async def mock_invoke(*args, **kwargs):
         return expected
 
-    with patch("src.chains.base.BaseChain.invoke", side_effect=mock_invoke):
+    with patch("src.riskgpt.chains.base.BaseChain.invoke", side_effect=mock_invoke):
         resp = await risk_assessment_chain(test_request)
         assert resp.impact == expected.impact
         assert resp.evidence == expected.evidence

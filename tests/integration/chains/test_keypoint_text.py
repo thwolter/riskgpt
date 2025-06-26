@@ -3,12 +3,12 @@ from unittest.mock import patch
 
 import pytest
 
-from src import (
+from src.riskgpt.chains.keypoint_text import keypoint_text_chain
+from src.riskgpt.models.enums import TopicEnum
+from src.riskgpt.models.workflows.context import (
     KeyPoint,
     KeyPointTextRequest,
     KeyPointTextResponse,
-    TopicEnum,
-    keypoint_text_chain,
 )
 
 
@@ -74,7 +74,7 @@ async def test_keypoint_text_chain_with_mock(test_key_points):
     async def mock_invoke(*args, **kwargs):
         return expected
 
-    with patch("src.chains.base.BaseChain.invoke", side_effect=mock_invoke):
+    with patch("src.riskgpt.chains.base.BaseChain.invoke", side_effect=mock_invoke):
         request = KeyPointTextRequest(key_points=test_key_points)
         resp = await keypoint_text_chain(request)
         assert resp.text == resp.text

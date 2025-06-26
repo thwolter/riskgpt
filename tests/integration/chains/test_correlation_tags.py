@@ -2,14 +2,14 @@ from unittest.mock import patch
 
 import pytest
 
-from src import (
-    BusinessContext,
+from src.riskgpt.chains.correlation_tags import correlation_tags_chain
+from src.riskgpt.models.chains.correlation import (
     CorrelationTag,
     CorrelationTagRequest,
     CorrelationTagResponse,
-    Risk,
-    correlation_tags_chain,
 )
+from src.riskgpt.models.chains.risk import Risk
+from src.riskgpt.models.common import BusinessContext
 
 
 @pytest.fixture
@@ -66,6 +66,6 @@ async def test_get_correlation_tags_chain_with_mock(test_request):
     async def mock_invoke(*args, **kwargs):
         return expected
 
-    with patch("src.chains.base.BaseChain.invoke", side_effect=mock_invoke):
+    with patch("src.riskgpt.chains.base.BaseChain.invoke", side_effect=mock_invoke):
         resp = await correlation_tags_chain(test_request)
         assert resp.correlation_tags == expected.correlation_tags

@@ -84,7 +84,7 @@ def test_fetch_documents():
     assert isinstance(docs[0], str)
 
 
-@patch("src.workflows.risk_workflow.fetch_documents")
+@patch("src.riskgpt.workflows.risk_workflow.fetch_documents")
 @pytest.mark.integration
 @pytest.mark.asyncio
 async def test_risk_workflow_with_mocked_document_service(mock_fetch, test_request):
@@ -107,7 +107,7 @@ async def test_risk_workflow_with_mocked_document_service(mock_fetch, test_reque
     assert "mock-doc-003" in response.document_refs
 
 
-@patch("src.workflows.risk_workflow.search_context")
+@patch("src.riskgpt.workflows.risk_workflow.search_context")
 @pytest.mark.integration
 @pytest.mark.asyncio
 async def test_risk_workflow_with_search(mock_search, test_request):
@@ -213,12 +213,12 @@ async def test_risk_workflow_with_mock(monkeypatch, test_request):
         ),
         patch("src.api.fetch_documents", return_value=["doc1"]),
         patch(
-            "src.chains.base.BaseChain.invoke",
+            "src.riskgpt.chains.base.BaseChain.invoke",
             new_callable=AsyncMock,
             side_effect=[risk_response, assessment_response],
         ),
         patch(
-            "src.workflows.risk_workflow._build_risk_workflow_graph",
+            "src.riskgpt.workflows.risk_workflow._build_risk_workflow_graph",
             return_value=mock_graph,
         ),
     ):

@@ -2,14 +2,10 @@ from unittest.mock import patch
 
 import pytest
 
-from src import (
-    BusinessContext,
-    DriverRequest,
-    DriverResponse,
-    Risk,
-    RiskDriver,
-    risk_drivers_chain,
-)
+from src.riskgpt.chains.risk_drivers import risk_drivers_chain
+from src.riskgpt.models.chains.drivers import DriverRequest, DriverResponse, RiskDriver
+from src.riskgpt.models.chains.risk import Risk
+from src.riskgpt.models.common import BusinessContext
 
 
 @pytest.fixture
@@ -58,6 +54,6 @@ async def test_get_drivers_chain_with_mock(test_request):
     async def mock_invoke(*args, **kwargs):
         return expected
 
-    with patch("src.chains.base.BaseChain.invoke", side_effect=mock_invoke):
+    with patch("src.riskgpt.chains.base.BaseChain.invoke", side_effect=mock_invoke):
         resp = await risk_drivers_chain(test_request)
         assert resp.drivers == expected.drivers

@@ -1,6 +1,6 @@
 from langchain_core.output_parsers import PydanticOutputParser
 
-from src.riskgpt.chains import BaseChain
+from src.riskgpt.chains.base import BaseChain
 from src.riskgpt.models.workflows.context import (
     ExtractKeyPointsRequest,
     ExtractKeyPointsResponse,

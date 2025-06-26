@@ -4,7 +4,7 @@ from typing import Annotated, List, TypedDict, TypeVar
 
 from langgraph.graph import END, StateGraph, add_messages
 
-from src.riskgpt.chains import keypoint_text_chain
+from src.riskgpt.chains.keypoint_text import keypoint_text_chain
 from src.riskgpt.models.base import ResponseInfo
 from src.riskgpt.models.enums import TopicEnum
 from src.riskgpt.models.utils.search import SearchRequest, SearchResponse, Source

@@ -42,7 +42,9 @@ from types import SimpleNamespace
 import pytest
 from langchain_core.output_parsers import BaseOutputParser
 
-from src import BaseChain, CategoryResponse, configure_logging
+from src.riskgpt.chains.base import BaseChain
+from src.riskgpt.logger import configure_logging
+from src.riskgpt.models.chains.categorization import CategoryResponse
 
 
 class DummyParser(BaseOutputParser):

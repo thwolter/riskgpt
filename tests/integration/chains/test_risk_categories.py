@@ -2,12 +2,9 @@ from unittest.mock import AsyncMock, patch
 
 import pytest
 
-from src import (
-    BusinessContext,
-    CategoryRequest,
-    CategoryResponse,
-    risk_categories_chain,
-)
+from src.riskgpt.chains.risk_categories import risk_categories_chain
+from src.riskgpt.models.chains.categorization import CategoryRequest, CategoryResponse
+from src.riskgpt.models.common import BusinessContext
 
 
 @pytest.fixture
@@ -16,7 +13,6 @@ def test_request():
     return CategoryRequest(
         business_context=BusinessContext(
             project_id="123",
-            project_name="CRM Implementation",
             project_description="Implementierung eines neuen CRM-Systems",
             domain_knowledge="Das Unternehmen ist im B2B-Bereich tätig.",
         ),
@@ -38,7 +34,7 @@ async def test_get_categories_chain_with_mock(test_request):
         categories=["Technical", "Operational"],
     )
     with patch(
-        "src.chains.base.BaseChain.invoke",
+        "src.riskgpt.chains.base.BaseChain.invoke",
         new_callable=AsyncMock,
         return_value=expected,
     ):

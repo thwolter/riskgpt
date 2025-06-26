@@ -5,7 +5,10 @@ import pytest
 from langchain_community.callbacks import get_openai_callback
 from langchain_core.output_parsers import BaseOutputParser
 
-from src import BaseChain, CategoryResponse, ResponseInfo, configure_logging
+from src.riskgpt.chains.base import BaseChain
+from src.riskgpt.logger import configure_logging
+from src.riskgpt.models.base import ResponseInfo
+from src.riskgpt.models.chains.categorization import CategoryResponse
 
 logger = logging.getLogger("src")
 
