@@ -69,7 +69,7 @@ class ExtractKeyPointsResponse(BaseResponse):
         }
 
 
-class ExternalContextRequest(BaseModel):
+class EnrichContextRequest(BaseModel):
     """Input model for external context enrichment."""
 
     business_context: BusinessContext
@@ -82,7 +82,7 @@ class ExternalContextRequest(BaseModel):
         return f"{self.business_context.project_description} {keywords}".strip()
 
 
-class ExternalContextResponse(BaseResponse):
+class EnrichContextResponse(BaseResponse):
     """Output model containing summarised external information."""
 
     sector_summary: str

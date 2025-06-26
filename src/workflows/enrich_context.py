@@ -9,8 +9,8 @@ from src.models.base import ResponseInfo
 from src.models.enums import TopicEnum
 from src.models.utils.search import SearchRequest, SearchResponse, Source
 from src.models.workflows.context import (
-    ExternalContextRequest,
-    ExternalContextResponse,
+    EnrichContextRequest,
+    EnrichContextResponse,
     ExtractKeyPointsRequest,
     ExtractKeyPointsResponse,
     KeyPoint,
@@ -47,12 +47,12 @@ class State(TypedDict):
 
     search_failed: bool
     keypoint_text_response: KeyPointTextResponse
-    response: ExternalContextResponse
+    response: EnrichContextResponse
 
 
 def topic_search(
     state: State,
-    request: ExternalContextRequest,
+    request: EnrichContextRequest,
     topic: TopicEnum,
     max_results: int | None = None,
 ) -> State:
@@ -120,7 +120,7 @@ def aggregate_response_info(state):
     )
 
 
-def get_enrich_context_graph(request: ExternalContextRequest):
+def get_enrich_context_graph(request: EnrichContextRequest):
     """
     Returns the uncompiled graph for visualization purposes.
 
@@ -207,7 +207,7 @@ def get_enrich_context_graph(request: ExternalContextRequest):
                 f"Review source: {s.title} ({s.url})" for s in sorted_sources[:2]
             ]
 
-        response = ExternalContextResponse(
+        response = EnrichContextResponse(
             sector_summary=summary,
             workshop_recommendations=recommendation if recommendation else [],
             full_report=full_report,
@@ -258,13 +258,13 @@ def get_enrich_context_graph(request: ExternalContextRequest):
     return graph
 
 
-def _build_graph(request: ExternalContextRequest):
+def _build_graph(request: EnrichContextRequest):
     return get_enrich_context_graph(request).compile()
 
 
 async def enrich_context(
-    request: ExternalContextRequest,
-) -> ExternalContextResponse:
+    request: EnrichContextRequest,
+) -> EnrichContextResponse:
     """Run the external context enrichment workflow asynchronously."""
 
     app = _build_graph(request)

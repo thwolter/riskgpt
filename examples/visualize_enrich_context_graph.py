@@ -15,11 +15,11 @@ To install the required dependencies:
 from IPython.display import Image, display
 
 from src.models.common import BusinessContext
-from src.models.workflows.context import ExternalContextRequest
+from src.models.workflows.context import EnrichContextRequest
 from src.workflows.enrich_context import get_enrich_context_graph
 
 # Create a sample request
-request = ExternalContextRequest(
+request = EnrichContextRequest(
     business_context=BusinessContext(
         project_id="Sample Project",
         project_description="A sample project for visualization",

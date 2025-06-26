@@ -7,7 +7,7 @@ from src.models.common import BusinessContext
 from src.models.enums import TopicEnum
 from src.models.utils.search import SearchResponse, SearchResult
 from src.models.workflows.context import (
-    ExternalContextRequest,
+    EnrichContextRequest,
     ExtractKeyPointsResponse,
     KeyPoint,
     KeyPointTextResponse,
@@ -18,7 +18,7 @@ from src.workflows.enrich_context import enrich_context
 @pytest.fixture
 def test_request():
     """Fixture to create a sample ExternalContextRequest."""
-    return ExternalContextRequest(
+    return EnrichContextRequest(
         business_context=BusinessContext(
             project_id="AI-Driven Risk Management",
             project_description="A project focused on leveraging AI for risk registration and management.",
