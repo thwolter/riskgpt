@@ -9,10 +9,9 @@ from __future__ import annotations
 
 from typing import List
 
-from src.riskgpt import logger
-from src import BusinessContext
-from src import SearchRequest, SearchResponse
+from src import BusinessContext, SearchRequest, SearchResponse
 from src import search as _search
+from src.riskgpt import logger
 
 
 def search_context(search_request: SearchRequest) -> SearchResponse:

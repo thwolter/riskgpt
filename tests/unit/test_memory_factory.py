@@ -5,8 +5,7 @@ sys.path.insert(0, str(pathlib.Path(__file__).resolve().parents[1]))
 
 from langchain.memory import ConversationBufferMemory
 
-from src import RiskGPTSettings
-from src import get_memory, register_memory_backend
+from src import RiskGPTSettings, get_memory, register_memory_backend
 
 
 def test_get_memory_buffer():

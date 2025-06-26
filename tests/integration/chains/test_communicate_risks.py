@@ -2,11 +2,15 @@ from unittest.mock import patch
 
 import pytest
 
-from src import communicate_risks_chain
-from src import CommunicationRequest, CommunicationResponse
-from src import Risk
-from src import BusinessContext
-from src import AudienceEnum, LanguageEnum
+from src import (
+    AudienceEnum,
+    BusinessContext,
+    CommunicationRequest,
+    CommunicationResponse,
+    LanguageEnum,
+    Risk,
+    communicate_risks_chain,
+)
 
 
 @pytest.fixture

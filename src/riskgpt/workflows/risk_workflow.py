@@ -13,10 +13,10 @@ from utils.search import search
 
 from src.riskgpt.config.settings import RiskGPTSettings
 from src.riskgpt.logger import logger
-from src.riskgpt.models.base import ResponseInfo
-from src.riskgpt.models.chains.assessment import AssessmentRequest
-from src.riskgpt.models.chains import RiskRequest, RiskResponse
 from src.riskgpt.models import BusinessContext
+from src.riskgpt.models.base import ResponseInfo
+from src.riskgpt.models.chains import RiskRequest, RiskResponse
+from src.riskgpt.models.chains.assessment import AssessmentRequest
 from src.riskgpt.utils.circuit_breaker import document_service_breaker, with_fallback
 
 

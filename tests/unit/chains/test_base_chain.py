@@ -42,9 +42,7 @@ from types import SimpleNamespace
 import pytest
 from langchain_core.output_parsers import BaseOutputParser
 
-from src import BaseChain
-from src import configure_logging
-from src import CategoryResponse
+from src import BaseChain, CategoryResponse, configure_logging
 
 
 class DummyParser(BaseOutputParser):

@@ -2,15 +2,15 @@ from unittest.mock import patch
 
 import pytest
 
-from src import risk_mitigations_chain
-from src import RiskDriver
 from src import (
+    BusinessContext,
     Mitigation,
     MitigationRequest,
     MitigationResponse,
+    Risk,
+    RiskDriver,
+    risk_mitigations_chain,
 )
-from src import Risk
-from src import BusinessContext
 
 
 @pytest.fixture

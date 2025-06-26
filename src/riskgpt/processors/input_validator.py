@@ -1,9 +1,8 @@
 from pydantic import ValidationError
 
+from src.riskgpt.models.chains import MitigationRequest, RiskRequest
 from src.riskgpt.models.chains.assessment import AssessmentRequest
 from src.riskgpt.models.chains.categorization import CategoryRequest
-from src.riskgpt.models.chains import MitigationRequest
-from src.riskgpt.models.chains import RiskRequest
 
 
 def validate_category_request(data: dict) -> CategoryRequest:

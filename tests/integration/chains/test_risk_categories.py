@@ -2,9 +2,12 @@ from unittest.mock import AsyncMock, patch
 
 import pytest
 
-from src import risk_categories_chain
-from src import CategoryRequest, CategoryResponse
-from src import BusinessContext
+from src import (
+    BusinessContext,
+    CategoryRequest,
+    CategoryResponse,
+    risk_categories_chain,
+)
 
 
 @pytest.fixture

@@ -2,13 +2,13 @@ from unittest.mock import AsyncMock, patch
 
 import pytest
 
-from src import challenge_questions_chain
 from src import (
+    AudienceEnum,
+    BusinessContext,
     ChallengeQuestionsRequest,
     ChallengeQuestionsResponse,
+    challenge_questions_chain,
 )
-from src import BusinessContext
-from src import AudienceEnum
 
 
 @pytest.fixture

@@ -2,10 +2,10 @@ from unittest.mock import patch
 
 import pytest
 
-from src import check_definition_chain
 from src import (
     DefinitionCheckRequest,
     DefinitionCheckResponse,
+    check_definition_chain,
 )
 
 

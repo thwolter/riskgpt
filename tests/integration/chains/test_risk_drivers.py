@@ -2,10 +2,14 @@ from unittest.mock import patch
 
 import pytest
 
-from src import risk_drivers_chain
-from src import DriverRequest, DriverResponse, RiskDriver
-from src import Risk
-from src import BusinessContext
+from src import (
+    BusinessContext,
+    DriverRequest,
+    DriverResponse,
+    Risk,
+    RiskDriver,
+    risk_drivers_chain,
+)
 
 
 @pytest.fixture

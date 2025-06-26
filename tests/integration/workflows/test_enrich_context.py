@@ -2,17 +2,18 @@ from unittest.mock import patch
 
 import pytest
 
-from src import ResponseInfo
-from src import BusinessContext
-from src import TopicEnum
-from src import SearchResponse, SearchResult
 from src import (
+    BusinessContext,
     EnrichContextRequest,
     ExtractKeyPointsResponse,
     KeyPoint,
     KeyPointTextResponse,
+    ResponseInfo,
+    SearchResponse,
+    SearchResult,
+    TopicEnum,
+    enrich_context,
 )
-from src import enrich_context
 
 
 @pytest.fixture

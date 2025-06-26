@@ -3,8 +3,7 @@ from unittest.mock import patch
 
 import pytest
 
-from src import SearchRequest, SearchResponse
-from src import _google_search, _wikipedia_search, search
+from src import SearchRequest, SearchResponse, _google_search, _wikipedia_search, search
 
 
 @pytest.mark.skipif(

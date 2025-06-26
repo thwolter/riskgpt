@@ -2,14 +2,14 @@ from unittest.mock import patch
 
 import pytest
 
-from src import opportunities_chain
 from src import (
+    BusinessContext,
     Opportunity,
     OpportunityRequest,
     OpportunityResponse,
+    Risk,
+    opportunities_chain,
 )
-from src import Risk
-from src import BusinessContext
 
 
 @pytest.fixture

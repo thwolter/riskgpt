@@ -1,7 +1,10 @@
 from langchain_core.output_parsers import PydanticOutputParser
 
 from src.riskgpt.chains.base import BaseChain
-from src.riskgpt.models.workflows.context import KeyPointTextRequest, KeyPointTextResponse
+from src.riskgpt.models.workflows.context import (
+    KeyPointTextRequest,
+    KeyPointTextResponse,
+)
 from src.riskgpt.utils.prompt_loader import load_prompt
 
 

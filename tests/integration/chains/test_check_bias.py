@@ -1,8 +1,6 @@
 import pytest
 
-from src import check_bias_chain
-from src import BiasCheckRequest
-from src import BusinessContext
+from src import BiasCheckRequest, BusinessContext, check_bias_chain
 
 
 @pytest.mark.asyncio

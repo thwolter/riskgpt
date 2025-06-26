@@ -2,14 +2,14 @@ from unittest.mock import patch
 
 import pytest
 
-from src import correlation_tags_chain
 from src import (
+    BusinessContext,
     CorrelationTag,
     CorrelationTagRequest,
     CorrelationTagResponse,
+    Risk,
+    correlation_tags_chain,
 )
-from src import Risk
-from src import BusinessContext
 
 
 @pytest.fixture

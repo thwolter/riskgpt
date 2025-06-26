@@ -3,12 +3,12 @@ from unittest.mock import patch
 
 import pytest
 
-from src import keypoint_text_chain
-from src import TopicEnum
 from src import (
     KeyPoint,
     KeyPointTextRequest,
     KeyPointTextResponse,
+    TopicEnum,
+    keypoint_text_chain,
 )
 
 

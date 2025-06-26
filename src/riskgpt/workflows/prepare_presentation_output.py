@@ -13,14 +13,22 @@ from langgraph.graph import END, StateGraph
 from src.riskgpt.config.settings import RiskGPTSettings
 from src.riskgpt.logger import logger
 from src.riskgpt.models.base import ResponseInfo
+from src.riskgpt.models.chains import (
+    CommunicationRequest,
+    CorrelationTag,
+    CorrelationTagRequest,
+    Mitigation,
+    MitigationRequest,
+    Risk,
+    RiskRequest,
+)
 from src.riskgpt.models.chains.assessment import AssessmentRequest
-from src.riskgpt.models.chains import CommunicationRequest
-from src.riskgpt.models.chains import CorrelationTag, CorrelationTagRequest
 from src.riskgpt.models.chains.drivers import DriverRequest, RiskDriver
-from src.riskgpt.models.chains import Mitigation, MitigationRequest
-from src.riskgpt.models.chains import Risk, RiskRequest
 from src.riskgpt.models.enums import AudienceEnum
-from src.riskgpt.models.workflows.presentation import PresentationRequest, PresentationResponse
+from src.riskgpt.models.workflows.presentation import (
+    PresentationRequest,
+    PresentationResponse,
+)
 
 settings = RiskGPTSettings()
 

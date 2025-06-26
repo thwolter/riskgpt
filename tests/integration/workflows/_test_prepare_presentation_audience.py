@@ -2,11 +2,15 @@ import os
 
 import pytest
 
-from src import ResponseInfo
-from src import BusinessContext
-from src import AudienceEnum, LanguageEnum
-from src import PresentationRequest, PresentationResponse
-from src import prepare_presentation_output
+from src import (
+    AudienceEnum,
+    BusinessContext,
+    LanguageEnum,
+    PresentationRequest,
+    PresentationResponse,
+    ResponseInfo,
+    prepare_presentation_output,
+)
 
 audiences = [
     AudienceEnum.executive,

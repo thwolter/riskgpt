@@ -2,12 +2,17 @@ from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 
-from src import fetch_documents
-from src import ResponseInfo
-from src import AssessmentResponse
-from src import IdentifiedRisk, Risk, RiskRequest, RiskResponse
-from src import BusinessContext
-from src import risk_workflow
+from src import (
+    AssessmentResponse,
+    BusinessContext,
+    IdentifiedRisk,
+    ResponseInfo,
+    Risk,
+    RiskRequest,
+    RiskResponse,
+    fetch_documents,
+    risk_workflow,
+)
 
 
 @pytest.fixture

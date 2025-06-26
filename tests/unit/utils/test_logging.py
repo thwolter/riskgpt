@@ -1,7 +1,6 @@
 import logging
 
-from src import configure_logging
-from src import logger
+from src import configure_logging, logger
 
 
 def test_configure_logging_adds_handler():
