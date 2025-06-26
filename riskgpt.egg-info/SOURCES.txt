@@ -1,8 +1,0 @@
-LICENSE
-README.md
-pyproject.toml
-riskgpt.egg-info/PKG-INFO
-riskgpt.egg-info/SOURCES.txt
-riskgpt.egg-info/dependency_links.txt
-riskgpt.egg-info/requires.txt
-riskgpt.egg-info/top_level.txt

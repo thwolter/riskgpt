@@ -8,16 +8,15 @@ import requests
 from api import fetch_documents
 from chains.risk_assessment import risk_assessment_chain
 from chains.risk_identification import risk_identification_chain
+from config.settings import RiskGPTSettings
+from helpers.circuit_breaker import document_service_breaker, with_fallback
+from helpers.search import search
 from langgraph.graph import END, StateGraph
-from utils.search import search
-
-from src.riskgpt.config.settings import RiskGPTSettings
-from src.riskgpt.logger import logger
-from src.riskgpt.models import BusinessContext
-from src.riskgpt.models.base import ResponseInfo
-from src.riskgpt.models.chains import RiskRequest, RiskResponse
-from src.riskgpt.models.chains.assessment import AssessmentRequest
-from src.riskgpt.utils.circuit_breaker import document_service_breaker, with_fallback
+from logger import logger
+from models import BusinessContext
+from models.base import ResponseInfo
+from models.chains import RiskRequest, RiskResponse
+from models.chains.assessment import AssessmentRequest
 
 
 def _documents_fallback(context: BusinessContext) -> List[str]:

@@ -6,12 +6,11 @@ This module contains models for the communicate_risks chain.
 
 from typing import List, Optional
 
+from models.base import BaseRequest, BaseResponse
+from models.chains.risk import Risk
+from models.common import BusinessContext
+from models.enums import AudienceEnum
 from pydantic import ConfigDict, Field
-
-from src.riskgpt.models.base import BaseRequest, BaseResponse
-from src.riskgpt.models.chains.risk import Risk
-from src.riskgpt.models.common import BusinessContext
-from src.riskgpt.models.enums import AudienceEnum
 
 
 class CommunicationRequest(BaseRequest):

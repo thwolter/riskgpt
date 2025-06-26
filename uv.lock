@@ -1555,8 +1555,8 @@ wheels = [
 
 [[package]]
 name = "riskgpt"
-version = "0.1.5"
-source = { virtual = "." }
+version = "0.1.0"
+source = { editable = "." }
 dependencies = [
     { name = "duckduckgo-search" },
     { name = "google-api-python-client" },

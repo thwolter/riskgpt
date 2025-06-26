@@ -9,19 +9,20 @@ from __future__ import annotations
 
 from typing import List
 
-from src import BusinessContext, SearchRequest, SearchResponse
-from src import search as _search
-from src.riskgpt import logger
+import logger
+from helpers.search import search
+from models.common import BusinessContext
+from models.utils.search import SearchRequest, SearchResponse
 
 
 def search_context(search_request: SearchRequest) -> SearchResponse:
     """Search for contextual information using the configured provider.
 
-    This is a simple wrapper around :func:`src.utils.search.search` that
+    This is a simple wrapper around :func:`src.helpers.search.search` that
     can be used directly in applications and workflows.
     """
 
-    return _search(search_request)
+    return search(search_request)
 
 
 def fetch_documents(context: BusinessContext) -> List[str]:

@@ -1,15 +1,14 @@
 from unittest.mock import patch
 
 import pytest
-
-from src.riskgpt.chains.risk_indicators import risk_indicators_chain
-from src.riskgpt.models.chains.monitoring import (
+from chains.risk_indicators import risk_indicators_chain
+from models.chains.monitoring import (
     RiskIndicator,
     RiskIndicatorRequest,
     RiskIndicatorResponse,
 )
-from src.riskgpt.models.chains.risk import Risk
-from src.riskgpt.models.common import BusinessContext
+from models.chains.risk import Risk
+from models.common import BusinessContext
 
 
 @pytest.fixture
@@ -53,6 +52,6 @@ async def test_get_monitoring_chain_with_mock(test_request):
     async def mock_invoke(*args, **kwargs):
         return expected
 
-    with patch("src.riskgpt.chains.base.BaseChain.invoke", side_effect=mock_invoke):
+    with patch("chains.base.BaseChain.invoke", side_effect=mock_invoke):
         resp = await risk_indicators_chain(test_request)
         assert resp.indicators == expected.indicators

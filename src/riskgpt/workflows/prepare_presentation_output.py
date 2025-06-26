@@ -8,12 +8,11 @@ from chains.risk_assessment import risk_assessment_chain
 from chains.risk_drivers import risk_drivers_chain
 from chains.risk_identification import risk_identification_chain
 from chains.risk_mitigations import risk_mitigations_chain
+from config.settings import RiskGPTSettings
 from langgraph.graph import END, StateGraph
-
-from src.riskgpt.config.settings import RiskGPTSettings
-from src.riskgpt.logger import logger
-from src.riskgpt.models.base import ResponseInfo
-from src.riskgpt.models.chains import (
+from logger import logger
+from models.base import ResponseInfo
+from models.chains import (
     CommunicationRequest,
     CorrelationTag,
     CorrelationTagRequest,
@@ -22,10 +21,10 @@ from src.riskgpt.models.chains import (
     Risk,
     RiskRequest,
 )
-from src.riskgpt.models.chains.assessment import AssessmentRequest
-from src.riskgpt.models.chains.drivers import DriverRequest, RiskDriver
-from src.riskgpt.models.enums import AudienceEnum
-from src.riskgpt.models.workflows.presentation import (
+from models.chains.assessment import AssessmentRequest
+from models.chains.drivers import DriverRequest, RiskDriver
+from models.enums import AudienceEnum
+from models.workflows.presentation import (
     PresentationRequest,
     PresentationResponse,
 )

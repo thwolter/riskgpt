@@ -1,11 +1,10 @@
+from chains.base import BaseChain
+from helpers.prompt_loader import load_prompt
 from langchain_core.output_parsers import PydanticOutputParser
-
-from src.riskgpt.chains.base import BaseChain
-from src.riskgpt.models.chains.definition_check import (
+from models.chains.definition_check import (
     DefinitionCheckRequest,
     DefinitionCheckResponse,
 )
-from src.riskgpt.utils.prompt_loader import load_prompt
 
 
 async def check_definition_chain(

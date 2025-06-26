@@ -1,11 +1,10 @@
 from typing import List, Optional
 
+from models.base import BaseResponse
+from models.chains.risk import Risk
+from models.common import BusinessContext
+from models.enums import AudienceEnum
 from pydantic import BaseModel, Field
-
-from src.riskgpt.models.base import BaseResponse
-from src.riskgpt.models.chains.risk import Risk
-from src.riskgpt.models.common import BusinessContext
-from src.riskgpt.models.enums import AudienceEnum
 
 
 class ChallengeQuestionsRequest(BaseModel):

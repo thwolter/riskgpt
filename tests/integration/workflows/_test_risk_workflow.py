@@ -1,18 +1,12 @@
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
-
-from src import (
-    AssessmentResponse,
-    BusinessContext,
-    IdentifiedRisk,
-    ResponseInfo,
-    Risk,
-    RiskRequest,
-    RiskResponse,
-    fetch_documents,
-    risk_workflow,
-)
+from api import fetch_documents
+from models.base import ResponseInfo
+from models.chains.assessment import AssessmentResponse
+from models.chains.risk import IdentifiedRisk, Risk, RiskRequest, RiskResponse
+from models.common import BusinessContext
+from workflows.risk_workflow import risk_workflow
 
 
 @pytest.fixture
@@ -84,7 +78,7 @@ def test_fetch_documents():
     assert isinstance(docs[0], str)
 
 
-@patch("src.riskgpt.workflows.risk_workflow.fetch_documents")
+@patch("workflows.risk_workflow.fetch_documents")
 @pytest.mark.integration
 @pytest.mark.asyncio
 async def test_risk_workflow_with_mocked_document_service(mock_fetch, test_request):
@@ -107,7 +101,7 @@ async def test_risk_workflow_with_mocked_document_service(mock_fetch, test_reque
     assert "mock-doc-003" in response.document_refs
 
 
-@patch("src.riskgpt.workflows.risk_workflow.search_context")
+@patch("workflows.risk_workflow.search_context")
 @pytest.mark.integration
 @pytest.mark.asyncio
 async def test_risk_workflow_with_search(mock_search, test_request):
@@ -213,12 +207,12 @@ async def test_risk_workflow_with_mock(monkeypatch, test_request):
         ),
         patch("src.api.fetch_documents", return_value=["doc1"]),
         patch(
-            "src.riskgpt.chains.base.BaseChain.invoke",
+            "chains.base.BaseChain.invoke",
             new_callable=AsyncMock,
             side_effect=[risk_response, assessment_response],
         ),
         patch(
-            "src.riskgpt.workflows.risk_workflow._build_risk_workflow_graph",
+            "workflows.risk_workflow._build_risk_workflow_graph",
             return_value=mock_graph,
         ),
     ):

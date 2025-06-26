@@ -2,10 +2,9 @@
 
 from typing import Literal, Optional
 
+from config.settings import RiskGPTSettings
+from helpers.memory_factory import get_memory as factory_get_memory
 from pydantic_settings import BaseSettings
-
-from src.riskgpt.config.settings import RiskGPTSettings
-from src.riskgpt.utils.memory_factory import get_memory as factory_get_memory
 
 
 class MemorySettings(BaseSettings):

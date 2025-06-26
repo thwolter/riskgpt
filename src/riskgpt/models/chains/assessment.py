@@ -6,10 +6,9 @@ This module contains models for risk assessment.
 
 from typing import List, Optional
 
+from models.base import BaseRequest, BaseResponse
+from models.common import BusinessContext, Dist
 from pydantic import BaseModel, ConfigDict, Field
-
-from src.riskgpt.models.base import BaseRequest, BaseResponse
-from src.riskgpt.models.common import BusinessContext, Dist
 
 
 class AssessmentRequest(BaseRequest):

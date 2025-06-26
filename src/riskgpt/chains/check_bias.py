@@ -3,7 +3,7 @@ from __future__ import annotations
 import re
 from typing import List
 
-from src.riskgpt.models.chains.bias_check import BiasCheckRequest, BiasCheckResponse
+from models.chains.bias_check import BiasCheckRequest, BiasCheckResponse
 
 
 async def check_bias_chain(request: BiasCheckRequest) -> BiasCheckResponse:

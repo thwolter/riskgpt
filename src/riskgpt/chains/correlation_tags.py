@@ -1,11 +1,10 @@
+from chains.base import BaseChain
+from helpers.prompt_loader import load_prompt
 from langchain_core.output_parsers import PydanticOutputParser
-
-from src.riskgpt.chains.base import BaseChain
-from src.riskgpt.models.chains.correlation import (
+from models.chains.correlation import (
     CorrelationTagRequest,
     CorrelationTagResponse,
 )
-from src.riskgpt.utils.prompt_loader import load_prompt
 
 
 async def correlation_tags_chain(

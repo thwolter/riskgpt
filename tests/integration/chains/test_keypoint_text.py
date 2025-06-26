@@ -2,10 +2,9 @@ from typing import List
 from unittest.mock import patch
 
 import pytest
-
-from src.riskgpt.chains.keypoint_text import keypoint_text_chain
-from src.riskgpt.models.enums import TopicEnum
-from src.riskgpt.models.workflows.context import (
+from chains.keypoint_text import keypoint_text_chain
+from models.enums import TopicEnum
+from models.workflows.context import (
     KeyPoint,
     KeyPointTextRequest,
     KeyPointTextResponse,
@@ -39,7 +38,8 @@ def test_key_points() -> List[KeyPoint]:
 async def test_keypoint_text_chain(test_key_points) -> None:
     """Test the keypoint_text_chain function with real API calls."""
 
-    response: KeyPointTextResponse = await keypoint_text_chain(test_key_points)
+    request = KeyPointTextRequest(key_points=test_key_points)
+    response: KeyPointTextResponse = await keypoint_text_chain(request)
 
     # Verify the response structure
     assert response.text is not None
@@ -74,7 +74,7 @@ async def test_keypoint_text_chain_with_mock(test_key_points):
     async def mock_invoke(*args, **kwargs):
         return expected
 
-    with patch("src.riskgpt.chains.base.BaseChain.invoke", side_effect=mock_invoke):
+    with patch("chains.base.BaseChain.invoke", side_effect=mock_invoke):
         request = KeyPointTextRequest(key_points=test_key_points)
         resp = await keypoint_text_chain(request)
         assert resp.text == resp.text

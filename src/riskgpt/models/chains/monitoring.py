@@ -6,11 +6,10 @@ This module contains models for deriving monitoring indicators for risks.
 
 from typing import List, Literal, Optional
 
+from models.base import BaseRequest, BaseResponse
+from models.chains.risk import Risk
+from models.common import BusinessContext
 from pydantic import BaseModel, ConfigDict, Field
-
-from src.riskgpt.models.base import BaseRequest, BaseResponse
-from src.riskgpt.models.chains.risk import Risk
-from src.riskgpt.models.common import BusinessContext
 
 
 class RiskIndicatorRequest(BaseRequest):

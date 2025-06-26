@@ -1,6 +1,5 @@
+from models.enums import TopicEnum
 from pydantic import BaseModel, Field
-
-from src.riskgpt.models.enums import TopicEnum
 
 
 class SearchResult(BaseModel):

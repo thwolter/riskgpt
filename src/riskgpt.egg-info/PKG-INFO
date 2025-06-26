@@ -189,7 +189,8 @@ Then in your Codespaces Jupyter notebook or Python script:
 Validation helpers are available in `riskgpt.processors.input_validator` to convert dictionaries into request objects:
 
 ```python
-from src.processors.input_validator import validate_risk_request
+from src import validate_risk_request
+
 request_dict = {"project_id": "ACME-1", "project_name": "Security Upgrade", ...}
 validated_request = validate_risk_request(request_dict)
 ```

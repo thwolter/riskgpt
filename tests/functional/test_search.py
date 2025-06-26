@@ -2,9 +2,8 @@ import os
 from unittest.mock import patch
 
 import pytest
-
-from src.riskgpt.models.utils.search import SearchRequest, SearchResponse, SearchResult
-from src.riskgpt.utils.search import _google_search, _wikipedia_search, search
+from helpers.search import _google_search, _wikipedia_search, search
+from models.utils.search import SearchRequest, SearchResponse, SearchResult
 
 
 @pytest.mark.skipif(
@@ -51,8 +50,8 @@ def test_combined_search(monkeypatch):
     """Test combined search with Google and Wikipedia."""
 
     # Use monkeypatch instead of directly modifying os.environ
-    monkeypatch.setattr("src.riskgpt.utils.search.settings.SEARCH_PROVIDER", "google")
-    monkeypatch.setattr("src.riskgpt.utils.search.settings.INCLUDE_WIKIPEDIA", True)
+    monkeypatch.setattr("helpers.search.settings.SEARCH_PROVIDER", "google")
+    monkeypatch.setattr("helpers.search.settings.INCLUDE_WIKIPEDIA", True)
 
     request = SearchRequest(query="artificial intelligence", source_type="test")
     response = search(request)
@@ -77,9 +76,9 @@ def test_combined_search(monkeypatch):
 @pytest.fixture
 def mock_settings(monkeypatch):
     """Fixture to patch the settings to use tavily as the search provider."""
-    monkeypatch.setattr("src.riskgpt.utils.search.settings.SEARCH_PROVIDER", "tavily")
-    monkeypatch.setattr("src.riskgpt.utils.search.settings.INCLUDE_WIKIPEDIA", False)
-    monkeypatch.setattr("src.riskgpt.utils.search.settings.MAX_SEARCH_RESULTS", 2)
+    monkeypatch.setattr("helpers.search.settings.SEARCH_PROVIDER", "tavily")
+    monkeypatch.setattr("helpers.search.settings.INCLUDE_WIKIPEDIA", False)
+    monkeypatch.setattr("helpers.search.settings.MAX_SEARCH_RESULTS", 2)
     yield
 
 
@@ -148,16 +147,16 @@ def test_search_google_with_mock(
     monkeypatch, search_request, mock_google_search, mock_wikipedia_search
 ):
     """Search using mocked Google provider."""
-    monkeypatch.setattr("src.riskgpt.utils.search.settings.SEARCH_PROVIDER", "google")
-    monkeypatch.setattr("src.riskgpt.utils.search.settings.INCLUDE_WIKIPEDIA", True)
+    monkeypatch.setattr("helpers.search.settings.SEARCH_PROVIDER", "google")
+    monkeypatch.setattr("helpers.search.settings.INCLUDE_WIKIPEDIA", True)
 
     with (
         patch(
-            "src.riskgpt.utils.search._google_search",
+            "helpers.search._google_search",
             return_value=mock_google_search,
         ),
         patch(
-            "src.riskgpt.utils.search._wikipedia_search",
+            "helpers.search._wikipedia_search",
             return_value=mock_wikipedia_search,
         ),
     ):
@@ -166,9 +165,9 @@ def test_search_google_with_mock(
         assert any(result.title == "G" for result in search_response.results)
         assert any(result.title == "W" for result in search_response.results)
 
-    monkeypatch.setattr("src.riskgpt.utils.search.settings.INCLUDE_WIKIPEDIA", False)
+    monkeypatch.setattr("helpers.search.settings.INCLUDE_WIKIPEDIA", False)
     with patch(
-        "src.riskgpt.utils.search._google_search",
+        "helpers.search._google_search",
         return_value=mock_google_search,
     ):
         search_response: SearchResponse = search(search_request)
@@ -180,18 +179,16 @@ def test_search_duckduckgo_with_mock(
     monkeypatch, search_request, mock_duckduckgo_search, mock_wikipedia_search
 ):
     """Search using mocked DuckDuckGo provider."""
-    monkeypatch.setattr(
-        "src.riskgpt.utils.search.settings.SEARCH_PROVIDER", "duckduckgo"
-    )
-    monkeypatch.setattr("src.riskgpt.utils.search.settings.INCLUDE_WIKIPEDIA", True)
+    monkeypatch.setattr("helpers.search.settings.SEARCH_PROVIDER", "duckduckgo")
+    monkeypatch.setattr("helpers.search.settings.INCLUDE_WIKIPEDIA", True)
 
     with (
         patch(
-            "src.riskgpt.utils.search._duckduckgo_search",
+            "helpers.search._duckduckgo_search",
             return_value=mock_duckduckgo_search,
         ),
         patch(
-            "src.riskgpt.utils.search._wikipedia_search",
+            "helpers.search._wikipedia_search",
             return_value=mock_wikipedia_search,
         ),
     ):
@@ -201,9 +198,9 @@ def test_search_duckduckgo_with_mock(
         assert any(result.title == "W" for result in search_response.results)
 
     # Test with INCLUDE_WIKIPEDIA disabled
-    monkeypatch.setattr("src.riskgpt.utils.search.settings.INCLUDE_WIKIPEDIA", False)
+    monkeypatch.setattr("helpers.search.settings.INCLUDE_WIKIPEDIA", False)
     with patch(
-        "src.riskgpt.utils.search._duckduckgo_search",
+        "helpers.search._duckduckgo_search",
         return_value=mock_duckduckgo_search,
     ):
         search_response: SearchResponse = search(search_request)
@@ -213,11 +210,9 @@ def test_search_duckduckgo_with_mock(
 
 def test_search_wikipedia_with_mock(monkeypatch, search_request, mock_wikipedia_search):
     """Search using mocked Wikipedia provider."""
-    monkeypatch.setattr(
-        "src.riskgpt.utils.search.settings.SEARCH_PROVIDER", "wikipedia"
-    )
+    monkeypatch.setattr("helpers.search.settings.SEARCH_PROVIDER", "wikipedia")
     with patch(
-        "src.riskgpt.utils.search._wikipedia_search",
+        "helpers.search._wikipedia_search",
         return_value=mock_wikipedia_search,
     ):
         search_response: SearchResponse = search(search_request)

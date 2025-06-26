@@ -6,12 +6,11 @@ This module contains models for risk mitigation measures.
 
 from typing import List, Optional
 
+from models.base import BaseRequest, BaseResponse
+from models.chains.drivers import RiskDriver
+from models.chains.risk import Risk
+from models.common import BusinessContext
 from pydantic import BaseModel, ConfigDict, Field
-
-from src.riskgpt.models.base import BaseRequest, BaseResponse
-from src.riskgpt.models.chains.drivers import RiskDriver
-from src.riskgpt.models.chains.risk import Risk
-from src.riskgpt.models.common import BusinessContext
 
 
 class MitigationRequest(BaseRequest):

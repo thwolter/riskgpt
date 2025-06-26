@@ -6,9 +6,8 @@ This module contains the base models and common utilities used throughout the Ri
 
 from typing import Optional
 
+from models.enums import LanguageEnum
 from pydantic import BaseModel, ConfigDict, Field
-
-from src.riskgpt.models.enums import LanguageEnum
 
 
 class ResponseInfo(BaseModel):

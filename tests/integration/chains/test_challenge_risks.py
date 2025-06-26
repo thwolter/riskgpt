@@ -1,16 +1,15 @@
 from unittest.mock import AsyncMock, patch
 
 import pytest
-
-from src.riskgpt.chains.challenge_risks import challenge_risks_chain
-from src.riskgpt.models.chains.questions import (
+from chains.challenge_risks import challenge_risks_chain
+from models.chains.questions import (
     ChallengeRisksRequest,
     ChallengeRisksResponse,
     RiskQuestions,
 )
-from src.riskgpt.models.chains.risk import Risk
-from src.riskgpt.models.common import BusinessContext
-from src.riskgpt.models.enums import AudienceEnum
+from models.chains.risk import Risk
+from models.common import BusinessContext
+from models.enums import AudienceEnum
 
 
 @pytest.fixture
@@ -105,7 +104,7 @@ async def test_challenge_risks_chain_with_mock(test_request):
         risk_questions=expected_risk_questions,
     )
     with patch(
-        "src.riskgpt.chains.base.BaseChain.invoke",
+        "chains.base.BaseChain.invoke",
         new_callable=AsyncMock,
         return_value=expected,
     ):
@@ -144,7 +143,7 @@ async def test_challenge_risks_chain_different_audience(test_request):
     )
 
     with patch(
-        "src.riskgpt.chains.base.BaseChain.invoke",
+        "chains.base.BaseChain.invoke",
         new_callable=AsyncMock,
         return_value=expected,
     ):
@@ -181,7 +180,7 @@ async def test_challenge_risks_chain_no_focus_areas(test_request):
     )
 
     with patch(
-        "src.riskgpt.chains.base.BaseChain.invoke",
+        "chains.base.BaseChain.invoke",
         new_callable=AsyncMock,
         return_value=expected,
     ):

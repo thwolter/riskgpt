@@ -1,11 +1,10 @@
+from chains.base import BaseChain
+from helpers.prompt_loader import load_prompt
 from langchain_core.output_parsers import PydanticOutputParser
-
-from src.riskgpt.chains.base import BaseChain
-from src.riskgpt.models.chains.opportunity import (
+from models.chains.opportunity import (
     OpportunityRequest,
     OpportunityResponse,
 )
-from src.riskgpt.utils.prompt_loader import load_prompt
 
 
 async def opportunities_chain(

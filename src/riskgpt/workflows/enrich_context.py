@@ -2,13 +2,14 @@ from __future__ import annotations
 
 from typing import Annotated, List, TypedDict, TypeVar
 
+from chains.keypoint_text import keypoint_text_chain
+from helpers.extraction import extract_key_points
+from helpers.search import search, settings
 from langgraph.graph import END, StateGraph, add_messages
-
-from src.riskgpt.chains.keypoint_text import keypoint_text_chain
-from src.riskgpt.models.base import ResponseInfo
-from src.riskgpt.models.enums import TopicEnum
-from src.riskgpt.models.utils.search import SearchRequest, SearchResponse, Source
-from src.riskgpt.models.workflows.context import (
+from models.base import ResponseInfo
+from models.enums import TopicEnum
+from models.utils.search import SearchRequest, SearchResponse, Source
+from models.workflows.context import (
     EnrichContextRequest,
     EnrichContextResponse,
     ExtractKeyPointsRequest,
@@ -17,8 +18,6 @@ from src.riskgpt.models.workflows.context import (
     KeyPointTextRequest,
     KeyPointTextResponse,
 )
-from src.riskgpt.utils.extraction import extract_key_points
-from src.riskgpt.utils.search import search, settings
 
 # Define reducer functions for lists
 T = TypeVar("T")

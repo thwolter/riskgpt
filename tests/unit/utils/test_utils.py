@@ -3,14 +3,13 @@ import sys
 import types
 
 import pytest
-
-from src.riskgpt.processors.input_validator import (
+from helpers import prompt_loader
+from processors.input_validator import (
     validate_assessment_request,
     validate_category_request,
     validate_mitigation_request,
     validate_risk_request,
 )
-from src.riskgpt.utils import prompt_loader
 
 
 def test_load_prompt(monkeypatch):
@@ -41,9 +40,7 @@ def test_load_prompt(monkeypatch):
     yaml_stub.safe_load = safe_load
     monkeypatch.setitem(sys.modules, "yaml", yaml_stub)
 
-    prompt_loader = importlib.reload(
-        importlib.import_module("src.riskgpt.utils.prompt_loader")
-    )
+    prompt_loader = importlib.reload(importlib.import_module("helpers.prompt_loader"))
     data = prompt_loader.load_prompt("risk_categories")
     assert data["version"] == "v1"
     assert "{format_instructions}" in data["template"]
