@@ -3,7 +3,7 @@ from langchain_core.output_parsers import PydanticOutputParser
 from src.models.chains.communication import CommunicationRequest, CommunicationResponse
 from src.utils.prompt_loader import load_prompt
 
-from .base import BaseChain
+from src.chains.base import BaseChain
 
 
 async def communicate_risks_chain(

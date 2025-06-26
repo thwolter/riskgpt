@@ -9,7 +9,7 @@ from __future__ import annotations
 
 from typing import List
 
-from models.utils.search import SearchRequest, SearchResponse
+from src.models.utils.search import SearchRequest, SearchResponse
 
 from src.logger import logger
 from src.models.common import BusinessContext

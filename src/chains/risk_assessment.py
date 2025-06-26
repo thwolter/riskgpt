@@ -3,7 +3,7 @@ from langchain_core.output_parsers import PydanticOutputParser
 from src.models.chains.assessment import AssessmentRequest, AssessmentResponse
 from src.utils.prompt_loader import load_prompt
 
-from .base import BaseChain
+from src.chains.base import BaseChain
 
 
 async def risk_assessment_chain(request: AssessmentRequest) -> AssessmentResponse:

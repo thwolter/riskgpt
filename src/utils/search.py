@@ -12,8 +12,8 @@ from langchain_community.utilities import (
 )
 from langchain_google_community import GoogleSearchAPIWrapper
 from langchain_tavily import TavilySearch
-from models.enums import TopicEnum
-from models.utils.search import SearchRequest, SearchResponse, SearchResult
+from src.models.enums import TopicEnum
+from src.models.utils.search import SearchRequest, SearchResponse, SearchResult
 
 from src.config.settings import RiskGPTSettings
 from src.logger import logger

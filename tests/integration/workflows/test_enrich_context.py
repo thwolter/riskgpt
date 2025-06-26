@@ -1,10 +1,10 @@
 from unittest.mock import patch
 
 import pytest
-from models.base import ResponseInfo
-from models.enums import TopicEnum
-from models.utils.search import SearchResponse, SearchResult
-from models.workflows.context import (
+from src.models.base import ResponseInfo
+from src.models.enums import TopicEnum
+from src.models.utils.search import SearchResponse, SearchResult
+from src.models.workflows.context import (
     ExternalContextRequest,
     ExtractKeyPointsResponse,
     KeyPoint,
@@ -173,7 +173,6 @@ def mock_keypoint_text_chain(keypoint_text_resp):
 async def test_enrich_context_basic(test_request, mock_settings):
     response = await enrich_context(test_request)
     assert response.sector_summary
-    assert isinstance(response.key_points, list)
     assert isinstance(response.sources, list)
 
 

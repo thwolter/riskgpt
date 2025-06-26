@@ -6,7 +6,7 @@ from src.models.chains.definition_check import (
 )
 from src.utils.prompt_loader import load_prompt
 
-from .base import BaseChain
+from src.chains.base import BaseChain
 
 
 async def check_definition_chain(

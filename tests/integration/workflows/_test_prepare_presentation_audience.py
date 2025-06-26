@@ -1,7 +1,7 @@
 import os
 
 import pytest
-from models.workflows.presentation import PresentationRequest, PresentationResponse
+from src.models.workflows.presentation import PresentationRequest, PresentationResponse
 
 from src.models.base import ResponseInfo
 from src.models.common import BusinessContext

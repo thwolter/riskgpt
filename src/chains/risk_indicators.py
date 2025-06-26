@@ -3,7 +3,7 @@ from langchain_core.output_parsers import PydanticOutputParser
 from src.models.chains.monitoring import RiskIndicatorRequest, RiskIndicatorResponse
 from src.utils.prompt_loader import load_prompt
 
-from .base import BaseChain
+from src.chains.base import BaseChain
 
 
 async def risk_indicators_chain(request: RiskIndicatorRequest) -> RiskIndicatorResponse:

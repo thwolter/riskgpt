@@ -3,7 +3,7 @@ from langchain_core.output_parsers import PydanticOutputParser
 from src.models.chains.opportunity import OpportunityRequest, OpportunityResponse
 from src.utils.prompt_loader import load_prompt
 
-from .base import BaseChain
+from src.chains.base import BaseChain
 
 
 async def opportunities_chain(

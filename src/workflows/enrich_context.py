@@ -3,9 +3,9 @@ from __future__ import annotations
 from typing import Annotated, List, TypedDict, TypeVar
 
 from langgraph.graph import END, StateGraph, add_messages
-from models.enums import TopicEnum
-from models.utils.search import SearchRequest, SearchResponse, Source
-from models.workflows.context import (
+from src.models.enums import TopicEnum
+from src.models.utils.search import SearchRequest, SearchResponse, Source
+from src.models.workflows.context import (
     ExtractKeyPointsRequest,
     ExtractKeyPointsResponse,
     KeyPoint,
@@ -122,7 +122,40 @@ def aggregate_response_info(state):
     )
 
 
-def _build_graph(request: ExternalContextRequest):
+def get_enrich_context_graph(request: ExternalContextRequest):
+    """
+    Returns the uncompiled graph for visualization purposes.
+
+    This method can be used in Jupyter notebooks to visualize the graph structure.
+
+    Example:
+        ```python
+        from IPython.display import Image, display
+        from src.workflows.enrich_context import get_enrich_context_graph
+        from src.models.workflows.context import ExternalContextRequest
+        from src.models.common import BusinessContext
+
+        # Create a request
+        request = ExternalContextRequest(
+            business_context=BusinessContext(
+                project_id="Sample Project",
+                project_description="A sample project for visualization",
+                domain_knowledge="sample domain",
+            ),
+            focus_keywords=["sample", "keywords"],
+        )
+
+        # Get the graph
+        graph = get_enrich_context_graph(request)
+
+        # Visualize the graph
+        try:
+            display(Image(graph.get_graph().draw_mermaid_png()))
+        except Exception as e:
+            print(f"Could not visualize graph: {e}")
+            print("Make sure you have graphviz installed.")
+        ```
+    """
     graph = StateGraph(State)
 
     def news_search(state: State) -> State:
@@ -147,7 +180,7 @@ def _build_graph(request: ExternalContextRequest):
         """Summarize key points for a specific topic."""
 
         kp_text_request = KeyPointTextRequest(
-            key_points=state.get("key_points", []),
+            key_points=state.get("key_points", [])
         )
         response: KeyPointTextResponse = await keypoint_text_chain(kp_text_request)
 
@@ -225,7 +258,12 @@ def _build_graph(request: ExternalContextRequest):
     # Final steps
     graph.add_edge("summarize_key_points", "aggregate")
     graph.add_edge("aggregate", END)
-    return graph.compile()
+
+    return graph
+
+
+def _build_graph(request: ExternalContextRequest):
+    return get_enrich_context_graph(request).compile()
 
 
 async def enrich_context(

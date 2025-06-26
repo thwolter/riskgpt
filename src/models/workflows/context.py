@@ -1,7 +1,7 @@
 from typing import List, Optional
 
-from models.enums import TopicEnum
-from models.utils.search import Source
+from src.models.enums import TopicEnum
+from src.models.utils.search import Source
 from pydantic import BaseModel
 
 from src.models.base import BaseResponse

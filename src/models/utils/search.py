@@ -1,4 +1,4 @@
-from models.enums import TopicEnum
+from src.models.enums import TopicEnum
 from pydantic import BaseModel, Field
 
 
