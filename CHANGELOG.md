@@ -2,6 +2,9 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.1.0] - 2024-06-26
+- some bug fixes
+
 ## [0.1.0] - 2024-06-11
 
 ### Initial Release

@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "riskgpt"
-version = "0.2.0"
+version = "0.2.1"
 description = "Analyze project risks and opportunities using AI"
 readme = "README.md"
 license = "MIT"
