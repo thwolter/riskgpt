@@ -13,10 +13,9 @@ To install the required dependencies:
 """
 
 from IPython.display import Image, display
-
-from src.models.common import BusinessContext
-from src.models.workflows.context import EnrichContextRequest
-from src.workflows.enrich_context import get_enrich_context_graph
+from riskgpt.models.common import BusinessContext
+from riskgpt.models.workflows.context import EnrichContextRequest
+from riskgpt.workflows.enrich_context import get_enrich_context_graph
 
 # Create a sample request
 request = EnrichContextRequest(

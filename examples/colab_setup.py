@@ -88,7 +88,7 @@ def print_usage_example():
     print("\nBasic usage example:")
     print("""
 from riskgpt import configure_logging
-from riskgpt.models.schemas import BusinessContext
+from riskgpt.models.common import BusinessContext
 from riskgpt.workflows.risk_workflow import run_risk_workflow
 
 # Configure logging
