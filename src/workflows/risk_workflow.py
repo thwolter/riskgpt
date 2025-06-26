@@ -178,6 +178,7 @@ def _build_risk_workflow_graph(request: RiskRequest, use_full_workflow: bool = T
             assessment_request = AssessmentRequest(
                 business_context=req.business_context,
                 risk_description=risk.description,
+                risk_title=risk.title,
             )
 
             # If we have document_refs in the state, add them to the request

@@ -101,6 +101,7 @@ def _build_graph(request: PresentationRequest):
                 AssessmentRequest(
                     business_context=req.business_context,
                     risk_description=risk.description,
+                    risk_title=risk.title,
                 )
             )
             if assess.response_info:

@@ -1,0 +1,25 @@
+version: "v1"
+description: "Generate challenging questions from business context for internet search."
+template: |
+  You are an expert at generating challenging and thought-provoking questions based on business context information.
+  
+  Please create {num_questions} challenging questions that can be used as search queries for internet research. The questions should:
+  - Be derived from the provided business context
+  - Be specific and focused on potential risks, challenges, or opportunities
+  - Be phrased in a way that would yield useful search results when used as queries
+  - Be tailored for the specified audience
+  - Focus on the specified focus areas (if provided)
+  
+  Business Context:
+  Project ID: {business_context_project_id}
+  Project Description: {business_context_project_description}
+  Domain Knowledge: {business_context_domain_knowledge}
+  Business Area: {business_context_business_area}
+  Industry Sector: {business_context_industry_sector}
+  
+  Target Audience: {audience}
+  
+  Focus Areas: {focus_areas}
+  
+  {format_instructions}
+  Output the result as a JSON object conforming to the schema above. Do not include any additional text or commentary.
