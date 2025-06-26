@@ -1,0 +1,40 @@
+# RiskGPT Example Configuration
+
+# Business Context
+business_context:
+  project_id: "CLOUD-2023"
+  project_description: "Migrate on-premises infrastructure to cloud services"
+  domain_knowledge: "The company is a financial services provider with strict regulatory requirements"
+  business_area: "IT Infrastructure"
+  industry_sector: "Financial Services"
+
+# Existing Risks
+existing_risks:
+  - title: "Data Security Breach"
+    description: "Risk of unauthorized access to sensitive data during migration"
+    category: "Security"
+  - title: "Service Disruption"
+    description: "Risk of service disruption during the migration process"
+    category: "Operational"
+
+# Challenge Questions Configuration
+challenge_questions:
+  audience: "risk_internal"
+  focus_areas:
+    - "data security"
+    - "compliance"
+    - "service continuity"
+  num_questions: 5
+
+# Enrich Context Configuration
+enrich_context:
+  focus_keywords:
+    - "cloud migration"
+    - "financial services"
+    - "data security"
+  time_horizon_months: 12
+
+# Risk Workflow Configuration
+risk_workflow:
+  category: "Technical"
+  max_risks: 5
