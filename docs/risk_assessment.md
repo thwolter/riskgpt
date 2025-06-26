@@ -1,6 +1,6 @@
-# Get Assessment
+# Risk Assessment
 
-The `get_assessment` chain evaluates the potential impact of a risk. It either returns a three-point estimate with a probability distribution or, for single-event risks, an impact and probability.
+The `risk_assessment_chain` evaluates the potential impact of a risk. It either returns a three-point estimate with a probability distribution or, for single-event risks, an impact and probability.
 
 ## Input
 
@@ -25,17 +25,23 @@ The `get_assessment` chain evaluates the potential impact of a risk. It either r
 ## Example
 
 ```python
-from src import risk_assessment_chain
-from src import AssessmentRequest, BusinessContext
+from riskgpt import risk_assessment_chain
+from riskgpt.models.common import BusinessContext
+from riskgpt.models.chains import AssessmentRequest
 
 request = AssessmentRequest(
     business_context=BusinessContext(
-        project_id="123",
+        project_id="ACME-MFG-2023",
+        project_name="ACME Manufacturing Plant Upgrade",
+        project_description="Modernization of production line equipment and control systems",
         language="de",
     ),
-    risk_description="Systemausfall durch mangelnde Wartung kann zu Produktionsstopps führen.",
+    risk_description="Systemausfall durch mangelnde Wartung kann zu Produktionsstopps führen und erhebliche finanzielle Verluste verursachen.",
+    document_refs=["doc-maintenance-history-2022", "doc-production-impact-analysis"]
 )
 
 response = risk_assessment_chain(request)
-print(response.evidence)
+print(f"Impact range: {response.minimum} - {response.most_likely} - {response.maximum}")
+print(f"Distribution: {response.distribution}")
+print(f"Evidence: {response.evidence}")
 ```

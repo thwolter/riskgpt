@@ -18,18 +18,21 @@ This workflow is designed to create presentation-ready outputs for different aud
 ## Usage
 
 ```python
-from src import BusinessContext, PresentationRequest, AudienceEnum
-from src import prepare_presentation_output
+from riskgpt import prepare_presentation_output
+from riskgpt.models.common import BusinessContext
+from riskgpt.models.workflows.presentation import PresentationRequest, AudienceEnum
 
 # Create a request
 request = PresentationRequest(
     business_context=BusinessContext(
-        project_id="PRJ-2023-001",
-        project_description="Implementation of a new CRM system",
-        domain_knowledge="The company operates in the B2B sector",
+        project_id="ACME-CRM-2023",
+        project_name="ACME Corp CRM Implementation",
+        project_description="Implementation of a new cloud-based CRM system to replace legacy software across all customer-facing departments",
+        domain_knowledge="The company operates in the B2B manufacturing sector with approximately 500 users who will need to be migrated to the new system. The project has a timeline of 12 months and a budget of $1.2 million.",
+        language="en"
     ),
     audience=AudienceEnum.executive,
-    focus_areas=["Technical"],
+    focus_areas=["Technical", "Operational"],
 )
 
 # Run the workflow

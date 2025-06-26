@@ -1,3 +1,7 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
 [project]
 name = "riskgpt"
 version = "0.1.0"
@@ -8,6 +12,14 @@ authors = [
     { name = "Thomas Wolter", email = "thwolter@gmail.com" }
 ]
 requires-python = ">=3.12"
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+]
 dependencies = [
     "duckduckgo-search>=8.0.4",
     "google-api-python-client>=2.173.0",
@@ -40,6 +52,12 @@ dev-dependencies = [
 Documentation = "https://thwolter.github.io/riskgpt/"
 Source = "https://github.com/thwolter/riskgpt.git"
 Tracker = "https://github.com/thwolter/riskgpt/issues"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
 
 [tool.ruff]
 line-length = 88

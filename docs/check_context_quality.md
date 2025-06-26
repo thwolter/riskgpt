@@ -20,13 +20,29 @@ The `check_context_quality` workflow evaluates whether the provided context info
 ## Example
 
 ```python
-from src import check_context_quality
-from src import ContextQualityRequest
+from riskgpt import check_context_quality
+from riskgpt.models.workflows.context_quality import ContextQualityRequest
 
 req = ContextQualityRequest(
-    context_knowledge="We plan to update our CRM system.",
-    project_type="IT",
+    context_knowledge="""
+    ACME Corp plans to update our CRM system from the current legacy platform to a cloud-based solution. 
+    The project will affect our sales and customer service departments. 
+    We have approximately 500 users who will need to be migrated to the new system.
+    """,
+    project_type="IT Infrastructure",
+    language="en"
 )
+
 resp = check_context_quality(req)
-print(resp.shortcomings)
+
+print("Context Quality Assessment:")
+print("\nShortcomings:")
+for i, shortcoming in enumerate(resp.shortcomings, 1):
+    print(f"{i}. {shortcoming}")
+
+print("\nRationale:")
+print(resp.rationale)
+
+print("\nSuggested Improvements:")
+print(resp.suggested_improvements)
 ```

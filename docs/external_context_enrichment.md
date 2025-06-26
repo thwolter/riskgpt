@@ -36,14 +36,24 @@ The search provider can be configured using environment variables:
 ## Example
 
 ```python
-from src import enrich_context
-from src import ExternalContextRequest
+from riskgpt import external_context_enrichment
+from riskgpt.models.workflows.external_context import ExternalContextRequest
 
 req = ExternalContextRequest(
-    project_name="SEFE Energy",
-    business_context="fiber optic infrastructure",
-    focus_keywords=["cyber", "supply chain"],
+    project_name="ACME Telecommunications",
+    business_context="Fiber optic infrastructure deployment for high-speed internet in rural areas",
+    focus_keywords=["cybersecurity", "supply chain disruptions", "regulatory changes"],
+    time_horizon_months=6,
+    language="en"
 )
+
 result = external_context_enrichment(req)
+print("Sector Summary:")
 print(result.sector_summary)
+print("\nExternal Risks:")
+for i, risk in enumerate(result.external_risks, 1):
+    print(f"{i}. {risk}")
+print("\nWorkshop Recommendations:")
+for i, rec in enumerate(result.workshop_recommendations, 1):
+    print(f"{i}. {rec}")
 ```
