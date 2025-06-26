@@ -113,13 +113,8 @@ class BaseChain:
             inputs["system_prompt"] = load_system_prompt()
 
             result = await self.chain.ainvoke(inputs, memory=self.memory)
-            if hasattr(result, "response_info"):
-                result.response_info = ResponseInfo(
-                    consumed_tokens=cb.total_tokens,
-                    total_cost=cb.total_cost,
-                    prompt_name=self.prompt_name,
-                    model_name=self.settings.OPENAI_MODEL_NAME,
-                )
+            result.response_info = await self.create_response_info(cb, result)
+
             logger.info(
                 "Consumed %s tokens (%.4f USD) for '%s' using %s",
                 cb.total_tokens,
@@ -128,3 +123,11 @@ class BaseChain:
                 self.settings.OPENAI_MODEL_NAME,
             )
         return result
+
+    async def create_response_info(self, cb, result):
+        return ResponseInfo(
+            consumed_tokens=cb.total_tokens,
+            total_cost=cb.total_cost,
+            prompt_name=self.prompt_name,
+            model_name=self.settings.OPENAI_MODEL_NAME,
+        )

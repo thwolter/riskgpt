@@ -1,6 +1,6 @@
 from typing import List, Optional
 
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 
 from riskgpt.models.base import BaseResponse
 from riskgpt.models.common import BusinessContext
@@ -30,13 +30,14 @@ class ExtractKeyPointsRequest(BaseModel):
             content=f"Title: {source.title}\n\nContent: {source.content}",
         )
 
-    class Config:
-        schema_extra = {
+    model_config = ConfigDict(
+        json_schema_extra={
             "example": {
                 "source_type": "NEWS",
                 "content": "This is an example content from a news article.",
             }
         }
+    )
 
 
 class ExtractKeyPointsResponse(BaseResponse):
@@ -44,8 +45,8 @@ class ExtractKeyPointsResponse(BaseResponse):
 
     points: List[KeyPoint] = []
 
-    class Config:
-        schema_extra = {
+    model_config = ConfigDict(
+        json_schema_extra={
             "example": {
                 "points": [
                     {
@@ -64,9 +65,15 @@ class ExtractKeyPointsResponse(BaseResponse):
                         "source_url": "https://example.com",
                     },
                 ],
-                "response_info": {"token_usage": 100, "cost": 0.01},
+                "response_info": {
+                    "consumed_tokens": 1400,
+                    "total_cost": 0.028,
+                    "prompt_name": "risk_assessment",
+                    "model_name": "gpt-4",
+                },
             }
         }
+    )
 
 
 class EnrichContextRequest(BaseModel):

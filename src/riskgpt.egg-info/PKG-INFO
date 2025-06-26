@@ -28,6 +28,7 @@ Requires-Dist: langgraph>=0.4.8
 Requires-Dist: langchain-google-community>=2.0.7
 Requires-Dist: redis>=6.2.0
 Requires-Dist: langchain-tavily>=0.2.4
+Requires-Dist: notebook>=7.4.3
 Dynamic: license-file
 
 # RiskGPT

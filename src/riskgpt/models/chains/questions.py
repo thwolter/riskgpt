@@ -1,6 +1,6 @@
 from typing import List, Optional
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 
 from riskgpt.models.base import BaseResponse
 from riskgpt.models.chains.risk import Risk
@@ -27,8 +27,8 @@ class ChallengeQuestionsRequest(BaseModel):
         le=10,
     )
 
-    class Config:
-        json_schema_extra = {
+    model_config = ConfigDict(
+        json_schema_extra={
             "example": {
                 "business_context": {
                     "project_id": "CRM-2023",
@@ -42,6 +42,7 @@ class ChallengeQuestionsRequest(BaseModel):
                 "num_questions": 5,
             }
         }
+    )
 
 
 class ChallengeQuestionsResponse(BaseResponse):
@@ -49,8 +50,8 @@ class ChallengeQuestionsResponse(BaseResponse):
 
     questions: List[str]
 
-    class Config:
-        json_schema_extra = {
+    model_config = ConfigDict(
+        json_schema_extra={
             "example": {
                 "questions": [
                     "What are the potential data security risks when migrating customer data to the new CRM system?",
@@ -59,9 +60,15 @@ class ChallengeQuestionsResponse(BaseResponse):
                     "What user adoption barriers might impact the success of the CRM implementation?",
                     "How might the new CRM system affect compliance with industry regulations?",
                 ],
-                "response_info": {"token_usage": 100, "cost": 0.01},
+                "response_info": {
+                    "consumed_tokens": 1400,
+                    "total_cost": 0.028,
+                    "prompt_name": "risk_assessment",
+                    "model_name": "gpt-4",
+                },
             }
         }
+    )
 
 
 class ChallengeRiskRequest(BaseModel):
@@ -84,8 +91,8 @@ class ChallengeRiskRequest(BaseModel):
         le=10,
     )
 
-    class Config:
-        json_schema_extra = {
+    model_config = ConfigDict(
+        json_schema_extra={
             "example": {
                 "risk": {
                     "title": "Data Migration Failure",
@@ -104,6 +111,7 @@ class ChallengeRiskRequest(BaseModel):
                 "num_questions": 5,
             }
         }
+    )
 
 
 class ChallengeRisksRequest(BaseModel):
@@ -126,8 +134,8 @@ class ChallengeRisksRequest(BaseModel):
         le=5,
     )
 
-    class Config:
-        schema_extra = {
+    model_config = ConfigDict(
+        json_schema_extra={
             "example": {
                 "risks": [
                     {
@@ -153,6 +161,7 @@ class ChallengeRisksRequest(BaseModel):
                 "questions_per_risk": 3,
             }
         }
+    )
 
 
 class RiskQuestions(BaseModel):
@@ -167,8 +176,8 @@ class ChallengeRiskResponse(BaseResponse):
 
     questions: List[str]
 
-    class Config:
-        schema_extra = {
+    model_config = ConfigDict(
+        json_schema_extra={
             "example": {
                 "questions": [
                     "What data validation procedures will be in place during the migration process?",
@@ -177,9 +186,15 @@ class ChallengeRiskResponse(BaseResponse):
                     "How will you test the migration process without risking production data?",
                     "What monitoring systems will be in place during the migration to detect data issues?",
                 ],
-                "response_info": {"token_usage": 120, "cost": 0.012},
+                "response_info": {
+                    "consumed_tokens": 1400,
+                    "total_cost": 0.028,
+                    "prompt_name": "risk_assessment",
+                    "model_name": "gpt-4",
+                },
             }
         }
+    )
 
 
 class ChallengeRisksResponse(BaseResponse):
@@ -187,8 +202,8 @@ class ChallengeRisksResponse(BaseResponse):
 
     risk_questions: List[RiskQuestions]
 
-    class Config:
-        schema_extra = {
+    model_config = ConfigDict(
+        json_schema_extra={
             "example": {
                 "risk_questions": [
                     {
@@ -208,6 +223,12 @@ class ChallengeRisksResponse(BaseResponse):
                         ],
                     },
                 ],
-                "response_info": {"token_usage": 180, "cost": 0.018},
+                "response_info": {
+                    "consumed_tokens": 1400,
+                    "total_cost": 0.028,
+                    "prompt_name": "risk_assessment",
+                    "model_name": "gpt-4",
+                },
             }
         }
+    )

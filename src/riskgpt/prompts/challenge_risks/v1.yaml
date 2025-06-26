@@ -27,3 +27,4 @@ template: |
   - Be specific and actionable
   
   {format_instructions}
+  Output the result as a JSON object that conforms to the schema above and do not include any additional text

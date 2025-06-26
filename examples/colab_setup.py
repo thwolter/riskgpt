@@ -91,27 +91,88 @@ def print_usage_example():
     print("=" * 50)
     print("\nBasic usage example:")
     print("""
-from riskgpt import configure_logging
+import asyncio
+from riskgpt.logger import configure_logging
 from riskgpt.models.common import BusinessContext
-from riskgpt.workflows.risk_workflow import run_risk_workflow
+from riskgpt.models.chains.risk import Risk
+from riskgpt.models.enums import AudienceEnum
+from riskgpt.models.chains.questions import ChallengeQuestionsRequest, ChallengeRiskRequest
+from riskgpt.chains.challenge_questions import challenge_questions_chain
+from riskgpt.chains.challenge_risk import challenge_risk_chain
+from riskgpt.models.workflows.context import EnrichContextRequest
+from riskgpt.workflows.enrich_context import enrich_context
 
 # Configure logging
 configure_logging()
 
 # Create a business context
 context = BusinessContext(
-    project_id="ACME-1",
-    project_name="ACME Corp Security Upgrade",
-    description="Implement new cybersecurity measures across all departments"
+    project_id="CLOUD-2023",
+    project_description="Migrate on-premises infrastructure to cloud services",
+    domain_knowledge="The company is a financial services provider with strict regulatory requirements",
+    business_area="IT Infrastructure",
+    industry_sector="Financial Services"
 )
 
-# Run the risk workflow
-result = run_risk_workflow(context)
+# Create a sample risk
+sample_risk = Risk(
+    title="Data Security Breach",
+    description="Risk of unauthorized access to sensitive data during migration",
+    category="Security",
+)
 
-# Display the results
-print(f"Identified Risks: {len(result.risks)}")
-for risk in result.risks:
-    print(f"Risk: {risk.title}")
+# Example 1: Challenge Questions Chain
+async def run_challenge_questions():
+    questions_request = ChallengeQuestionsRequest(
+        business_context=context,
+        audience=AudienceEnum.risk_internal,
+        focus_areas=["data security", "compliance", "service continuity"],
+        num_questions=5
+    )
+    response = await challenge_questions_chain(questions_request)
+    print(f"Generated {len(response.questions)} challenging questions:")
+    for i, question in enumerate(response.questions, 1):
+        print(f"{i}. {question}")
+    return response
+
+# Example 2: Challenge Risk Chain
+async def run_challenge_risk():
+    risk_request = ChallengeRiskRequest(
+        risk=sample_risk,
+        business_context=context,
+        audience=AudienceEnum.risk_internal,
+        focus_areas=["data encryption", "access controls", "regulatory compliance"],
+        num_questions=5
+    )
+    response = await challenge_risk_chain(risk_request)
+    print(f"Generated {len(response.questions)} challenging questions for risk '{sample_risk.title}':")
+    for i, question in enumerate(response.questions, 1):
+        print(f"{i}. {question}")
+    return response
+
+# Example 3: Enrich Context Workflow
+async def run_enrich_context():
+    enrich_request = EnrichContextRequest(
+        business_context=context,
+        focus_keywords=["cloud migration", "financial services", "data security"],
+        time_horizon_months=12
+    )
+    response = await enrich_context(enrich_request)
+    print("Sector Summary:")
+    print(response.sector_summary)
+    print("\\nWorkshop Recommendations:")
+    for i, rec in enumerate(response.workshop_recommendations, 1):
+        print(f"{i}. {rec}")
+    return response
+
+# Run the examples
+async def run_examples():
+    await run_challenge_questions()
+    await run_challenge_risk()
+    await run_enrich_context()
+
+# Execute the async function
+asyncio.run(run_examples())
     """)
     print(
         "\nFor more examples and documentation, visit: https://thwolter.github.io/riskgpt/"
