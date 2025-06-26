@@ -72,6 +72,33 @@ context = BusinessContext(
 result = run_risk_workflow(context)
 ```
 
+### Google Colab Usage
+
+To use RiskGPT in Google Colab notebooks, you have two options:
+
+#### Option 1: Step-by-step guide
+
+See the [Colab usage guide](examples/colab_usage_guide.ipynb) which provides detailed instructions for:
+
+- Installing RiskGPT directly from GitHub
+- Setting up the OpenAI API key in Colab
+- Running basic and advanced examples
+- Troubleshooting common issues
+
+#### Option 2: Quick setup script
+
+For a faster setup, run this command in a Colab cell:
+
+```python
+!curl -s https://raw.githubusercontent.com/thwolter/riskgpt/main/examples/colab_setup.py | python3
+```
+
+This script will:
+- Check and install Python 3.12 if needed
+- Install RiskGPT from GitHub
+- Help you set up your OpenAI API key
+- Provide a basic usage example
+
 Validation helpers are available in `riskgpt.processors.input_validator` to convert dictionaries into request objects:
 
 ```python

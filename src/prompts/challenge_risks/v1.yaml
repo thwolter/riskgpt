@@ -6,7 +6,11 @@ template: |
   You are a risk assessment expert. Your task is to generate challenging questions for multiple risks in a business context.
   
   ## Business Context
-  {business_context}
+  Project ID: {business_context_project_id}
+  Project Description: {business_context_project_description}
+  Domain Knowledge: {business_context_domain_knowledge}
+  Business Area: {business_context_business_area}
+  Industry Sector: {business_context_industry_sector}
   
   ## Risks to Challenge
   {risks}
