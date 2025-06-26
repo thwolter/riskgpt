@@ -62,6 +62,10 @@ def install_riskgpt():
     )
     print("RiskGPT installed successfully.")
 
+    # Note: Alternative installation method
+    # If you have access to the wheel file, you can install it with:
+    # pip install /path/to/dist/riskgpt-0.1.0-py3-none-any.whl
+
 
 def setup_api_key():
     """Set up the OpenAI API key."""
