@@ -173,7 +173,15 @@ def mock_keypoint_text_chain(keypoint_text_resp):
 
 @pytest.mark.integration
 @pytest.mark.asyncio
-async def test_enrich_context_basic(test_request, mock_settings):
+async def test_enrich_context_tavili(test_request, mock_settings):
+    response: EnrichContextResponse = await enrich_context(test_request)
+    assert response.sector_summary
+
+
+@pytest.mark.integration
+@pytest.mark.asyncio
+async def test_enrich_context_duckduckgo(monkeypatch, test_request, mock_settings):
+    monkeypatch.setattr("riskgpt.helpers.search.settings.SEARCH_PROVIDER", "duckduckgo")
     response: EnrichContextResponse = await enrich_context(test_request)
     assert response.sector_summary
 
