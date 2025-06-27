@@ -36,7 +36,7 @@ def test_key_points() -> List[KeyPoint]:
 
 
 @pytest.mark.asyncio
-async def test_keypoint_text_chain(test_key_points) -> None:
+async def test_keypoint_summary_chain(test_key_points) -> None:
     """Test the keypoint_text_chain function with real API calls."""
 
     request = KeyPointSummaryRequest(key_points=test_key_points)
@@ -58,7 +58,7 @@ async def test_keypoint_text_chain(test_key_points) -> None:
 
 
 @pytest.mark.asyncio
-async def test_keypoint_text_chain_with_mock(test_key_points):
+async def test_keypoint_summary_chain_with_mock(test_key_points):
     """Test keypoint_text_chain with mocked BaseChain.invoke."""
 
     expected = KeyPointSummaryResponse(
@@ -116,7 +116,7 @@ def test_long_key_points() -> List[KeyPoint]:
 
 @pytest.mark.integration
 @pytest.mark.asyncio
-async def test_keypoint_text_chain_with_long_keypoints(test_long_key_points) -> None:
+async def test_keypoint_text_summary_with_long_keypoints(test_long_key_points) -> None:
     """Test keypoint_text_chain with mocked BaseChain.invoke."""
 
     request = KeyPointSummaryRequest(key_points=test_long_key_points)

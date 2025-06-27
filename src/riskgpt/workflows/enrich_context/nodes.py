@@ -14,6 +14,7 @@ from ...models.chains.keypoints import (
     KeyPointSummaryRequest,
     KeyPointSummaryResponse,
 )
+from .deduplicator import KeyPointDeduplicator
 from .state import State
 
 
@@ -95,9 +96,15 @@ def create_extract_key_points_node(topic: TopicEnum):
 
 
 async def summarize_key_points(state: State) -> State:
-    """Summarize key points for a specific topic."""
+    """Summarize key points for a specific topic with de-duplication."""
 
-    kp_text_request = KeyPointSummaryRequest(key_points=state.get("key_points", []))
+    key_points = state.get("key_points", [])
+
+    # De-duplicate key points before creating the request
+    deduplicator = KeyPointDeduplicator(key_points)
+    deduplicated_points = deduplicator.deduplicate()
+
+    kp_text_request = KeyPointSummaryRequest(key_points=deduplicated_points)
 
     try:
         response: KeyPointSummaryResponse = await keypoints_summary_chain(

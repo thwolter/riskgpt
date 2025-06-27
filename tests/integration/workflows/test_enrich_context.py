@@ -26,7 +26,7 @@ def test_request():
             project_description="A project focused on leveraging AI for risk registration and management.",
             domain_knowledge="artificial intelligence and risk assessment",
         ),
-        focus_keywords=["AI", "risk management", "data-driven insights"],
+        focus_keywords=["crime"],
         max_search_results=2,
         region="de-DE",
     )

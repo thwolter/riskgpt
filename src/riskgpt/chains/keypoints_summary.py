@@ -28,12 +28,16 @@ async def keypoints_summary_chain(
         prompt_name="keypoint_text",
     )
 
-    inputs = {
-        "key_points": "\n".join(
-            [
-                f"- {kp.topic.value}: {kp.content} {kp.source_url}"
-                for kp in request.key_points
-            ]
-        )
-    }
+    # Format key points, handling multiple sources if available
+    formatted_points = []
+    for kp in request.key_points:
+        sources = [kp.source_url] if kp.source_url else []
+        if hasattr(kp, "additional_sources") and kp.additional_sources:
+            sources.extend(kp.additional_sources)
+
+        # Format with all available sources
+        source_str = ", ".join([s for s in sources if s])
+        formatted_points.append(f"- {kp.topic.value}: {kp.content} {source_str}")
+
+    inputs = {"key_points": "\n".join(formatted_points)}
     return await chain.invoke(inputs)

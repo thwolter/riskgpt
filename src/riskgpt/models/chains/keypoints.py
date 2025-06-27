@@ -13,6 +13,7 @@ class KeyPoint(BaseModel):
     content: str
     topic: TopicEnum
     source_url: Optional[str] = None
+    additional_sources: List[str] = []
 
 
 class ExtractKeyPointsRequest(BaseModel):
