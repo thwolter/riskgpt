@@ -1,14 +1,14 @@
 from typing import List, Optional
 
-from pydantic import BaseModel, Field
+from pydantic import Field
 
-from riskgpt.models.base import BaseResponse
+from riskgpt.models.base import BaseRequest, BaseResponse
 from riskgpt.models.common import BusinessContext
 from riskgpt.models.enums import TopicEnum
 from riskgpt.models.helpers import SearchRequest
 
 
-class EnrichContextRequest(BaseModel):
+class EnrichContextRequest(BaseRequest):
     """Input model for external context enrichment."""
 
     business_context: BusinessContext
