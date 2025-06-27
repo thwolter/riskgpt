@@ -1,16 +1,19 @@
 version: "v1"
-description: "Extract only the key points present in the provided content for risk assessment."
-template: |
-  You are an expert at extracting key points from {source_type} sources.
+description: "Extract contextually clear key points from the provided content with a focus on defined keywords for risk assessment."
 
-  Please analyse the following {source_type} source and extract up to five most important key points.
-  - Only extract key points that are explicitly present in the provided content.  
-  - Do not add, infer, generalise, or speculate beyond what is stated in the source.
-  - Do not paraphrase or reword—use the language and facts from the source as closely as possible.
-  - Limit the number of key points to what is justified by the length and substance of the content.
-  - If there are few or no key points in the content, return an empty or very short list.
+template: |
+  You are an expert in extracting precise and contextually complete key points from {source_type} sources.
+
+  Please analyse the following {source_type} source and extract up to five key points based on the following rules:
+
+  - Focus on key points clearly related to the following focus keywords: {focus_keywords}.
+  - Each key point must be **fully self-contained and contextually clear**. Avoid vague references such as “these” or “such”.
+  - Use the exact language and facts from the source wherever possible. Do not paraphrase, generalise, or interpret.
+  - Limit the number of key points to those explicitly present in the content. If fewer than five relevant points exist, return only those. If none exist, return an empty or very short list.
+  - Extract **only** information that is explicitly stated. Do not infer or speculate beyond the content.
 
   {content}
-  
+
   {format_instructions}
-   Output the result as a JSON object conforming to the schema above. Do not include any additional text or commentary.
+
+  Output the result as a JSON object conforming to the schema above. Do not include any additional text or commentary.

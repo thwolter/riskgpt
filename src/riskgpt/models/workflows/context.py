@@ -21,6 +21,7 @@ class ExtractKeyPointsRequest(BaseModel):
 
     source_type: str
     content: str
+    focus_keywords: Optional[List[str]] = []
 
     @classmethod
     def from_source(cls, source: Source) -> "ExtractKeyPointsRequest":

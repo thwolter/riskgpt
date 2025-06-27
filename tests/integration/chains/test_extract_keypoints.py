@@ -230,6 +230,7 @@ async def test_extract_key_points_integration():
             "risk management systems. Regulators are starting to pay attention to these issues "
             "and are considering new guidelines for AI use in risk management."
         ),
+        focus_keywords=["guidelines"],
     )
 
     # Call the function under test with a real LLM
