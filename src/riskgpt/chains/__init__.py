@@ -6,8 +6,8 @@ from .check_definition import check_definition_chain
 from .communicate_risks import communicate_risks_chain
 from .correlation_tags import correlation_tags_chain
 from .cost_benefit import cost_benefit_chain
-from .extract_keypoints import extract_key_points
-from .keypoint_text import keypoint_text_chain
+from .extract_keypoints import extract_key_points_chain
+from .keypoints_summary import keypoints_summary_chain
 from .opportunities import opportunities_chain
 from .risk_assessment import risk_assessment_chain
 from .risk_categories import risk_categories_chain
@@ -25,8 +25,8 @@ __all__ = [
     "communicate_risks_chain",
     "correlation_tags_chain",
     "cost_benefit_chain",
-    "extract_key_points",
-    "keypoint_text_chain",
+    "extract_key_points_chain",
+    "keypoints_summary_chain",
     "opportunities_chain",
     "risk_assessment_chain",
     "risk_categories_chain",

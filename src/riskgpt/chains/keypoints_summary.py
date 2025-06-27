@@ -2,15 +2,15 @@ from langchain_core.output_parsers import PydanticOutputParser
 
 from riskgpt.chains.base import BaseChain
 from riskgpt.helpers.prompt_loader import load_prompt
-from riskgpt.models.workflows.context import (
-    KeyPointTextRequest,
-    KeyPointTextResponse,
+from riskgpt.models.chains.keypoints import (
+    KeyPointSummaryRequest,
+    KeyPointSummaryResponse,
 )
 
 
-async def keypoint_text_chain(
-    request: KeyPointTextRequest,
-) -> KeyPointTextResponse:
+async def keypoints_summary_chain(
+    request: KeyPointSummaryRequest,
+) -> KeyPointSummaryResponse:
     """
     Chain to generate text from key points with Harvard-style citations.
 
@@ -21,7 +21,7 @@ async def keypoint_text_chain(
     """
     prompt_data = load_prompt("keypoint_text")
 
-    parser = PydanticOutputParser(pydantic_object=KeyPointTextResponse)
+    parser = PydanticOutputParser(pydantic_object=KeyPointSummaryResponse)
     chain = BaseChain(
         prompt_template=prompt_data["template"],
         parser=parser,

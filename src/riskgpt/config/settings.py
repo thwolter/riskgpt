@@ -21,7 +21,6 @@ class RiskGPTSettings(BaseSettings):
     SEARCH_PROVIDER: Literal["duckduckgo", "google", "wikipedia", "tavily"] = Field(
         default="tavily"
     )
-    MAX_SEARCH_RESULTS: int = Field(default=3, ge=1, le=100)
     INCLUDE_WIKIPEDIA: bool = Field(default=False)
     GOOGLE_CSE_ID: Optional[str] = None
     GOOGLE_API_KEY: Optional[SecretStr] = None

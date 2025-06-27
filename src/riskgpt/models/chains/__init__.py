@@ -11,6 +11,13 @@ from .communication import CommunicationRequest, CommunicationResponse
 from .correlation import CorrelationTag, CorrelationTagRequest, CorrelationTagResponse
 from .definition_check import DefinitionCheckRequest, DefinitionCheckResponse
 from .drivers import DriverRequest, DriverResponse, RiskDriver
+from .keypoints import (
+    ExtractKeyPointsRequest,
+    ExtractKeyPointsResponse,
+    KeyPoint,
+    KeyPointSummaryRequest,
+    KeyPointSummaryResponse,
+)
 from .mitigation import Mitigation, MitigationRequest, MitigationResponse
 from .monitoring import RiskIndicator, RiskIndicatorRequest, RiskIndicatorResponse
 from .opportunity import Opportunity, OpportunityRequest, OpportunityResponse
@@ -48,6 +55,11 @@ __all__ = [
     "DriverRequest",
     "DriverResponse",
     "IdentifiedRisk",
+    "KeyPoint",
+    "ExtractKeyPointsRequest",
+    "ExtractKeyPointsResponse",
+    "KeyPointSummaryRequest",
+    "KeyPointSummaryResponse",
     "Mitigation",
     "MitigationRequest",
     "MitigationResponse",

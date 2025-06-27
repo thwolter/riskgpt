@@ -22,7 +22,6 @@ from riskgpt.helpers.circuit_breaker import (
     with_fallback,
 )
 from riskgpt.logger import logger
-from riskgpt.models.enums import TopicEnum
 from riskgpt.models.helpers.search import SearchRequest, SearchResponse, SearchResult
 
 settings = RiskGPTSettings()
@@ -41,19 +40,28 @@ def _search_fallback(payload: SearchRequest) -> SearchResponse:
 def _duckduckgo_search(payload: SearchRequest) -> SearchResponse:
     """Perform a DuckDuckGo search and format results."""
 
+    if payload.source_type.value.lower() in ["news"]:
+        source_type = payload.source_type.value.lower()
+        query = payload.query
+    else:
+        source_type = "text"  # Default to text for unsupported types
+        query = f"{payload.source_type.value} {payload.query}"
+
     results: List[SearchResult] = []
     try:
-        wrapper = DuckDuckGoSearchAPIWrapper()
-        search_results = wrapper.results(
-            query=payload.query, max_results=payload.max_results
+        wrapper = DuckDuckGoSearchAPIWrapper(
+            max_results=payload.max_results,
+            region=payload.region,
+            source=source_type,
         )
+        search_results = wrapper.results(query=query, max_results=payload.max_results)
         for item in search_results:
             results.append(
                 SearchResult(
                     title=item.get("title", ""),
                     url=item.get("link", ""),
                     date=item.get("date") or "",
-                    type=payload.source_type,
+                    type=payload.source_type.value,
                     content=item.get("snippet", ""),
                 )
             )
@@ -72,6 +80,7 @@ def _duckduckgo_search(payload: SearchRequest) -> SearchResponse:
 def _google_search(payload: SearchRequest) -> SearchResponse:
     """Perform a Google Custom Search and format results."""
     results: List[SearchResult] = []
+    query = f"{payload.source_type.value} {payload.query}"
 
     if not settings.GOOGLE_CSE_ID or not settings.GOOGLE_API_KEY:
         logger.warning("Google CSE ID or API key not configured")
@@ -86,9 +95,10 @@ def _google_search(payload: SearchRequest) -> SearchResponse:
         wrapper = GoogleSearchAPIWrapper(
             google_api_key=api_key,
             google_cse_id=settings.GOOGLE_CSE_ID,
+            k=payload.max_results,
         )
 
-        search_results = wrapper.results(payload.query, num_results=payload.max_results)
+        search_results = wrapper.results(query=query, num_results=payload.max_results)
 
         if not search_results or (
             len(search_results) == 1 and "Result" in search_results[0]
@@ -105,7 +115,7 @@ def _google_search(payload: SearchRequest) -> SearchResponse:
                     title=item.get("title", ""),
                     url=item.get("link", ""),
                     date="",  # Google doesn't provide date in the same way
-                    type=payload.source_type,
+                    type=payload.source_type.value,
                     content=item.get("snippet", ""),
                 )
             )
@@ -138,7 +148,7 @@ def _wikipedia_search(payload: SearchRequest) -> SearchResponse:
                     title=item.metadata.get("title", ""),
                     url=item.metadata.get("source", ""),
                     date="",  # Wikipedia doesn't provide date in the same way
-                    type=payload.source_type,
+                    type=payload.source_type.value,
                     content=item.metadata.get("summary", ""),
                 )
             )
@@ -157,6 +167,13 @@ def _wikipedia_search(payload: SearchRequest) -> SearchResponse:
 def _tavily_search(payload: SearchRequest) -> SearchResponse:
     """Perform a Tavily search and format results."""
 
+    if payload.source_type.value.lower() in ["general", "news", "finance"]:
+        topic = payload.source_type.value.lower()
+        query = payload.query
+    else:
+        topic = "general"  # Default to general for unsupported types
+        query = f"{payload.source_type.value} {payload.query}"
+
     results: List[SearchResult] = []
 
     if not settings.TAVILY_API_KEY:
@@ -171,12 +188,12 @@ def _tavily_search(payload: SearchRequest) -> SearchResponse:
         tool = TavilySearch(
             tavily_api_key=settings.TAVILY_API_KEY.get_secret_value(),
             max_results=payload.max_results,
-            topic="news" if payload.source_type == TopicEnum.NEWS.value else "general",
+            topic=topic,
             include_answer="basic",
             include_raw_content="text",
         )
 
-        search_results = tool.invoke(payload.query)
+        search_results = tool.invoke(query)
 
         # Check if we got valid results
         if not search_results:
@@ -191,7 +208,7 @@ def _tavily_search(payload: SearchRequest) -> SearchResponse:
                     title=item.get("title", ""),
                     url=item.get("url", ""),
                     date=item.get("published_date", ""),
-                    type=payload.source_type,
+                    type=payload.source_type.value,
                     content=item.get("raw_content", ""),
                     score=item.get("score", None),
                 )

@@ -28,15 +28,15 @@ import logging
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
-from riskgpt.chains.extract_keypoints import extract_key_points
+from riskgpt.chains.extract_keypoints import extract_key_points_chain
 from riskgpt.logger import configure_logging
 from riskgpt.models.base import ResponseInfo
-from riskgpt.models.enums import TopicEnum
-from riskgpt.models.workflows.context import (
+from riskgpt.models.chains.keypoints import (
     ExtractKeyPointsRequest,
     ExtractKeyPointsResponse,
     KeyPoint,
 )
+from riskgpt.models.enums import TopicEnum
 
 
 @pytest.mark.asyncio
@@ -80,7 +80,7 @@ async def test_extract_key_points_news(monkeypatch, caplog):
         )
 
         # Call the function under test
-        result = await extract_key_points(request)
+        result = await extract_key_points_chain(request)
 
         # Verify the result
         assert isinstance(result, ExtractKeyPointsResponse)
@@ -139,7 +139,7 @@ async def test_extract_key_points_research(monkeypatch, caplog):
         )
 
         # Call the function under test
-        result = await extract_key_points(request)
+        result = await extract_key_points_chain(request)
 
         # Verify the result
         assert isinstance(result, ExtractKeyPointsResponse)
@@ -196,7 +196,7 @@ async def test_extract_key_points_from_source(monkeypatch, caplog):
         request = ExtractKeyPointsRequest.from_source(mock_source)
 
         # Call the function under test
-        result = await extract_key_points(request)
+        result = await extract_key_points_chain(request)
 
         # Verify the result
         assert isinstance(result, ExtractKeyPointsResponse)
@@ -234,7 +234,7 @@ async def test_extract_key_points_integration():
     )
 
     # Call the function under test with a real LLM
-    result = await extract_key_points(request)
+    result = await extract_key_points_chain(request)
 
     # Verify the structure of the response
     assert isinstance(result, ExtractKeyPointsResponse)

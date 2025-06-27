@@ -4,13 +4,13 @@ from unittest.mock import patch
 
 import pytest
 import yaml
-from riskgpt.chains.keypoint_text import keypoint_text_chain
-from riskgpt.models.enums import TopicEnum
-from riskgpt.models.workflows.context import (
+from riskgpt.chains.keypoints_summary import keypoints_summary_chain
+from riskgpt.models.chains.keypoints import (
     KeyPoint,
-    KeyPointTextRequest,
-    KeyPointTextResponse,
+    KeyPointSummaryRequest,
+    KeyPointSummaryResponse,
 )
+from riskgpt.models.enums import TopicEnum
 
 
 @pytest.fixture
@@ -39,8 +39,8 @@ def test_key_points() -> List[KeyPoint]:
 async def test_keypoint_text_chain(test_key_points) -> None:
     """Test the keypoint_text_chain function with real API calls."""
 
-    request = KeyPointTextRequest(key_points=test_key_points)
-    response: KeyPointTextResponse = await keypoint_text_chain(request)
+    request = KeyPointSummaryRequest(key_points=test_key_points)
+    response: KeyPointSummaryResponse = await keypoints_summary_chain(request)
 
     # Verify the response structure
     assert response.text is not None
@@ -61,7 +61,7 @@ async def test_keypoint_text_chain(test_key_points) -> None:
 async def test_keypoint_text_chain_with_mock(test_key_points):
     """Test keypoint_text_chain with mocked BaseChain.invoke."""
 
-    expected = KeyPointTextResponse(
+    expected = KeyPointSummaryResponse(
         text="The global market for AI is expected to grow by 37% annually until 2030 (Example.com, 2023). "
         "Regulatory frameworks for AI are being developed in the EU (Example.eu, 2023). "
         "Industry leaders are investing heavily in responsible AI development (LinkedIn, 2023).",
@@ -76,8 +76,8 @@ async def test_keypoint_text_chain_with_mock(test_key_points):
         return expected
 
     with patch("riskgpt.chains.base.BaseChain.invoke", side_effect=mock_invoke):
-        request = KeyPointTextRequest(key_points=test_key_points)
-        resp = await keypoint_text_chain(request)
+        request = KeyPointSummaryRequest(key_points=test_key_points)
+        resp = await keypoints_summary_chain(request)
         assert resp.text == resp.text
         assert resp.references == expected.references
 
@@ -116,10 +116,10 @@ def test_long_key_points() -> List[KeyPoint]:
 
 @pytest.mark.integration
 @pytest.mark.asyncio
-async def test_keypoint_text_chain_with_long_keypoints(test_long_key_points):
+async def test_keypoint_text_chain_with_long_keypoints(test_long_key_points) -> None:
     """Test keypoint_text_chain with mocked BaseChain.invoke."""
 
-    request = KeyPointTextRequest(key_points=test_long_key_points)
-    response: KeyPointTextResponse = await keypoint_text_chain(request)
+    request = KeyPointSummaryRequest(key_points=test_long_key_points)
+    response: KeyPointSummaryResponse = await keypoints_summary_chain(request)
 
     assert response.text == response.text

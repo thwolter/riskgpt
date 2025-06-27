@@ -43,13 +43,14 @@ class SearchRequest(BaseModel):
     """Request model for search queries."""
 
     query: str = Field(description="Search query string")
-    source_type: str = Field(
-        default="",
+    source_type: TopicEnum = Field(
+        default=TopicEnum.NEWS,
         description="Type of source to search (e.g., news, professional, regulatory, peer)",
     )
     max_results: int = Field(
         default=3, ge=1, le=100, description="Maximum number of results to return"
     )
+    region: str = "wt-wt"  # Default to 'wt-wt' for worldwide
 
     model_config = {
         "json_schema_extra": {

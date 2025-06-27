@@ -2,15 +2,17 @@ from unittest.mock import patch
 
 import pytest
 from riskgpt.models.base import ResponseInfo
+from riskgpt.models.chains.keypoints import (
+    ExtractKeyPointsResponse,
+    KeyPoint,
+    KeyPointSummaryResponse,
+)
 from riskgpt.models.common import BusinessContext
 from riskgpt.models.enums import TopicEnum
 from riskgpt.models.helpers.search import SearchResponse, SearchResult
 from riskgpt.models.workflows.context import (
     EnrichContextRequest,
     EnrichContextResponse,
-    ExtractKeyPointsResponse,
-    KeyPoint,
-    KeyPointTextResponse,
 )
 from riskgpt.workflows.enrich_context import enrich_context
 
@@ -25,6 +27,8 @@ def test_request():
             domain_knowledge="artificial intelligence and risk assessment",
         ),
         focus_keywords=["AI", "risk management", "data-driven insights"],
+        max_search_results=2,
+        region="de-DE",
     )
 
 
@@ -80,7 +84,6 @@ def mock_settings(monkeypatch):
     """Fixture to patch the settings to use tavily as the search provider."""
     monkeypatch.setattr("riskgpt.helpers.search.settings.SEARCH_PROVIDER", "tavily")
     monkeypatch.setattr("riskgpt.helpers.search.settings.INCLUDE_WIKIPEDIA", False)
-    monkeypatch.setattr("riskgpt.helpers.search.settings.MAX_SEARCH_RESULTS", 2)
     yield
 
 
@@ -131,7 +134,7 @@ def mock_key_points():
 
 @pytest.fixture
 def keypoint_text_resp():
-    return KeyPointTextResponse(
+    return KeyPointSummaryResponse(
         model_version="1.0",
         response_info=ResponseInfo(
             consumed_tokens=1068,
@@ -153,19 +156,19 @@ def mock_extract_key_points(mock_key_points):
 
     # Patch at the location where enrich_context imports/calls it
     with patch(
-        "riskgpt.workflows.enrich_context.extract_key_points",
+        "riskgpt.chains.extract_keypoints.extract_key_points_chain",
         return_value=mock_key_points,
     ) as mock:
         yield mock
 
 
 @pytest.fixture
-def mock_keypoint_text_chain(keypoint_text_resp):
+def mock_keypoints_summary_chain(keypoint_text_resp):
     """Fixture to patch the keypoint text chain."""
 
     # Patch the keypoint_text_chain to return mock_key_points
     with patch(
-        "riskgpt.workflows.enrich_context.keypoint_text_chain",
+        "riskgpt.chains.keypoints_summary.keypoints_summary_chain",
         return_value=keypoint_text_resp,
     ) as mock:
         yield mock
@@ -173,30 +176,29 @@ def mock_keypoint_text_chain(keypoint_text_resp):
 
 @pytest.mark.integration
 @pytest.mark.asyncio
-async def test_enrich_context_tavili(monkeypatch, test_request, mock_settings):
+async def test_enrich_context_tavili(monkeypatch, test_request, mock_settings) -> None:
     monkeypatch.setattr("riskgpt.helpers.search.settings.SEARCH_PROVIDER", "tavily")
     monkeypatch.setattr("riskgpt.helpers.search.settings.INCLUDE_WIKIPEDIA", False)
-    monkeypatch.setattr("riskgpt.helpers.search.settings.MAX_SEARCH_RESULTS", 2)
     response: EnrichContextResponse = await enrich_context(test_request)
     assert response.sector_summary
 
 
 @pytest.mark.integration
 @pytest.mark.asyncio
-async def test_enrich_context_duckduckgo(monkeypatch, test_request, mock_settings):
+async def test_enrich_context_duckduckgo(
+    monkeypatch, test_request, mock_settings
+) -> None:
     monkeypatch.setattr("riskgpt.helpers.search.settings.SEARCH_PROVIDER", "duckduckgo")
     monkeypatch.setattr("riskgpt.helpers.search.settings.INCLUDE_WIKIPEDIA", False)
-    monkeypatch.setattr("riskgpt.helpers.search.settings.MAX_SEARCH_RESULTS", 2)
     response: EnrichContextResponse = await enrich_context(test_request)
     assert response.sector_summary
 
 
 @pytest.mark.integration
 @pytest.mark.asyncio
-async def test_enrich_context_google(monkeypatch, test_request, mock_settings):
+async def test_enrich_context_google(monkeypatch, test_request, mock_settings) -> None:
     monkeypatch.setattr("riskgpt.helpers.search.settings.SEARCH_PROVIDER", "google")
     monkeypatch.setattr("riskgpt.helpers.search.settings.INCLUDE_WIKIPEDIA", False)
-    monkeypatch.setattr("riskgpt.helpers.search.settings.MAX_SEARCH_RESULTS", 2)
     response: EnrichContextResponse = await enrich_context(test_request)
     assert response.sector_summary
 
@@ -205,22 +207,23 @@ async def test_enrich_context_google(monkeypatch, test_request, mock_settings):
 @pytest.mark.asyncio
 async def test_enrich_context_duckduckgo_and_wikipedia(
     monkeypatch, test_request, mock_settings
-):
+) -> None:
     monkeypatch.setattr("riskgpt.helpers.search.settings.SEARCH_PROVIDER", "duckduckgo")
     monkeypatch.setattr("riskgpt.helpers.search.settings.INCLUDE_WIKIPEDIA", True)
-    monkeypatch.setattr("riskgpt.helpers.search.settings.MAX_SEARCH_RESULTS", 2)
     response: EnrichContextResponse = await enrich_context(test_request)
     assert response.sector_summary
 
 
+# todo: Check this test: It should mock and not call the LLM
+@pytest.mark.integration
 @pytest.mark.asyncio
 async def test_enrich_context_with_mock(
     test_request,
     mock_settings,
     mock_search,
     mock_extract_key_points,
-    mock_keypoint_text_chain,
-):
+    mock_keypoints_summary_chain,
+) -> None:
     """Test enrich_context with mocked search results and key points extraction."""
 
     response = await enrich_context(test_request)

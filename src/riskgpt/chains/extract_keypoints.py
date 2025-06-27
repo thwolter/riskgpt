@@ -2,13 +2,13 @@ from langchain_core.output_parsers import PydanticOutputParser
 
 from riskgpt.chains.base import BaseChain
 from riskgpt.helpers.prompt_loader import load_prompt
-from riskgpt.models.workflows.context import (
+from riskgpt.models.chains.keypoints import (
     ExtractKeyPointsRequest,
     ExtractKeyPointsResponse,
 )
 
 
-async def extract_key_points(
+async def extract_key_points_chain(
     request: ExtractKeyPointsRequest,
 ) -> ExtractKeyPointsResponse:
     """Extract key points from a source using an LLM."""
