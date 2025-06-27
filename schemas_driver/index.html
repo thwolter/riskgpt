@@ -1,0 +1,1539 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+        <link rel="canonical" href="https://thwolter.github.io/riskgpt/schemas_driver/">
+      
+      
+        <link rel="prev" href="../schemas_assessment/">
+      
+      
+        <link rel="next" href="../schemas_category/">
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.14">
+    
+    
+      
+        <title>Driver Models - RiskGPT</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.342714a4.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#driver-schema-models" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="RiskGPT" class="md-header__button md-logo" aria-label="RiskGPT" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            RiskGPT
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Driver Models
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="RiskGPT" class="md-nav__button md-logo" aria-label="RiskGPT" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    RiskGPT
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Home
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Chains
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            Chains
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../risk_categories/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Get Categories
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../check_definition/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Check Definition
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../risk_drivers/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Get Drivers
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../risk_assessment/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Get Assessment
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../risk_mitigations/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Get Mitigations
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../risk_indicators/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Get Monitoring
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../opportunities/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Get Opportunities
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../risk_identification/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Get Risks
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../prioritize_risks/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Prioritize Risks
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cost_benefit/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Cost Benefit
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../communicate_risks/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Communicate Risks
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Workflows
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            Workflows
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../risk_workflow/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Risk Workflow
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../prepare_presentation_output/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Prepare Presentation Output
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../external_context_enrichment/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    External Context Enrichment
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../check_context_quality/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Check Context Quality
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../publishing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Publishing
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Design
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            Design
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../design/audience_output/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Audience Output
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../design/prepare_presentation_output/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Prepare Presentation Output
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Schemas
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            Schemas
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../schemas_base/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Base Models
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../schemas_risk/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Risk Models
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../schemas_assessment/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Assessment Models
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    Driver Models
+    
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    Driver Models
+    
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      Overview
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#models" class="md-nav__link">
+    <span class="md-ellipsis">
+      Models
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Models">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#driverrequest" class="md-nav__link">
+    <span class="md-ellipsis">
+      DriverRequest
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#driverresponse" class="md-nav__link">
+    <span class="md-ellipsis">
+      DriverResponse
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#mitigationrequest" class="md-nav__link">
+    <span class="md-ellipsis">
+      MitigationRequest
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#mitigationresponse" class="md-nav__link">
+    <span class="md-ellipsis">
+      MitigationResponse
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#usage" class="md-nav__link">
+    <span class="md-ellipsis">
+      Usage
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Usage">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#driver-identification" class="md-nav__link">
+    <span class="md-ellipsis">
+      Driver Identification
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#mitigation-identification" class="md-nav__link">
+    <span class="md-ellipsis">
+      Mitigation Identification
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#drivers-in-presentation-workflow" class="md-nav__link">
+    <span class="md-ellipsis">
+      Drivers in Presentation Workflow
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../schemas_category/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Category Models
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../schemas_presentation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Presentation Models
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../schemas_external_context/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    External Context Models
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../schemas_context_quality/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Context Quality Models
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      Overview
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#models" class="md-nav__link">
+    <span class="md-ellipsis">
+      Models
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Models">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#driverrequest" class="md-nav__link">
+    <span class="md-ellipsis">
+      DriverRequest
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#driverresponse" class="md-nav__link">
+    <span class="md-ellipsis">
+      DriverResponse
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#mitigationrequest" class="md-nav__link">
+    <span class="md-ellipsis">
+      MitigationRequest
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#mitigationresponse" class="md-nav__link">
+    <span class="md-ellipsis">
+      MitigationResponse
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#usage" class="md-nav__link">
+    <span class="md-ellipsis">
+      Usage
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Usage">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#driver-identification" class="md-nav__link">
+    <span class="md-ellipsis">
+      Driver Identification
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#mitigation-identification" class="md-nav__link">
+    <span class="md-ellipsis">
+      Mitigation Identification
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#drivers-in-presentation-workflow" class="md-nav__link">
+    <span class="md-ellipsis">
+      Drivers in Presentation Workflow
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="driver-schema-models">Driver Schema Models<a class="headerlink" href="#driver-schema-models" title="Permanent link">&para;</a></h1>
+<p>This page documents the schema models related to risk drivers in the RiskGPT application.</p>
+<h2 id="overview">Overview<a class="headerlink" href="#overview" title="Permanent link">&para;</a></h2>
+<p>The driver schema models define the structure for risk driver identification requests and responses. Risk drivers are factors that contribute to or influence the likelihood or impact of a risk.</p>
+<h2 id="models">Models<a class="headerlink" href="#models" title="Permanent link">&para;</a></h2>
+<h3 id="driverrequest">DriverRequest<a class="headerlink" href="#driverrequest" title="Permanent link">&para;</a></h3>
+<div class="codehilite"><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">DriverRequest</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+    <span class="n">business_context</span><span class="p">:</span> <span class="n">BusinessContext</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Business context information&quot;</span>
+    <span class="p">)</span>
+    <span class="n">risk_description</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Risk description to identify drivers for&quot;</span>
+    <span class="p">)</span>
+</code></pre></div>
+
+<p>Input model for risk driver identification.</p>
+<p><strong>Fields:</strong>
+- <code>business_context</code> (BusinessContext): Business context information
+- <code>risk_description</code> (str): Risk description to identify drivers for</p>
+<p><strong>Example:</strong></p>
+<div class="codehilite"><pre><span></span><code><span class="p">{</span>
+    <span class="s2">&quot;business_context&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;project_id&quot;</span><span class="p">:</span> <span class="s2">&quot;CRM-2023&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;project_description&quot;</span><span class="p">:</span> <span class="s2">&quot;Implementation of a new CRM system&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;language&quot;</span><span class="p">:</span> <span class="s2">&quot;en&quot;</span><span class="p">,</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;risk_description&quot;</span><span class="p">:</span> <span class="s2">&quot;There is a 30% probability that the CRM implementation will experience critical technical failures within the first 3 months of deployment.&quot;</span><span class="p">,</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<h3 id="driverresponse">DriverResponse<a class="headerlink" href="#driverresponse" title="Permanent link">&para;</a></h3>
+<div class="codehilite"><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">DriverResponse</span><span class="p">(</span><span class="n">BaseResponse</span><span class="p">):</span>
+    <span class="n">drivers</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">description</span><span class="o">=</span><span class="s2">&quot;List of identified risk drivers&quot;</span><span class="p">)</span>
+    <span class="n">references</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;References used for driver identification&quot;</span>
+    <span class="p">)</span>
+</code></pre></div>
+
+<p>Output model containing risk drivers.</p>
+<p><strong>Fields:</strong>
+- <code>drivers</code> (List[str]): List of identified risk drivers
+- <code>references</code> (Optional[List[str]]): References used for driver identification
+- <code>model_version</code> (str): Schema version for backward compatibility (inherited from BaseResponse)
+- <code>response_info</code> (Optional[ResponseInfo]): Information about the response processing (inherited from BaseResponse)</p>
+<p><strong>Example:</strong></p>
+<div class="codehilite"><pre><span></span><code><span class="p">{</span>
+    <span class="s2">&quot;drivers&quot;</span><span class="p">:</span> <span class="p">[</span>
+        <span class="s2">&quot;Inadequate testing before deployment&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;Incompatibility with existing systems&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;Poor data quality in source systems&quot;</span><span class="p">,</span>
+    <span class="p">],</span>
+    <span class="s2">&quot;references&quot;</span><span class="p">:</span> <span class="p">[</span>
+        <span class="s2">&quot;Industry report on CRM implementations&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;Internal lessons learned&quot;</span><span class="p">,</span>
+    <span class="p">],</span>
+    <span class="s2">&quot;model_version&quot;</span><span class="p">:</span> <span class="s2">&quot;1.0&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;response_info&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;consumed_tokens&quot;</span><span class="p">:</span> <span class="mi">1300</span><span class="p">,</span>
+        <span class="s2">&quot;total_cost&quot;</span><span class="p">:</span> <span class="mf">0.026</span><span class="p">,</span>
+        <span class="s2">&quot;prompt_name&quot;</span><span class="p">:</span> <span class="s2">&quot;risk_drivers&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;model_name&quot;</span><span class="p">:</span> <span class="s2">&quot;gpt-4&quot;</span><span class="p">,</span>
+    <span class="p">},</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<h3 id="mitigationrequest">MitigationRequest<a class="headerlink" href="#mitigationrequest" title="Permanent link">&para;</a></h3>
+<div class="codehilite"><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">MitigationRequest</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+    <span class="n">business_context</span><span class="p">:</span> <span class="n">BusinessContext</span>
+    <span class="n">risk_description</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">drivers</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>
+</code></pre></div>
+
+<p>Input model for risk mitigation measures.</p>
+<p><strong>Fields:</strong>
+- <code>business_context</code> (BusinessContext): Business context information
+- <code>risk_description</code> (str): Risk description to identify mitigation measures for
+- <code>drivers</code> (Optional[List[str]]): List of risk drivers to consider for mitigation</p>
+<p><strong>Example:</strong></p>
+<div class="codehilite"><pre><span></span><code><span class="p">{</span>
+    <span class="s2">&quot;business_context&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;project_id&quot;</span><span class="p">:</span> <span class="s2">&quot;CRM-2023&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;project_description&quot;</span><span class="p">:</span> <span class="s2">&quot;Implementation of a new CRM system&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;language&quot;</span><span class="p">:</span> <span class="s2">&quot;en&quot;</span><span class="p">,</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;risk_description&quot;</span><span class="p">:</span> <span class="s2">&quot;There is a 30% probability that the CRM implementation will experience critical technical failures within the first 3 months of deployment.&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;drivers&quot;</span><span class="p">:</span> <span class="p">[</span>
+        <span class="s2">&quot;Inadequate testing before deployment&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;Incompatibility with existing systems&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;Poor data quality in source systems&quot;</span><span class="p">,</span>
+    <span class="p">],</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<h3 id="mitigationresponse">MitigationResponse<a class="headerlink" href="#mitigationresponse" title="Permanent link">&para;</a></h3>
+<div class="codehilite"><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">MitigationResponse</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+    <span class="n">mitigations</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
+    <span class="n">references</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">response_info</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ResponseInfo</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+</code></pre></div>
+
+<p>Output model containing mitigation measures.</p>
+<p><strong>Fields:</strong>
+- <code>mitigations</code> (List[str]): List of mitigation measures
+- <code>references</code> (Optional[List[str]]): References used for mitigation identification
+- <code>response_info</code> (Optional[ResponseInfo]): Information about the response processing</p>
+<p><strong>Example:</strong></p>
+<div class="codehilite"><pre><span></span><code><span class="p">{</span>
+    <span class="s2">&quot;mitigations&quot;</span><span class="p">:</span> <span class="p">[</span>
+        <span class="s2">&quot;Implement comprehensive testing plan including unit, integration, and user acceptance testing&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;Conduct thorough compatibility assessment with existing systems before deployment&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;Perform data quality assessment and cleansing of source data before migration&quot;</span><span class="p">,</span>
+    <span class="p">],</span>
+    <span class="s2">&quot;references&quot;</span><span class="p">:</span> <span class="p">[</span>
+        <span class="s2">&quot;Industry best practices for CRM implementations&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;Internal testing guidelines&quot;</span><span class="p">,</span>
+    <span class="p">],</span>
+    <span class="s2">&quot;response_info&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;consumed_tokens&quot;</span><span class="p">:</span> <span class="mi">1350</span><span class="p">,</span>
+        <span class="s2">&quot;total_cost&quot;</span><span class="p">:</span> <span class="mf">0.027</span><span class="p">,</span>
+        <span class="s2">&quot;prompt_name&quot;</span><span class="p">:</span> <span class="s2">&quot;risk_mitigations&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;model_name&quot;</span><span class="p">:</span> <span class="s2">&quot;gpt-4&quot;</span><span class="p">,</span>
+    <span class="p">},</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<h2 id="usage">Usage<a class="headerlink" href="#usage" title="Permanent link">&para;</a></h2>
+<p>These models are used in the driver identification and mitigation chains to identify factors that contribute to risks and suggest mitigation measures.</p>
+<h3 id="driver-identification">Driver Identification<a class="headerlink" href="#driver-identification" title="Permanent link">&para;</a></h3>
+<div class="codehilite"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">src</span><span class="w"> </span><span class="kn">import</span> <span class="n">BusinessContext</span><span class="p">,</span> <span class="n">DriverRequest</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">src</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_drivers_chain</span>
+
+<span class="c1"># Create a request</span>
+<span class="n">request</span> <span class="o">=</span> <span class="n">DriverRequest</span><span class="p">(</span>
+    <span class="n">business_context</span><span class="o">=</span><span class="n">BusinessContext</span><span class="p">(</span>
+        <span class="n">project_id</span><span class="o">=</span><span class="s2">&quot;PRJ-2023-001&quot;</span><span class="p">,</span>
+        <span class="n">project_description</span><span class="o">=</span><span class="s2">&quot;Implementation of a new CRM system&quot;</span><span class="p">,</span>
+        <span class="n">domain_knowledge</span><span class="o">=</span><span class="s2">&quot;The company operates in the B2B sector&quot;</span><span class="p">,</span>
+    <span class="p">),</span>
+    <span class="n">risk_description</span><span class="o">=</span><span class="s2">&quot;There is a 30% probability that the CRM implementation will experience critical technical failures within the first 3 months of deployment.&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="c1"># Run the chain</span>
+<span class="n">response</span> <span class="o">=</span> <span class="n">get_drivers_chain</span><span class="p">(</span><span class="n">request</span><span class="p">)</span>
+
+<span class="c1"># Access the results</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Risk Drivers:&quot;</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">driver</span> <span class="ow">in</span> <span class="n">response</span><span class="o">.</span><span class="n">drivers</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;- </span><span class="si">{</span><span class="n">driver</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</code></pre></div>
+
+<h3 id="mitigation-identification">Mitigation Identification<a class="headerlink" href="#mitigation-identification" title="Permanent link">&para;</a></h3>
+<div class="codehilite"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">src</span><span class="w"> </span><span class="kn">import</span> <span class="n">BusinessContext</span><span class="p">,</span> <span class="n">MitigationRequest</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">src</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_mitigations_chain</span>
+
+<span class="c1"># Create a request</span>
+<span class="n">request</span> <span class="o">=</span> <span class="n">MitigationRequest</span><span class="p">(</span>
+    <span class="n">business_context</span><span class="o">=</span><span class="n">BusinessContext</span><span class="p">(</span>
+        <span class="n">project_id</span><span class="o">=</span><span class="s2">&quot;PRJ-2023-001&quot;</span><span class="p">,</span>
+        <span class="n">project_description</span><span class="o">=</span><span class="s2">&quot;Implementation of a new CRM system&quot;</span><span class="p">,</span>
+        <span class="n">domain_knowledge</span><span class="o">=</span><span class="s2">&quot;The company operates in the B2B sector&quot;</span><span class="p">,</span>
+    <span class="p">),</span>
+    <span class="n">risk_description</span><span class="o">=</span><span class="s2">&quot;There is a 30% probability that the CRM implementation will experience critical technical failures within the first 3 months of deployment.&quot;</span><span class="p">,</span>
+    <span class="n">drivers</span><span class="o">=</span><span class="p">[</span>
+        <span class="s2">&quot;Inadequate testing before deployment&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;Incompatibility with existing systems&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;Poor data quality in source systems&quot;</span><span class="p">,</span>
+    <span class="p">],</span>
+<span class="p">)</span>
+
+<span class="c1"># Run the chain</span>
+<span class="n">response</span> <span class="o">=</span> <span class="n">get_mitigations_chain</span><span class="p">(</span><span class="n">request</span><span class="p">)</span>
+
+<span class="c1"># Access the results</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Mitigation Measures:&quot;</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">mitigation</span> <span class="ow">in</span> <span class="n">response</span><span class="o">.</span><span class="n">mitigations</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;- </span><span class="si">{</span><span class="n">mitigation</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</code></pre></div>
+
+<h3 id="drivers-in-presentation-workflow">Drivers in Presentation Workflow<a class="headerlink" href="#drivers-in-presentation-workflow" title="Permanent link">&para;</a></h3>
+<p>The driver models are also used in the prepare_presentation_output workflow:</p>
+<div class="codehilite"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">src</span><span class="w"> </span><span class="kn">import</span> <span class="n">BusinessContext</span><span class="p">,</span> <span class="n">PresentationRequest</span><span class="p">,</span> <span class="n">AudienceEnum</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">src</span><span class="w"> </span><span class="kn">import</span> <span class="n">prepare_presentation_output</span>
+
+<span class="c1"># Create a request</span>
+<span class="n">request</span> <span class="o">=</span> <span class="n">PresentationRequest</span><span class="p">(</span>
+    <span class="n">business_context</span><span class="o">=</span><span class="n">BusinessContext</span><span class="p">(</span>
+        <span class="n">project_id</span><span class="o">=</span><span class="s2">&quot;PRJ-2023-001&quot;</span><span class="p">,</span>
+        <span class="n">project_description</span><span class="o">=</span><span class="s2">&quot;Implementation of a new CRM system&quot;</span><span class="p">,</span>
+        <span class="n">domain_knowledge</span><span class="o">=</span><span class="s2">&quot;The company operates in the B2B sector&quot;</span><span class="p">,</span>
+    <span class="p">),</span>
+    <span class="n">audience</span><span class="o">=</span><span class="n">AudienceEnum</span><span class="o">.</span><span class="n">executive</span><span class="p">,</span>
+    <span class="n">focus_areas</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;Technical&quot;</span><span class="p">],</span>
+<span class="p">)</span>
+
+<span class="c1"># Run the workflow</span>
+<span class="n">response</span> <span class="o">=</span> <span class="n">prepare_presentation_output</span><span class="p">(</span><span class="n">request</span><span class="p">)</span>
+
+<span class="c1"># Access the drivers in the response</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Key Drivers:&quot;</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">driver</span> <span class="ow">in</span> <span class="n">response</span><span class="o">.</span><span class="n">key_drivers</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;- </span><span class="si">{</span><span class="n">driver</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</code></pre></div>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      <script id="__config" type="application/json">{"base": "..", "features": [], "search": "../assets/javascripts/workers/search.d50fe291.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.13a4f30d.min.js"></script>
+      
+    
+  </body>
+</html>
