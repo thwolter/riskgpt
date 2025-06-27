@@ -3,8 +3,8 @@ import sys
 import types
 
 import pytest
-from helpers import prompt_loader
-from processors.input_validator import (
+from riskgpt.helpers import prompt_loader
+from riskgpt.processors.input_validator import (
     validate_assessment_request,
     validate_category_request,
     validate_mitigation_request,

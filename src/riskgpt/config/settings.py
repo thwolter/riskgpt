@@ -39,3 +39,6 @@ class RiskGPTSettings(BaseSettings):
         if v not in allowed:
             raise ValueError("Input should be 'none', 'buffer' or 'redis'")
         return v
+
+
+settings = RiskGPTSettings()

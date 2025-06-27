@@ -13,7 +13,7 @@ import logger
 
 from riskgpt.helpers.search import search
 from riskgpt.models.common import BusinessContext
-from riskgpt.models.utils.search import SearchRequest, SearchResponse
+from riskgpt.models.helpers.search import SearchRequest, SearchResponse
 
 
 def search_context(search_request: SearchRequest) -> SearchResponse:

@@ -4,7 +4,7 @@ import pytest
 from riskgpt.models.base import ResponseInfo
 from riskgpt.models.common import BusinessContext
 from riskgpt.models.enums import TopicEnum
-from riskgpt.models.utils.search import SearchResponse, SearchResult
+from riskgpt.models.helpers.search import SearchResponse, SearchResult
 from riskgpt.models.workflows.context import (
     EnrichContextRequest,
     EnrichContextResponse,

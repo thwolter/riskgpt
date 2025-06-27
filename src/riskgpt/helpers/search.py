@@ -23,7 +23,7 @@ from riskgpt.helpers.circuit_breaker import (
 )
 from riskgpt.logger import logger
 from riskgpt.models.enums import TopicEnum
-from riskgpt.models.utils.search import SearchRequest, SearchResponse, SearchResult
+from riskgpt.models.helpers.search import SearchRequest, SearchResponse, SearchResult
 
 settings = RiskGPTSettings()
 

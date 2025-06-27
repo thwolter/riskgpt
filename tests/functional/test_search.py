@@ -3,7 +3,7 @@ from unittest.mock import patch
 
 import pytest
 from riskgpt.helpers.search import _google_search, _wikipedia_search, search
-from riskgpt.models.utils.search import SearchRequest, SearchResponse, SearchResult
+from riskgpt.models.helpers.search import SearchRequest, SearchResponse, SearchResult
 
 
 @pytest.mark.skipif(

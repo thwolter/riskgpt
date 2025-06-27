@@ -4,12 +4,12 @@ from typing import Annotated, List, TypedDict, TypeVar
 
 from langgraph.graph import END, StateGraph, add_messages
 
+from riskgpt.chains.extract_keypoints import extract_key_points
 from riskgpt.chains.keypoint_text import keypoint_text_chain
-from riskgpt.helpers.extraction import extract_key_points
 from riskgpt.helpers.search import search, settings
 from riskgpt.models.base import ResponseInfo
 from riskgpt.models.enums import TopicEnum
-from riskgpt.models.utils.search import SearchRequest, SearchResponse, Source
+from riskgpt.models.helpers.search import SearchRequest, SearchResponse, Source
 from riskgpt.models.workflows.context import (
     EnrichContextRequest,
     EnrichContextResponse,

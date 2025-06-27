@@ -85,10 +85,10 @@ pip install git+https://github.com/thwolter/riskgpt.git
 Basic usage example:
 
 ```python
-from riskgpt import configure_logging
+from riskgpt.logger import configure_logging
 from riskgpt.models.common import BusinessContext
-from riskgpt.workflows.risk_workflow import risk_workflow
-from riskgpt.models.chains import RiskRequest
+from riskgpt.workflows import enrich_context
+from riskgpt.models.workflows import EnrichContextRequest
 
 # Configure logging
 configure_logging()
@@ -96,19 +96,19 @@ configure_logging()
 # Create a business context
 context = BusinessContext(
     project_id="ACME-1",
-    project_name="ACME Corp Security Upgrade",
     project_description="Implement new cybersecurity measures across all departments"
 )
 
 # Create a risk request
-request = RiskRequest(
+request = EnrichContextRequest(
     business_context=context,
-    category="cybersecurity"
+    focus_keywords=['cybersecurity'],
+    time_horizon_months=12
 )
 
 # Run the risk workflow (async function)
 import asyncio
-result = asyncio.run(risk_workflow(request))
+result = asyncio.run(enrich_context(request))
 ```
 
 ### Google Colab Usage
@@ -251,24 +251,6 @@ Integration tests require real external services and valid API keys:
 export OPENAI_API_KEY=sk-test-123
 export DOCUMENT_SERVICE_URL=https://example.com
 uv run pytest -m integration
-```
-
-## 📚 Programmatic API
-
-RiskGPT exposes helper functions to access search and document services directly:
-
-```python
-from riskgpt.api import search_context, fetch_documents
-from riskgpt.models.common import BusinessContext
-from riskgpt.models.utils.search import SearchRequest
-
-# Search recent news
-search_req = SearchRequest(query="ACME Corp cybersecurity", context_type="news")
-search_response = search_context(search_req)
-
-# Retrieve project documents
-context = BusinessContext(project_id="ACME-1")
-doc_uuids = fetch_documents(context)  # Returns list of document UUIDs
 ```
 
 ## 📄 License
