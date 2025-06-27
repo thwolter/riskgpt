@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "riskgpt"
-version = "0.2.1"
+version = "0.2.2"
 description = "Analyze project risks and opportunities using AI"
 readme = "README.md"
 license = "MIT"
@@ -34,6 +34,7 @@ dependencies = [
     "redis>=6.2.0",
     "langchain-tavily>=0.2.4",
     "notebook>=7.4.3",
+    "types-pyyaml>=6.0.12.20250516",
 ]
 
 [tool.uv]
@@ -55,6 +56,9 @@ Tracker = "https://github.com/thwolter/riskgpt/issues"
 
 [tool.setuptools]
 package-dir = {"" = "src"}
+
+[tool.setuptools.package-data]
+"riskgpt.prompts" = ["**/*.yaml"]
 
 [tool.setuptools.packages.find]
 where = ["src"]

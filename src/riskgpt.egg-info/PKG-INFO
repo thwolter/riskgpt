@@ -1,6 +1,6 @@
 Metadata-Version: 2.4
 Name: riskgpt
-Version: 0.2.0
+Version: 0.2.1
 Summary: Analyze project risks and opportunities using AI
 Author-email: Thomas Wolter <thwolter@gmail.com>
 License-Expression: MIT
@@ -29,6 +29,7 @@ Requires-Dist: langchain-google-community>=2.0.7
 Requires-Dist: redis>=6.2.0
 Requires-Dist: langchain-tavily>=0.2.4
 Requires-Dist: notebook>=7.4.3
+Requires-Dist: types-pyyaml>=6.0.12.20250516
 Dynamic: license-file
 
 # RiskGPT

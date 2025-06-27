@@ -185,12 +185,32 @@ def get_enrich_context_graph(request: EnrichContextRequest):
         """Summarize key points for a specific topic."""
 
         kp_text_request = KeyPointTextRequest(key_points=state.get("key_points", []))
-        response: KeyPointTextResponse = await keypoint_text_chain(kp_text_request)
 
-        state["keypoint_text_response"] = response
+        try:
+            response: KeyPointTextResponse = await keypoint_text_chain(kp_text_request)
+            state["keypoint_text_response"] = response
 
-        if response.response_info:
-            state.setdefault("response_info_list", []).append(response.response_info)
+            if response.response_info:
+                state.setdefault("response_info_list", []).append(
+                    response.response_info
+                )
+        except Exception as e:
+            # Create a fallback response with error information
+            fallback_response = KeyPointTextResponse(
+                text="Unable to generate summary text due to parsing error.",
+                references=["Error occurred during text generation."],
+                response_info=ResponseInfo(
+                    consumed_tokens=0,
+                    total_cost=0.0,
+                    prompt_name="keypoint_text",
+                    model_name="unknown",
+                    error=str(e),
+                ),
+            )
+            state["keypoint_text_response"] = fallback_response
+            state.setdefault("response_info_list", []).append(
+                fallback_response.response_info
+            )
         return state
 
     async def aggregate(state: State) -> State:

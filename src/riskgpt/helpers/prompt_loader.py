@@ -12,7 +12,7 @@ from riskgpt.models.common import Prompt
 # provided already.  This mirrors the behaviour of environment derived
 # configuration without hard coding the value on every reload.
 if "PROMPT_DIR" not in globals():
-    PROMPT_DIR = Path(__file__).parent.parent / "prompts"
+    PROMPT_DIR = (Path(__file__).parent.parent / "prompts").resolve()
 
 
 def load_prompt(name: str, version: Optional[str] = None) -> Dict[str, Any]:

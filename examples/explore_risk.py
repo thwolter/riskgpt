@@ -1,8 +1,9 @@
 #!/usr/bin/env python
 """
-Run Risk Workflow
+Run Risk Analysis Workflows
 
-This script demonstrates how to run the risk workflow from RiskGPT
+This script demonstrates how to run the risk analysis workflows from RiskGPT
+including challenge questions, context enrichment, and risk identification
 when executed as the main module.
 """
 
@@ -14,9 +15,14 @@ import yaml
 from dotenv import load_dotenv
 
 # Import required modules
+from riskgpt.chains.challenge_questions import challenge_questions_chain
 from riskgpt.logger import configure_logging
+from riskgpt.models.chains.questions import ChallengeQuestionsRequest
 from riskgpt.models.chains.risk import Risk, RiskRequest
 from riskgpt.models.common import BusinessContext
+from riskgpt.models.enums import AudienceEnum
+from riskgpt.models.workflows.context import EnrichContextRequest
+from riskgpt.workflows.enrich_context import enrich_context
 from riskgpt.workflows.risk_workflow import risk_workflow
 
 load_dotenv()
@@ -102,6 +108,93 @@ def create_existing_risks():
     ]
 
 
+async def run_challenge_questions(context):
+    """Run the challenge_questions workflow."""
+    # Default values
+    audience = AudienceEnum.risk_internal
+    focus_areas = ["data security", "compliance", "service continuity"]
+    num_questions = 5
+
+    # Try to load from config file
+    if CONFIG_FILE.exists():
+        try:
+            with open(CONFIG_FILE, "r", encoding="utf-8") as f:
+                config = yaml.safe_load(f)
+
+            if "challenge_questions" in config:
+                cq_config = config["challenge_questions"]
+                if "audience" in cq_config:
+                    audience = getattr(AudienceEnum, cq_config["audience"], audience)
+                if "focus_areas" in cq_config:
+                    focus_areas = cq_config["focus_areas"]
+                if "num_questions" in cq_config:
+                    num_questions = cq_config["num_questions"]
+        except Exception as e:
+            print(f"Error loading challenge questions config: {e}")
+            print("Falling back to default challenge questions config")
+
+    # Create a request
+    questions_request = ChallengeQuestionsRequest(
+        business_context=context,
+        audience=audience,
+        focus_areas=focus_areas,
+        num_questions=num_questions,
+    )
+
+    # Run the chain
+    response = await challenge_questions_chain(questions_request)
+    print(f"Generated {len(response.questions)} challenging questions:")
+    for i, question in enumerate(response.questions, 1):
+        print(f"{i}. {question}")
+    return response
+
+
+async def run_enrich_context(context):
+    """Run the enrich_context workflow."""
+    # Default values
+    focus_keywords = ["cloud migration", "financial services", "data security"]
+    time_horizon_months = 12
+
+    # Try to load from config file
+    if CONFIG_FILE.exists():
+        try:
+            with open(CONFIG_FILE, "r", encoding="utf-8") as f:
+                config = yaml.safe_load(f)
+
+            if "enrich_context" in config:
+                ec_config = config["enrich_context"]
+                if "focus_keywords" in ec_config:
+                    focus_keywords = ec_config["focus_keywords"]
+                if "time_horizon_months" in ec_config:
+                    time_horizon_months = ec_config["time_horizon_months"]
+        except Exception as e:
+            print(f"Error loading enrich context config: {e}")
+            print("Falling back to default enrich context config")
+
+    # Create a request
+    enrich_request = EnrichContextRequest(
+        business_context=context,
+        focus_keywords=focus_keywords,
+        time_horizon_months=time_horizon_months,
+    )
+
+    # Run the workflow
+    response = await enrich_context(enrich_request)
+    print("Sector Summary:")
+    print(response.sector_summary)
+    print("\nWorkshop Recommendations:")
+    for i, rec in enumerate(response.workshop_recommendations, 1):
+        print(f"{i}. {rec}")
+    if response.full_report:
+        print("\nFull Report:")
+        print(
+            response.full_report[:500] + "..."
+            if len(response.full_report) > 500
+            else response.full_report
+        )
+    return response
+
+
 async def run_risk_workflow(context):
     """Run the risk workflow."""
     # Default values
@@ -143,11 +236,23 @@ async def run_risk_workflow(context):
 
 
 async def main():
-    """Main function to run the workflow."""
+    """Main function to run the risk analysis workflows."""
     configure_logging()
     setup_environment()
 
     context = create_business_context()
+
+    print("\n=== Running Challenge Questions Workflow ===\n")
+    challenge_questions_response = await run_challenge_questions(context)
+    print(
+        f"{challenge_questions_response.response_info.total_cost} USD consumed for challenge questions workflow"
+    )
+
+    print("\n=== Running Enrich Context Workflow ===\n")
+    enrich_context_response = await run_enrich_context(context)
+    print(
+        f"{enrich_context_response.response_info.total_cost} USD consumed for enrich context workflow"
+    )
 
     print("\n=== Running Risk Workflow ===\n")
     risk_response = await run_risk_workflow(context)

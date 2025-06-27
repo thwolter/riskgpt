@@ -2,11 +2,11 @@
 
 # Business Context
 business_context:
-  project_id: "CLOUD-2023"
-  project_description: "Migrate on-premises infrastructure to cloud services"
-  domain_knowledge: "The company is a financial services provider with strict regulatory requirements"
-  business_area: "IT Infrastructure"
-  industry_sector: "Financial Services"
+  project_id: "Infrastructure-Risk-Register-001"
+  project_description: "Updating the Gas Transport and Storage Infrastructure Assets Risk Register "
+  domain_knowledge: "The Risk Register is used to track and manage risks associated with the infrastructure assets (UGS, Transport) of the organization."
+  business_area: "Gas Transport and Storage Infrastructure"
+  industry_sector: "Energy"
 
 # Existing Risks
 existing_risks:
@@ -19,19 +19,19 @@ existing_risks:
 
 # Challenge Questions Configuration
 challenge_questions:
-  audience: "risk_internal"
+  audience: "executives"
   focus_areas:
-    - "data security"
-    - "compliance"
-    - "service continuity"
+    - "strategic alignment"
+    - "technical uncertainty"
+    - "operational risks"
   num_questions: 5
 
 # Enrich Context Configuration
 enrich_context:
   focus_keywords:
-    - "cloud migration"
-    - "financial services"
-    - "data security"
+    - "strategic alignment"
+    - "technical uncertainty"
+    - "operational risks"
   time_horizon_months: 12
 
 # Risk Workflow Configuration

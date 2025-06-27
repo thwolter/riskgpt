@@ -1,7 +1,9 @@
+import re
 from typing import List
 from unittest.mock import patch
 
 import pytest
+import yaml
 from riskgpt.chains.keypoint_text import keypoint_text_chain
 from riskgpt.models.enums import TopicEnum
 from riskgpt.models.workflows.context import (
@@ -33,7 +35,6 @@ def test_key_points() -> List[KeyPoint]:
     ]
 
 
-@pytest.mark.integration
 @pytest.mark.asyncio
 async def test_keypoint_text_chain(test_key_points) -> None:
     """Test the keypoint_text_chain function with real API calls."""
@@ -79,3 +80,46 @@ async def test_keypoint_text_chain_with_mock(test_key_points):
         resp = await keypoint_text_chain(request)
         assert resp.text == resp.text
         assert resp.references == expected.references
+
+
+@pytest.fixture
+def test_long_key_points() -> List[KeyPoint]:
+    """Fixture to create KeyPoint objects from YAML with multiple topics."""
+
+    TOPIC_MAP = {
+        "news": TopicEnum.NEWS,
+        "regulatory": TopicEnum.REGULATORY,
+        "linkedin": TopicEnum.LINKEDIN,
+        "peer": TopicEnum.PEER,
+    }
+
+    with open("data/long_keypoints.yaml", "r", encoding="utf-8") as f:
+        data = yaml.safe_load(f)
+    key_points = []
+    for line in data["inputs"]["key_points"].split("\n"):
+        match = re.match(
+            r"-\s*(news|regulatory|linkedin|peer):\s*(.+?)\s+(https?://\S+)", line
+        )
+        if match:
+            topic_str, content, url = match.groups()
+            topic = TOPIC_MAP.get(topic_str)
+            if topic:
+                key_points.append(
+                    KeyPoint(
+                        content=content.strip(),
+                        topic=topic,
+                        source_url=url.strip(),
+                    )
+                )
+    return key_points
+
+
+@pytest.mark.integration
+@pytest.mark.asyncio
+async def test_keypoint_text_chain_with_long_keypoints(test_long_key_points):
+    """Test keypoint_text_chain with mocked BaseChain.invoke."""
+
+    request = KeyPointTextRequest(key_points=test_long_key_points)
+    response: KeyPointTextResponse = await keypoint_text_chain(request)
+
+    assert response.text == response.text

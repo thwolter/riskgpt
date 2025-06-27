@@ -3,7 +3,7 @@ description: "Extract only the key points present in the provided content for ri
 template: |
   You are an expert at extracting key points from {source_type} sources.
 
-  Please analyse the following {source_type} source and extract the most important key points.
+  Please analyse the following {source_type} source and extract up to five most important key points.
   - Only extract key points that are explicitly present in the provided content.  
   - Do not add, infer, generalise, or speculate beyond what is stated in the source.
   - Do not paraphrase or reword—use the language and facts from the source as closely as possible.
