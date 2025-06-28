@@ -5,12 +5,15 @@ including DuckDuckGo, Google Custom Search API, Wikipedia, and Tavily.
 """
 
 import concurrent.futures
+from typing import Optional
 
 from riskgpt.config.settings import RiskGPTSettings
+from riskgpt.helpers.search.base import BaseSearchProvider
 from riskgpt.helpers.search.factory import get_search_provider
 from riskgpt.helpers.search.utils import deduplicate_results, rank_results
 from riskgpt.helpers.search.wikipedia import WikipediaSearchProvider
 from riskgpt.logger import logger
+from riskgpt.models.enums import TopicEnum
 from riskgpt.models.helpers.search import SearchRequest, SearchResponse, SearchResult
 
 settings = RiskGPTSettings()
@@ -85,11 +88,13 @@ def _execute_search(provider, request: SearchRequest) -> SearchResponse:
         return SearchResponse(results=[], success=False, error_message=str(e))
 
 
-def search(search_request: SearchRequest) -> SearchResponse:
+def search(
+    search_request: SearchRequest, provider: Optional[BaseSearchProvider] = None
+) -> SearchResponse:
     """Perform a search using the configured search provider with improvements."""
 
     # Get the primary search provider
-    provider = get_search_provider()
+    provider = provider or get_search_provider()
 
     # Prepare for parallel execution
     search_tasks = [(provider, search_request, provider.__class__.__name__)]
@@ -99,7 +104,7 @@ def search(search_request: SearchRequest) -> SearchResponse:
     include_wiki = (
         settings.INCLUDE_WIKIPEDIA
         and settings.SEARCH_PROVIDER != "wikipedia"
-        and search_request.source_type.value.lower() != "academic"
+        and search_request.source_type != TopicEnum.ACADEMIC
         and (
             not settings.WIKIPEDIA_CONTEXT_AWARE
             or _should_include_wikipedia(search_request)

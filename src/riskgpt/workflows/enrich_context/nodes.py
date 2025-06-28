@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Optional
 
 from riskgpt.chains.extract_keypoints import extract_key_points_chain
 from riskgpt.chains.keypoints_summary import keypoints_summary_chain
@@ -8,6 +8,7 @@ from riskgpt.models.enums import TopicEnum
 from riskgpt.models.helpers.search import SearchResponse, Source
 from riskgpt.models.workflows.context import EnrichContextRequest, EnrichContextResponse
 
+from ...helpers.search.base import BaseSearchProvider
 from ...models.chains.keypoints import (
     ExtractKeyPointsRequest,
     ExtractKeyPointsResponse,
@@ -22,10 +23,10 @@ def topic_search(
     state: State,
     request: EnrichContextRequest,
     topic: TopicEnum,
-    max_results: int | None = None,
+    provider: Optional[BaseSearchProvider] = None,
 ) -> State:
     search_request = request.create_search_request(topic)
-    search_response: SearchResponse = search(search_request)
+    search_response: SearchResponse = search(search_request, provider=provider)
 
     sources: List[Source] = state.get("sources", [])
     existing_urls = {source.url for source in sources}
@@ -81,9 +82,13 @@ def aggregate_response_info(state):
 
 
 # Create node factory functions
-def create_search_node(request: EnrichContextRequest, topic: TopicEnum):
+def create_search_node(
+    request: EnrichContextRequest,
+    topic: TopicEnum,
+    provider: Optional[BaseSearchProvider] = None,
+):
     def search_node(state: State) -> State:
-        return topic_search(state, request, topic)
+        return topic_search(state, request, topic, provider=provider)
 
     return search_node
 

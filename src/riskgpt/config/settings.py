@@ -36,6 +36,7 @@ class RiskGPTSettings(BaseSettings):
 
     # Document service settings
     DOCUMENT_SERVICE_URL: Optional[str] = None
+    SEMANTIC_SCHOLAR_URL: str = "https://api.semanticscholar.org/graph/v1/paper/search"
 
     @field_validator("MEMORY_TYPE")
     @classmethod

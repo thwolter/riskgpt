@@ -20,7 +20,8 @@ class SemanticScholarSearchProvider(BaseSearchProvider):
     def __init__(self):
         """Initialize the Semantic Scholar search provider."""
         self.fallback = create_fallback_function(self)
-        self.api_url = "https://api.semanticscholar.org/graph/v1/paper/search"
+        self.api_url = settings.SEMANTIC_SCHOLAR_URL
+
         self.api_key = (
             settings.SEMANTIC_SCHOLAR_API_KEY.get_secret_value()
             if settings.SEMANTIC_SCHOLAR_API_KEY
@@ -34,7 +35,6 @@ class SemanticScholarSearchProvider(BaseSearchProvider):
 
         results: List[SearchResult] = []
 
-        # Prepare headers with API key if available
         headers = {}
         if self.api_key:
             headers["x-api-key"] = self.api_key
@@ -47,7 +47,13 @@ class SemanticScholarSearchProvider(BaseSearchProvider):
         }
 
         try:
-            response = requests.get(self.api_url, params=params, headers=headers)
+            if self.api_key:
+                # Use the API key for authenticated requests
+                headers["x-api-key"] = self.api_key
+                response = requests.get(self.api_url, params=params, headers=headers)
+            else:
+                response = requests.get(self.api_url, params=params)
+
             response.raise_for_status()
             data = response.json()
 
