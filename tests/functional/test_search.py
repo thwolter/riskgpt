@@ -3,7 +3,11 @@ from typing import Generator
 from unittest.mock import patch
 
 import pytest
-from riskgpt.helpers.search import _google_search, _wikipedia_search, search
+
+from riskgpt.helpers.search import search
+from riskgpt.helpers.search.duckduckgo import DuckDuckGoSearchProvider
+from riskgpt.helpers.search.google import GoogleSearchProvider
+from riskgpt.helpers.search.wikipedia import WikipediaSearchProvider
 from riskgpt.models.enums import TopicEnum
 from riskgpt.models.helpers.search import SearchRequest, SearchResponse, SearchResult
 
@@ -18,7 +22,8 @@ def test_google_search():
     request = SearchRequest(
         query="artificial intelligence", source_type=TopicEnum.LINKEDIN
     )
-    response = _google_search(request)
+    google_provider = GoogleSearchProvider()
+    response = google_provider.search(request)
 
     assert response.success is True
     assert len(response.results) > 0
@@ -26,7 +31,7 @@ def test_google_search():
         assert result.title
         assert result.url
         assert result.type
-        assert result.type == "test"
+        assert result.type == "linkedin"
 
 
 @pytest.mark.integration
@@ -35,7 +40,8 @@ def test_wikipedia_search():
     request = SearchRequest(
         query="artificial intelligence", source_type=TopicEnum.REGULATORY, max_results=5
     )
-    response = _wikipedia_search(request)
+    wiki_provider = WikipediaSearchProvider()
+    response = wiki_provider.search(request)
 
     assert response.success is True
     assert len(response.results) > 0
@@ -43,8 +49,7 @@ def test_wikipedia_search():
         assert result.title
         assert result.url
         assert result.type
-        assert result.type == "test"
-        assert "Wikipedia:" in result.title
+        assert result.type == "regulatory"
 
 
 @pytest.mark.skipif(
@@ -56,6 +61,9 @@ def test_combined_search(monkeypatch):
     """Test combined search with Google and Wikipedia."""
 
     # Use monkeypatch instead of directly modifying os.environ
+    monkeypatch.setattr(
+        "riskgpt.helpers.search.factory.settings.SEARCH_PROVIDER", "google"
+    )
     monkeypatch.setattr("riskgpt.helpers.search.settings.SEARCH_PROVIDER", "google")
     monkeypatch.setattr("riskgpt.helpers.search.settings.INCLUDE_WIKIPEDIA", True)
 
@@ -72,7 +80,7 @@ def test_combined_search(monkeypatch):
     has_google = False
 
     for result in response.results:
-        if "Wikipedia:" in result.title:
+        if "wikipedia.org" in result.url:
             has_wikipedia = True
         else:
             has_google = True
@@ -84,6 +92,9 @@ def test_combined_search(monkeypatch):
 @pytest.fixture
 def mock_settings(monkeypatch) -> Generator[None, None, None]:
     """Fixture to patch the settings to use tavily as the search provider."""
+    monkeypatch.setattr(
+        "riskgpt.helpers.search.factory.settings.SEARCH_PROVIDER", "tavily"
+    )
     monkeypatch.setattr("riskgpt.helpers.search.settings.SEARCH_PROVIDER", "tavily")
     monkeypatch.setattr("riskgpt.helpers.search.settings.INCLUDE_WIKIPEDIA", False)
     yield
@@ -157,16 +168,21 @@ def test_search_google_with_mock(
     mock_wikipedia_search: SearchResponse,
 ) -> None:
     """Search using mocked Google provider."""
+    monkeypatch.setattr(
+        "riskgpt.helpers.search.factory.settings.SEARCH_PROVIDER", "google"
+    )
     monkeypatch.setattr("riskgpt.helpers.search.settings.SEARCH_PROVIDER", "google")
     monkeypatch.setattr("riskgpt.helpers.search.settings.INCLUDE_WIKIPEDIA", True)
 
     with (
-        patch(
-            "riskgpt.helpers.search._google_search",
+        patch.object(
+            GoogleSearchProvider,
+            "search",
             return_value=mock_google_search,
         ),
-        patch(
-            "riskgpt.helpers.search._wikipedia_search",
+        patch.object(
+            WikipediaSearchProvider,
+            "search",
             return_value=mock_wikipedia_search,
         ),
     ):
@@ -176,8 +192,9 @@ def test_search_google_with_mock(
         assert any(result.title == "W" for result in search_response.results)
 
     monkeypatch.setattr("riskgpt.helpers.search.settings.INCLUDE_WIKIPEDIA", False)
-    with patch(
-        "riskgpt.helpers.search._google_search",
+    with patch.object(
+        GoogleSearchProvider,
+        "search",
         return_value=mock_google_search,
     ):
         search_response = search(search_request)
@@ -192,16 +209,21 @@ def test_search_duckduckgo_with_mock(
     mock_wikipedia_search: SearchResponse,
 ) -> None:
     """Search using mocked DuckDuckGo provider."""
+    monkeypatch.setattr(
+        "riskgpt.helpers.search.factory.settings.SEARCH_PROVIDER", "duckduckgo"
+    )
     monkeypatch.setattr("riskgpt.helpers.search.settings.SEARCH_PROVIDER", "duckduckgo")
     monkeypatch.setattr("riskgpt.helpers.search.settings.INCLUDE_WIKIPEDIA", True)
 
     with (
-        patch(
-            "riskgpt.helpers.search._duckduckgo_search",
+        patch.object(
+            DuckDuckGoSearchProvider,
+            "search",
             return_value=mock_duckduckgo_search,
         ),
-        patch(
-            "riskgpt.helpers.search._wikipedia_search",
+        patch.object(
+            WikipediaSearchProvider,
+            "search",
             return_value=mock_wikipedia_search,
         ),
     ):
@@ -212,8 +234,9 @@ def test_search_duckduckgo_with_mock(
 
     # Test with INCLUDE_WIKIPEDIA disabled
     monkeypatch.setattr("riskgpt.helpers.search.settings.INCLUDE_WIKIPEDIA", False)
-    with patch(
-        "riskgpt.helpers.search._duckduckgo_search",
+    with patch.object(
+        DuckDuckGoSearchProvider,
+        "search",
         return_value=mock_duckduckgo_search,
     ):
         search_response = search(search_request)
@@ -225,9 +248,13 @@ def test_search_wikipedia_with_mock(
     monkeypatch, search_request: SearchRequest, mock_wikipedia_search: SearchResponse
 ) -> None:
     """Search using mocked Wikipedia provider."""
+    monkeypatch.setattr(
+        "riskgpt.helpers.search.factory.settings.SEARCH_PROVIDER", "wikipedia"
+    )
     monkeypatch.setattr("riskgpt.helpers.search.settings.SEARCH_PROVIDER", "wikipedia")
-    with patch(
-        "riskgpt.helpers.search._wikipedia_search",
+    with patch.object(
+        WikipediaSearchProvider,
+        "search",
         return_value=mock_wikipedia_search,
     ):
         search_response: SearchResponse = search(search_request)

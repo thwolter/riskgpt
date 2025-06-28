@@ -4,6 +4,7 @@ from unittest.mock import patch
 
 import pytest
 import yaml
+
 from riskgpt.chains.keypoints_summary import keypoints_summary_chain
 from riskgpt.models.chains.keypoints import (
     KeyPoint,
@@ -35,6 +36,7 @@ def test_key_points() -> List[KeyPoint]:
     ]
 
 
+@pytest.mark.integration
 @pytest.mark.asyncio
 async def test_keypoint_summary_chain(test_key_points) -> None:
     """Test the keypoint_text_chain function with real API calls."""
