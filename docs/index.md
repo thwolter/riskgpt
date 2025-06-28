@@ -35,6 +35,10 @@ pip install git+https://github.com/thwolter/riskgpt.git
 - Conversation memory with multiple backend options
 - Programmatic API for direct access to search and document services
 
+## Helpers
+
+- [Search](search.md) – unified interface for web search providers (DuckDuckGo, Google, Wikipedia, Tavily)
+
 ## Chains
 
 - [Risk Categories](risk_categories.md) – determine relevant risk categories for a project description
