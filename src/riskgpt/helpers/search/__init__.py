@@ -4,7 +4,6 @@ This module provides a unified interface for different search providers,
 including DuckDuckGo, Google Custom Search API, Wikipedia, and Tavily.
 """
 
-import concurrent.futures
 from typing import Optional
 
 from riskgpt.config.settings import RiskGPTSettings
@@ -79,16 +78,16 @@ def _should_include_wikipedia(request: SearchRequest) -> bool:
     return settings.INCLUDE_WIKIPEDIA
 
 
-def _execute_search(provider, request: SearchRequest) -> SearchResponse:
+async def _execute_search(provider, request: SearchRequest) -> SearchResponse:
     """Execute a search with a specific provider."""
     try:
-        return provider.search(request)
+        return await provider.search(request)
     except Exception as e:
         logger.error(f"Error in search execution: {e}")
         return SearchResponse(results=[], success=False, error_message=str(e))
 
 
-def search(
+async def search(
     search_request: SearchRequest, provider: Optional[BaseSearchProvider] = None
 ) -> SearchResponse:
     """Perform a search using the configured search provider with improvements."""
@@ -122,34 +121,37 @@ def search(
         wiki_provider = WikipediaSearchProvider()
         search_tasks.append((wiki_provider, wiki_request, "WikipediaSearchProvider"))
 
-    # Execute searches in parallel
-    all_results = []
+    # Execute searches in parallel using asyncio
+    all_results: list[SearchResult] = []
     success = False
     error_message = ""
 
-    with concurrent.futures.ThreadPoolExecutor(
-        max_workers=len(search_tasks)
-    ) as executor:
-        # Submit all search tasks
-        future_to_provider = {
-            executor.submit(_execute_search, provider, req): provider_name
-            for provider, req, provider_name in search_tasks
-        }
+    import asyncio
 
-        # Process results as they complete
-        for future in concurrent.futures.as_completed(future_to_provider):
-            provider_name = future_to_provider[future]
-            try:
-                response = future.result()
-                all_results.extend(response.results)
-                if response.success:
-                    success = True
-                elif not success:  # Only keep error message if no success yet
-                    error_message = response.error_message
-            except Exception as exc:
-                logger.error(
-                    f"Search with {provider_name} generated an exception: {exc}"
-                )
+    # Create tasks for all search providers
+    tasks = []
+    for provider, req, provider_name in search_tasks:
+        tasks.append(_execute_search(provider, req))
+
+    # Execute all tasks concurrently
+    responses = await asyncio.gather(*tasks, return_exceptions=True)
+
+    # Process results
+    for i, response in enumerate(responses):
+        provider_name = search_tasks[i][2]
+        if isinstance(response, Exception):
+            logger.error(
+                f"Search with {provider_name} generated an exception: {response}"
+            )
+            continue
+
+        # Only access attributes if response is a SearchResponse
+        if isinstance(response, SearchResponse):
+            all_results.extend(response.results)
+            if response.success:
+                success = True
+            elif not success:  # Only keep error message if no success yet
+                error_message = response.error_message
 
     # Deduplicate and rank results
     final_results = rank_results(deduplicate_results(all_results))

@@ -20,7 +20,7 @@ class WikipediaSearchProvider(BaseSearchProvider):
 
     @wikipedia_breaker
     @with_fallback(lambda self, payload: self.fallback(payload))
-    def search(self, payload: SearchRequest) -> SearchResponse:
+    async def search(self, payload: SearchRequest) -> SearchResponse:
         """Perform a Wikipedia search and format results."""
 
         results: List[SearchResult] = []
@@ -29,7 +29,8 @@ class WikipediaSearchProvider(BaseSearchProvider):
             wrapper = WikipediaAPIWrapper(
                 wiki_client=None, top_k_results=payload.max_results
             )
-            # Wikipedia API returns a single string with all results
+            # Note: WikipediaAPIWrapper.load is not async, but we're keeping
+            # the method signature async to match the interface
             wiki_results = wrapper.load(payload.query)
             for item in wiki_results:
                 results.append(

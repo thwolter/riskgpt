@@ -24,11 +24,14 @@ class ExtractKeyPointsRequest(BaseModel):
     focus_keywords: Optional[List[str]] = []
 
     @classmethod
-    def from_source(cls, source: Source) -> "ExtractKeyPointsRequest":
+    def from_source(
+        cls, source: Source, focus_keywords: Optional[List[str]] = None
+    ) -> "ExtractKeyPointsRequest":
         """Create an ExtractKeyPointsRequest from a Source object."""
         return ExtractKeyPointsRequest(
             source_type=source.type,
             content=f"Title: {source.title}\n\nContent: {source.content}",
+            focus_keywords=focus_keywords or [],
         )
 
     model_config = ConfigDict(

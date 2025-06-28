@@ -19,14 +19,14 @@ from .deduplicator import KeyPointDeduplicator
 from .state import State
 
 
-def topic_search(
+async def topic_search(
     state: State,
     request: EnrichContextRequest,
     topic: TopicEnum,
     provider: Optional[BaseSearchProvider] = None,
 ) -> State:
     search_request = request.create_search_request(topic)
-    search_response: SearchResponse = search(search_request, provider=provider)
+    search_response: SearchResponse = await search(search_request, provider=provider)
 
     sources: List[Source] = state.get("sources", [])
     existing_urls = {source.url for source in sources}
@@ -45,13 +45,17 @@ def topic_search(
     return state
 
 
-async def extract_topic_key_points(state: State, topic: TopicEnum) -> State:
+async def extract_topic_key_points(
+    state: State, topic: TopicEnum, focus_keywords: Optional[List[str]] = None
+) -> State:
     # Filter sources by topic
     sources: List[Source] = state.get("sources", [])
     topic_sources = [source for source in sources if source.topic == topic]
 
     for source in topic_sources:
-        request = ExtractKeyPointsRequest.from_source(source)
+        request = ExtractKeyPointsRequest.from_source(
+            source, focus_keywords=focus_keywords
+        )
         response: ExtractKeyPointsResponse = await extract_key_points_chain(request)
 
         # Attach source.url to each point in response.points
@@ -87,15 +91,19 @@ def create_search_node(
     topic: TopicEnum,
     provider: Optional[BaseSearchProvider] = None,
 ):
-    def search_node(state: State) -> State:
-        return topic_search(state, request, topic, provider=provider)
+    async def search_node(state: State) -> State:
+        return await topic_search(state, request, topic, provider=provider)
 
     return search_node
 
 
-def create_extract_key_points_node(topic: TopicEnum):
+def create_extract_key_points_node(
+    topic: TopicEnum, focus_keywords: Optional[List[str]] = None
+):
     async def extract_node(state: State) -> State:
-        return await extract_topic_key_points(state, topic)
+        return await extract_topic_key_points(
+            state, topic, focus_keywords=focus_keywords
+        )
 
     return extract_node
 
@@ -171,5 +179,5 @@ async def aggregate(state: State, request: EnrichContextRequest) -> State:
     return state
 
 
-def start(state: State) -> State:
+async def start(state: State) -> State:
     return state

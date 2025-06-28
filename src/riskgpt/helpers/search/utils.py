@@ -1,6 +1,6 @@
 """Common utility functions for search providers."""
 
-from typing import Callable, List, TypeVar
+from typing import Any, Callable, Coroutine, List, TypeVar
 
 from riskgpt.models.helpers.search import SearchRequest, SearchResponse, SearchResult
 
@@ -16,7 +16,7 @@ def _search_fallback(payload: SearchRequest) -> SearchResponse:
 
 def create_fallback_function(
     provider_instance,
-) -> Callable[[SearchRequest], SearchResponse]:
+) -> Callable[[SearchRequest], Coroutine[Any, Any, SearchResponse]]:
     """Create a fallback function for a search provider.
 
     Args:
@@ -25,9 +25,11 @@ def create_fallback_function(
     Returns:
         A fallback function that can be used with the with_fallback decorator
     """
-    return lambda payload: provider_instance.format_error_response(
-        "Search service is unavailable"
-    )
+
+    async def fallback_function(payload):
+        return provider_instance.format_error_response("Search service is unavailable")
+
+    return fallback_function
 
 
 def deduplicate_results(results: List[SearchResult]) -> List[SearchResult]:

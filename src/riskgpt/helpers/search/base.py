@@ -9,7 +9,7 @@ class BaseSearchProvider(ABC):
     """Base class for all search providers."""
 
     @abstractmethod
-    def search(self, request: SearchRequest) -> SearchResponse:
+    async def search(self, request: SearchRequest) -> SearchResponse:
         """Perform a search using this provider."""
         pass
 

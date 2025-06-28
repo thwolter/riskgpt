@@ -1,12 +1,30 @@
 # Project Guidelines
-    
-This is a placeholder of the project guidelines for Junie.
-Replace this text with any project-level instructions for Junie, e.g.:
 
-* What is the project structure
-* Whether Junie should run tests to check the correctness of the proposed solution
-* How does Junie run tests (once it requires any non-standard approach)
-* Whether Junie should build the project before submitting the result
-* Any code-style related instructions
 
-As an option you can ask Junie to create these guidelines for you.
+## Basic Considerations
+- The package uses asynchronous programming
+
+## Code Style & Conventions
+- Follows Ruff standards with 88 character line length
+- type-annotate the code and check with mypy
+- sort imports using isort (via Ruff)
+
+## Testing
+- All new features must include tests in the `/tests` directory.
+- Use `pytest` as the testing framework.
+ 
+## Commit Messages
+- Use the format: `<type>: <short description>`
+- Example: `fix: correct login bug`
+- Types can include:
+  - `feat`: New feature
+  - `fix`: Bug fix
+  - `docs`: Documentation changes
+  - `style`: Code style changes (formatting, etc.)
+  - `refactor`: Code refactoring without changing functionality
+  - `test`: Adding or updating tests
+
+## Additional Notes
+- For API documentation, use docstrings compatible with Sphinx.
+- When in doubt, refer to the [project README](./README.md).
+- 

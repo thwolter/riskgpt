@@ -1,7 +1,6 @@
 from unittest.mock import patch
 
 import pytest
-
 from riskgpt.models.base import ResponseInfo
 from riskgpt.models.chains.keypoints import (
     ExtractKeyPointsResponse,
@@ -27,7 +26,7 @@ def test_request():
             project_description="A project focused on leveraging AI for risk registration and management.",
             domain_knowledge="artificial intelligence and risk assessment",
         ),
-        focus_keywords=["crime"],
+        focus_keywords=["ethic"],
         max_search_results=2,
         region="de-DE",
     )
@@ -92,7 +91,7 @@ def mock_settings(monkeypatch):
 def mock_search(monkeypatch, mock_search_result):
     """Fixture to patch the search function."""
 
-    def mock_search_func(*args, **kwargs):
+    async def mock_search_func(*args, **kwargs):
         return mock_search_result
 
     # Patch the search function
@@ -110,7 +109,7 @@ def mock_key_points():
             prompt_name="extract_news_key_points",
             model_name="openai:gpt-4.1-nano",
             error=None,
-        ).model_dump(),
+        ),
         points=[
             KeyPoint(
                 content="Years of extreme volatility, caused by pandemic shocks, trade wars, and climate-driven disruptions, have exposed the complexity of the world’s logistics networks.",
@@ -141,7 +140,7 @@ def keypoint_text_resp():
             prompt_name="keypoint_text",
             model_name="openai:gpt-4.1-nano",
             error=None,
-        ).model_dump(),
+        ),
         text="Years of extreme volatility, driven by pandemic shocks, trade wars, and climate-related disruptions, have exposed the intricate complexity of global logistics networks (maritime-executive.com, 2023). Advances in AI technologies and the growing availability of multi-source data now offer organizations unprecedented opportunities to analyze and manage these complexities effectively (maritime-executive.com, 2023). Furthermore, by harnessing collective intelligence derived from these data sources, organizations can achieve both cost efficiencies and significant reductions in emissions, contributing to more sustainable and resilient supply chain operations (maritime-executive.com, 2023).",
         references=[
             "maritime-executive.com (2023). Two new chapters in supply chain data-driven intelligence. [Online] Available at: https://www.maritime-executive.com/editorials/two-new-chapters-in-supply-chain-data-driven-intelligence [Accessed: 27 April 2024]"
@@ -153,10 +152,13 @@ def keypoint_text_resp():
 def mock_extract_key_points(mock_key_points):
     """Fixture to patch extract_key_points function used by enrich_context."""
 
+    async def mock_extract_key_points_func(*args, **kwargs):
+        return mock_key_points
+
     # Patch at the location where enrich_context imports/calls it
     with patch(
         "riskgpt.chains.extract_keypoints.extract_key_points_chain",
-        return_value=mock_key_points,
+        side_effect=mock_extract_key_points_func,
     ) as mock:
         yield mock
 
@@ -165,17 +167,27 @@ def mock_extract_key_points(mock_key_points):
 def mock_keypoints_summary_chain(keypoint_text_resp):
     """Fixture to patch the keypoint text chain."""
 
+    async def mock_keypoints_summary_func(*args, **kwargs):
+        return keypoint_text_resp
+
     # Patch the keypoint_text_chain to return mock_key_points
     with patch(
         "riskgpt.chains.keypoints_summary.keypoints_summary_chain",
-        return_value=keypoint_text_resp,
+        side_effect=mock_keypoints_summary_func,
     ) as mock:
         yield mock
 
 
 @pytest.mark.integration
 @pytest.mark.asyncio
-async def test_enrich_context_tavili(monkeypatch, test_request, mock_settings) -> None:
+async def test_enrich_context_tavily(
+    monkeypatch,
+    test_request,
+    mock_settings,
+    mock_search,
+    mock_extract_key_points,
+    mock_keypoints_summary_chain,
+) -> None:
     monkeypatch.setattr("riskgpt.helpers.search.settings.SEARCH_PROVIDER", "tavily")
     monkeypatch.setattr("riskgpt.helpers.search.settings.INCLUDE_WIKIPEDIA", False)
     response: EnrichContextResponse = await enrich_context(test_request)
@@ -185,7 +197,12 @@ async def test_enrich_context_tavili(monkeypatch, test_request, mock_settings) -
 @pytest.mark.integration
 @pytest.mark.asyncio
 async def test_enrich_context_duckduckgo(
-    monkeypatch, test_request, mock_settings
+    monkeypatch,
+    test_request,
+    mock_settings,
+    mock_search,
+    mock_extract_key_points,
+    mock_keypoints_summary_chain,
 ) -> None:
     monkeypatch.setattr("riskgpt.helpers.search.settings.SEARCH_PROVIDER", "duckduckgo")
     monkeypatch.setattr("riskgpt.helpers.search.settings.INCLUDE_WIKIPEDIA", False)
@@ -195,7 +212,14 @@ async def test_enrich_context_duckduckgo(
 
 @pytest.mark.integration
 @pytest.mark.asyncio
-async def test_enrich_context_google(monkeypatch, test_request, mock_settings) -> None:
+async def test_enrich_context_google(
+    monkeypatch,
+    test_request,
+    mock_settings,
+    mock_search,
+    mock_extract_key_points,
+    mock_keypoints_summary_chain,
+) -> None:
     monkeypatch.setattr("riskgpt.helpers.search.settings.SEARCH_PROVIDER", "google")
     monkeypatch.setattr("riskgpt.helpers.search.settings.INCLUDE_WIKIPEDIA", False)
     response: EnrichContextResponse = await enrich_context(test_request)
@@ -205,7 +229,12 @@ async def test_enrich_context_google(monkeypatch, test_request, mock_settings) -
 @pytest.mark.integration
 @pytest.mark.asyncio
 async def test_enrich_context_duckduckgo_and_wikipedia(
-    monkeypatch, test_request, mock_settings
+    monkeypatch,
+    test_request,
+    mock_settings,
+    mock_search,
+    mock_extract_key_points,
+    mock_keypoints_summary_chain,
 ) -> None:
     monkeypatch.setattr("riskgpt.helpers.search.settings.SEARCH_PROVIDER", "duckduckgo")
     monkeypatch.setattr("riskgpt.helpers.search.settings.INCLUDE_WIKIPEDIA", True)
@@ -216,7 +245,11 @@ async def test_enrich_context_duckduckgo_and_wikipedia(
 @pytest.mark.integration
 @pytest.mark.asyncio
 async def test_enrich_context_with_context_aware_wiki_enabled_knowledge_query(
-    monkeypatch, mock_settings
+    monkeypatch,
+    mock_settings,
+    mock_search,
+    mock_extract_key_points,
+    mock_keypoints_summary_chain,
 ) -> None:
     """Test enrich_context with context-aware wiki enabled and a knowledge query."""
     # Create a request with a knowledge query that should include Wikipedia
@@ -245,7 +278,11 @@ async def test_enrich_context_with_context_aware_wiki_enabled_knowledge_query(
 @pytest.mark.integration
 @pytest.mark.asyncio
 async def test_enrich_context_with_context_aware_wiki_enabled_news_query(
-    monkeypatch, mock_settings
+    monkeypatch,
+    mock_settings,
+    mock_search,
+    mock_extract_key_points,
+    mock_keypoints_summary_chain,
 ) -> None:
     """Test enrich_context with context-aware wiki enabled and a news query."""
     # Create a request with a news query that should not include Wikipedia
@@ -271,7 +308,11 @@ async def test_enrich_context_with_context_aware_wiki_enabled_news_query(
 @pytest.mark.integration
 @pytest.mark.asyncio
 async def test_enrich_context_with_context_aware_wiki_disabled(
-    monkeypatch, mock_settings
+    monkeypatch,
+    mock_settings,
+    mock_search,
+    mock_extract_key_points,
+    mock_keypoints_summary_chain,
 ) -> None:
     """Test enrich_context with context-aware wiki disabled."""
     # Create a request with a news query, but Wikipedia should be included anyway

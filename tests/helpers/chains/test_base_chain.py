@@ -40,7 +40,9 @@ import logging
 from types import SimpleNamespace
 
 import pytest
+from langchain_core.exceptions import OutputParserException
 from langchain_core.output_parsers import BaseOutputParser
+from langchain_core.output_parsers.pydantic import PydanticOutputParser
 from riskgpt.chains.base import BaseChain
 from riskgpt.logger import configure_logging
 from riskgpt.models.chains.categorization import CategoryResponse
@@ -82,3 +84,47 @@ async def test_invoke(monkeypatch, caplog):
     await chain.invoke({})
 
     assert any("Consumed" in record.getMessage() for record in caplog.records)
+
+
+@pytest.mark.asyncio
+async def test_invoke_with_parser_exception(monkeypatch, caplog):
+    """Test that OutputParserException is handled correctly."""
+    caplog.set_level(logging.ERROR, logger="src")
+    configure_logging(level=logging.ERROR)
+
+    # Use PydanticOutputParser instead of DummyParser
+    parser = PydanticOutputParser(pydantic_object=CategoryResponse)
+    chain = BaseChain(prompt_template="hi", parser=parser)
+
+    async def fake_ainvoke_with_error(inputs, memory=None):
+        raise OutputParserException("Failed to parse output", llm_output="Invalid JSON")
+
+    class DummyCB:
+        def __enter__(self):
+            self.total_tokens = 3
+            self.total_cost = 0.001
+            return self
+
+        def __exit__(self, exc_type, exc, tb):
+            pass
+
+    monkeypatch.setattr(
+        chain, "chain", SimpleNamespace(ainvoke=fake_ainvoke_with_error)
+    )
+    monkeypatch.setattr(
+        "langchain_community.callbacks.get_openai_callback", lambda: DummyCB()
+    )
+
+    result = await chain.invoke({})
+
+    # Verify that the error was logged
+    assert any(
+        "Output parser error" in record.getMessage() for record in caplog.records
+    )
+
+    # Verify that a fallback response was created
+    assert isinstance(result, CategoryResponse)
+
+    # Verify that the response_info contains the error
+    assert result.response_info is not None
+    assert "Output parser error" in result.response_info.error

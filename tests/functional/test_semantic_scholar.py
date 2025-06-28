@@ -1,11 +1,12 @@
 """Tests for the Semantic Scholar search provider."""
 
-from unittest.mock import MagicMock, patch
+from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
-
 from riskgpt.helpers.search import search
-from riskgpt.helpers.search.semantic_scholar import SemanticScholarSearchProvider
+from riskgpt.helpers.search.semantic_scholar import (
+    SemanticScholarSearchProvider,
+)
 from riskgpt.models.enums import TopicEnum
 from riskgpt.models.helpers.search import SearchRequest, SearchResponse, SearchResult
 
@@ -45,7 +46,8 @@ def mock_semantic_scholar_response():
     }
 
 
-def test_semantic_scholar_search_provider(mock_semantic_scholar_response):
+@pytest.mark.asyncio
+async def test_semantic_scholar_search_provider(mock_semantic_scholar_response):
     """Test the Semantic Scholar search provider directly."""
     provider = SemanticScholarSearchProvider()
     request = SearchRequest(
@@ -54,14 +56,15 @@ def test_semantic_scholar_search_provider(mock_semantic_scholar_response):
         max_results=2,
     )
 
-    with patch("requests.get") as mock_get:
+    with patch("aiohttp.ClientSession.get") as mock_get:
         # Configure the mock to return a response with the mock data
-        mock_response = MagicMock()
-        mock_response.json.return_value = mock_semantic_scholar_response
-        mock_response.raise_for_status.return_value = None
+        mock_response = AsyncMock()
+        mock_response.json = AsyncMock(return_value=mock_semantic_scholar_response)
+        mock_response.raise_for_status = AsyncMock()
+        mock_response.__aenter__.return_value = mock_response
         mock_get.return_value = mock_response
 
-        response = provider.search(request)
+        response = await provider.search(request)
 
         assert response.success is True
         assert len(response.results) == 2
@@ -83,7 +86,8 @@ def test_semantic_scholar_search_provider(mock_semantic_scholar_response):
         assert "Sarah Wilson, Michael Lee" in response.results[1].content
 
 
-def test_semantic_scholar_search_with_factory():
+@pytest.mark.asyncio
+async def test_semantic_scholar_search_with_factory():
     """Test that the factory correctly returns the Semantic Scholar provider."""
     with patch(
         "riskgpt.helpers.search.factory.settings.SEARCH_PROVIDER", "semantic_scholar"
@@ -94,7 +98,8 @@ def test_semantic_scholar_search_with_factory():
         assert isinstance(provider, SemanticScholarSearchProvider)
 
 
-def test_academic_search_excludes_wikipedia():
+@pytest.mark.asyncio
+async def test_academic_search_excludes_wikipedia():
     """Test that academic searches exclude Wikipedia results."""
     # Mock the primary provider (Semantic Scholar)
     mock_semantic_scholar = MagicMock()
@@ -127,7 +132,7 @@ def test_academic_search_excludes_wikipedia():
             max_results=5,
         )
 
-        search(request)
+        await search(request)
 
         # Verify that the primary provider was called
         mock_semantic_scholar.search.assert_called_once()
@@ -136,8 +141,58 @@ def test_academic_search_excludes_wikipedia():
         mock_wikipedia.search.assert_not_called()
 
 
+@pytest.mark.asyncio
+async def test_semantic_scholar_long_query_extraction(mock_semantic_scholar_response):
+    """Test that long queries are processed using keyword extraction."""
+    provider = SemanticScholarSearchProvider()
+
+    # Create a long query (more than 20 words)
+    long_query = (
+        "This is a very long query about machine learning explainability techniques "
+        "that should be processed using keyword extraction because it contains "
+        "many words and might not perform well with semantic search if passed directly "
+        "to the API without extracting the most important keywords first."
+    )
+
+    request = SearchRequest(
+        query=long_query,
+        source_type=TopicEnum.ACADEMIC,
+        max_results=2,
+    )
+
+    # Mock the extract_keywords_chain function to return a simplified query
+    extracted_keywords = "machine learning explainability techniques"
+    mock_keywords_response = MagicMock()
+    mock_keywords_response.keywords = extracted_keywords
+
+    # Use AsyncMock to mock the async function
+    mock_extract_keywords = AsyncMock(return_value=mock_keywords_response)
+
+    with patch(
+        "riskgpt.helpers.search.semantic_scholar.extract_keywords_chain",
+        mock_extract_keywords,
+    ) as mock_extract:
+        with patch("aiohttp.ClientSession.get") as mock_get:
+            # Configure the mock to return a response with the mock data
+            mock_response = AsyncMock()
+            mock_response.json = AsyncMock(return_value=mock_semantic_scholar_response)
+            mock_response.raise_for_status = AsyncMock()
+            mock_response.__aenter__.return_value = mock_response
+            mock_get.return_value = mock_response
+
+            response = await provider.search(request)
+
+            # Verify that extract_keywords_chain was called with the request
+            mock_extract.assert_called_once()
+
+            # Verify the response
+            assert response.success is True
+            assert len(response.results) == 2
+
+
 @pytest.mark.integration
-def test_semantic_scholar_live():
+@pytest.mark.asyncio
+async def test_semantic_scholar_live():
     """Test the Semantic Scholar search provider with a live API call.
 
     This test is marked as integration and will be skipped unless run explicitly.
@@ -149,7 +204,7 @@ def test_semantic_scholar_live():
         max_results=2,
     )
 
-    response = provider.search(request)
+    response = await provider.search(request)
 
     assert response.success is True
     assert len(response.results) > 0

@@ -1,149 +1,105 @@
-# RiskGPT Project Guidelines
 
-## Project Overview
+# RiskGPT Junie Guidelines
 
-RiskGPT is a Python package for analyzing project risks and opportunities using LLM-based chains. It leverages LangChain and LangGraph to create sophisticated workflows for risk assessment, analysis, and mitigation planning.
+## What is Junie?
+Junie is an AI assistant designed to help you navigate, understand, and develop the RiskGPT codebase. It can assist with code exploration, debugging, feature implementation, and understanding the project's architecture and patterns.
 
-## Project Structure
+## Quick Start
+1. Ask Junie about specific parts of the codebase: "How does the circuit breaker pattern work in RiskGPT?"
+2. Get help with implementing new features: "How would I add a new search provider to the enrich_context workflow?"
+3. Debug issues: "Why might my chain be failing when processing this input?"
+4. Understand project structure: "Explain how the workflows are organized in RiskGPT"
 
+## Code Style & Conventions
+- **Python Version**: RiskGPT requires Python 3.12+
+- **Formatting**: Code follows Ruff standards with 88 character line length
+- **Type Annotations**: All code is type-annotated and checked with mypy
+- **Imports**: Sorted using isort (via Ruff)
+- **Pre-commit Hooks**: Ruff for linting/formatting and mypy for type checking
+
+## RiskGPT-Specific Workflows
+Junie can help with these common development scenarios:
+
+### Exploring LangChain/LangGraph Implementations
+- "Show me how RiskGPT implements LangGraph workflows"
+- "Explain the BaseChain class and how it's used"
+- "How does RiskGPT handle circuit breaking for external API calls?"
+
+### Adding New Features
+- "How do I add a new chain for risk analysis?"
+- "What's the pattern for adding a new search provider?"
+- "How should I structure a new workflow node?"
+
+### Debugging Issues
+- "Why might my circuit breaker be triggering too frequently?"
+- "How can I debug this LangGraph workflow?"
+- "What could cause this parsing error in my chain?"
+
+### Testing
+- "How should I write tests for a new chain?"
+- "What's the pattern for mocking external services in tests?"
+- "How do I run integration tests for my new feature?"
+
+## Project Structure Overview
 ```
 riskgpt/
-├── src/                    # Main source code
-│   ├── riskgpt/           # Main package
-│       ├── chains/        # LLM chain implementations
-│       ├── config/        # Configuration settings
-│       ├── helpers/       # Helper functions
-│       ├── models/        # Data models and schemas
-│       ├── processors/    # Input/output processors
-│       ├── prompts/       # LLM prompts organized by function
-│       ├── workflows/     # Risk assessment workflows
-│       ├── api.py         # Public API functions
-│       ├── logger.py      # Logging configuration
-│       ├── py.typed       # Marker file for type checking
-├── tests/                  # Test suite
+├── src/riskgpt/           # Main package
+│   ├── chains/            # LLM chain implementations
+│   ├── config/            # Configuration settings
+│   ├── helpers/           # Helper functions and utilities
+│   ├── models/            # Data models and schemas
+│   ├── processors/        # Input/output processors
+│   ├── prompts/           # LLM prompts organized by function
+│   ├── workflows/         # Risk assessment workflows using LangGraph
+├── tests/                 # Test suite
 │   ├── unit/              # Unit tests
 │   ├── functional/        # Functional tests
 │   ├── integration/       # Integration tests (require external services)
-│   ├── utils/             # Test utilities
-│   ├── conftest.py        # Pytest fixtures and configuration
-├── docs/                   # Documentation
-├── examples/               # Example notebooks and scripts
-├── .env.example            # Environment variables template
-├── .github/                # GitHub Actions workflows
-├── CHANGELOG.md            # Release history and changes
-├── LICENSE                 # Project license
-├── mkdocs.yml              # MkDocs configuration
-├── pyproject.toml          # Project configuration and dependencies
-├── .pre-commit-config.yaml # Pre-commit hooks configuration
-├── uv.lock                 # Dependency lock file
-└── README.md               # Project overview and usage instructions
 ```
 
-## Development Environment Setup
+## Key Technologies
+- **LangChain**: Framework for LLM applications
+- **LangGraph**: For building complex, multi-step workflows
+- **Pydantic**: For data validation and settings management
+- **Circuit Breaker Pattern**: For resilient external API calls
+- **Redis/Buffer Memory**: For conversation memory
 
-1. **Python Version**: This project requires Python 3.12 or higher.
+## Effective Prompting Strategies
 
-2. **Environment Variables**: Copy `.env.example` to `.env` and configure the required variables:
-   ```bash
-   cp .env.example .env
-   # Edit .env with your API keys and configuration
-   ```
+### DO:
+- Specify the file or component you're asking about
+- Include relevant error messages when debugging
+- Mention which part of the codebase you're working with
+- Ask about specific patterns or implementations
 
-3. **Package Installation**: Use [Poetry](https://python-poetry.org/) for dependency management:
-   ```bash
-   poetry install
-   ```
+### DON'T:
+- Ask overly broad questions ("How does RiskGPT work?")
+- Paste large code blocks without context
+- Ask Junie to write complete features without guidance
 
-4. **Pre-commit Hooks**: Install pre-commit hooks to ensure code quality:
-   ```bash
-   pre-commit install
-   ```
+### Examples of Good Prompts:
+- "How does the `BaseChain` class handle circuit breaking for OpenAI API calls?"
+- "I'm getting a type error in my workflow node. Here's the error: [error]. How can I fix it?"
+- "Show me the pattern for creating a new search provider in the `helpers/search` module"
 
-## Code Style Guidelines
+## Tips and Best Practices
+- **Provide Context**: Tell Junie which file or component you're working with
+- **Be Specific**: Ask about particular patterns or implementations
+- **Verify Responses**: Always test code suggestions in your development environment
+- **Iterative Approach**: Start with high-level questions, then drill down into specifics
 
-RiskGPT follows these code style conventions:
-
-1. **Formatting**: Code is formatted using both Ruff and Black with a line length of 88 characters.
-
-2. **Linting**: Ruff is used for linting with import sorting enabled.
-
-3. **Type Checking**: All code should be type-annotated and checked with mypy.
-
-4. **Pre-commit Hooks**: The following checks run automatically on commit:
-   - Ruff for linting
-   - Ruff for formatting
-   - Mypy for type checking
-
-## Testing Guidelines
-
-1. **Test Categories**:
-   - **Unit Tests**: Test individual components in isolation
-   - **Functional Tests**: Test interactions between components
-   - **Integration Tests**: Test interactions with external services
-
-2. **Running Tests**:
-   - Run all unit and functional tests:
-     ```bash
-     poetry run pytest
-     ```
-   - Run with coverage:
-     ```bash
-     poetry run pytest --cov=src
-     ```
-   - Run integration tests (requires API keys):
-     ```bash
-     poetry run pytest -m integration
-     ```
-
-3. **Test Requirements**:
-   - All new features should include appropriate tests
-   - Integration tests should be marked with the `@pytest.mark.integration` decorator
-   - Mock external dependencies in unit and functional tests
-
-## Pull Request Process
-
-1. Create a feature branch from `main`
-2. Implement your changes with appropriate tests
-3. Ensure all tests pass and code quality checks succeed
-4. Submit a pull request with a clear description of the changes
-
-## Dependency Management
-
-1. Use `Poetry` for installing and managing dependencies
-2. Add new dependencies to `pyproject.toml` in the appropriate section:
-   - Runtime dependencies under `[project.dependencies]`
-   - Development dependencies under `[tool.poetry.dev-dependencies]` or `[tool.uv.dev-dependencies]`
-3. Update dependencies with:
-   ```bash
-   poetry update
-   ```
-
-## Documentation
-
-1. Document all public functions, classes, and methods with docstrings
-2. Update the README.md when adding new features or changing existing functionality
-3. Documentation is built with MkDocs and deployed to GitHub Pages
+## When Not to Use Junie
+- For running or executing code (use your local environment)
+- For accessing external documentation (use the official docs)
+- For sensitive information like API keys or credentials
 
 ## Troubleshooting
+- If Junie doesn't understand your question, try rephrasing with more specific details
+- If code suggestions don't work, ask Junie to explain the reasoning behind them
+- For complex workflows, ask Junie to break down the explanation step by step
 
-1. **Circuit Breaker Issues**: If external API calls are failing, check the circuit breaker status in logs
-2. **Environment Variables**: Ensure all required environment variables are set correctly
-3. **API Keys**: Verify that API keys for OpenAI and search providers are valid
-
-## Continuous Integration
-
-The project uses GitHub Actions for continuous integration:
-1. Run tests on pull requests and pushes to main
-2. Check code quality with Ruff, Black, and mypy
-3. Build and publish package to PyPI on pushes to main that modify the src/ directory
-4. Deploy documentation to GitHub Pages using MkDocs
-
-## Release Process
-
-1. Update version in `pyproject.toml`
-2. Update `CHANGELOG.md` with the changes
-3. Push changes to the main branch
-4. The CI pipeline will automatically:
-   - Build the package with Poetry
-   - Publish to PyPI
-   - Commit the version update back to the repository
+## Additional Resources
+- [RiskGPT Documentation](https://thwolter.github.io/riskgpt/)
+- [LangChain Documentation](https://python.langchain.com/docs/get_started/introduction)
+- [LangGraph Documentation](https://langchain-ai.github.io/langgraph/)
+- [Project README](./README.md) for installation and basic usage

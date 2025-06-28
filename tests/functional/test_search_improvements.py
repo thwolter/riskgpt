@@ -1,7 +1,6 @@
-from unittest.mock import MagicMock, patch
+from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
-
 from riskgpt.helpers.search import _should_include_wikipedia, search
 from riskgpt.helpers.search.utils import deduplicate_results, rank_results
 from riskgpt.models.enums import TopicEnum
@@ -185,7 +184,8 @@ class TestContextualWikipedia:
         (False, False, "what is AI", ["primary"]),  # Wikipedia disabled
     ],
 )
-def test_search_provider_selection(
+@pytest.mark.asyncio
+async def test_search_provider_selection(
     monkeypatch, include_wiki, context_aware, query, expected_providers
 ):
     """Test that the correct search providers are selected based on settings and query."""
@@ -200,13 +200,17 @@ def test_search_provider_selection(
     # Mock search providers
     primary_provider = MagicMock()
     primary_provider.__class__.__name__ = "PrimaryProvider"
-    primary_provider.search.return_value = SearchResponse(
-        results=[SearchResult(title="Primary Result")], success=True
+    primary_provider.search = AsyncMock(
+        return_value=SearchResponse(
+            results=[SearchResult(title="Primary Result")], success=True
+        )
     )
 
     wiki_provider = MagicMock()
-    wiki_provider.search.return_value = SearchResponse(
-        results=[SearchResult(title="Wiki Result")], success=True
+    wiki_provider.search = AsyncMock(
+        return_value=SearchResponse(
+            results=[SearchResult(title="Wiki Result")], success=True
+        )
     )
 
     # Mock get_search_provider to return our mock
@@ -221,7 +225,7 @@ def test_search_provider_selection(
         patch("riskgpt.helpers.search.rank_results", lambda x: x),
     ):
         request = SearchRequest(query=query, source_type=TopicEnum.NEWS)
-        search(request)
+        await search(request)
 
         # Check that the correct providers were called
         if "primary" in expected_providers:
@@ -235,13 +239,14 @@ def test_search_provider_selection(
             wiki_provider.search.assert_not_called()
 
 
-def test_parallel_execution(monkeypatch):
+@pytest.mark.asyncio
+async def test_parallel_execution(monkeypatch):
     """Test that searches are executed in parallel."""
     # Instead of trying to mock the complex ThreadPoolExecutor and as_completed behavior,
     # we'll patch the _execute_search function to verify it's called correctly
 
     # Create a mock for _execute_search that returns a successful response
-    mock_execute_search = MagicMock()
+    mock_execute_search = AsyncMock()
     mock_execute_search.return_value = SearchResponse(
         results=[SearchResult(title="Test Result")], success=True
     )
@@ -259,8 +264,10 @@ def test_parallel_execution(monkeypatch):
     # Create mock providers
     mock_provider = MagicMock()
     mock_provider.__class__.__name__ = "MockProvider"
+    mock_provider.search = AsyncMock()
 
     mock_wiki = MagicMock()
+    mock_wiki.search = AsyncMock()
 
     # Patch the provider creation functions
     monkeypatch.setattr(
@@ -272,7 +279,7 @@ def test_parallel_execution(monkeypatch):
 
     # Call search
     request = SearchRequest(query="test query", source_type=TopicEnum.NEWS)
-    result = search(request)
+    result = await search(request)
 
     # Verify the search was successful
     assert result.success is True

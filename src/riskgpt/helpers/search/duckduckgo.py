@@ -20,7 +20,7 @@ class DuckDuckGoSearchProvider(BaseSearchProvider):
 
     @duckduckgo_breaker
     @with_fallback(lambda self, payload: self.fallback(payload))
-    def search(self, payload: SearchRequest) -> SearchResponse:
+    async def search(self, payload: SearchRequest) -> SearchResponse:
         """Perform a DuckDuckGo search and format results."""
 
         if payload.source_type.value.lower() in ["news"]:
@@ -37,6 +37,8 @@ class DuckDuckGoSearchProvider(BaseSearchProvider):
                 region=payload.region,
                 source=source_type,
             )
+            # Note: DuckDuckGoSearchAPIWrapper.results is not async, but we're keeping
+            # the method signature async to match the interface
             search_results = wrapper.results(
                 query=query, max_results=payload.max_results
             )

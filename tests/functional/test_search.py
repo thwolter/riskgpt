@@ -1,9 +1,8 @@
 import os
 from typing import Generator
-from unittest.mock import MagicMock, patch
+from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
-
 from riskgpt.helpers.search import search
 from riskgpt.helpers.search.google import GoogleSearchProvider
 from riskgpt.helpers.search.wikipedia import WikipediaSearchProvider
@@ -16,13 +15,14 @@ from riskgpt.models.helpers.search import SearchRequest, SearchResponse, SearchR
     reason="Google API key or CSE ID not set",
 )
 @pytest.mark.integration
-def test_google_search():
+@pytest.mark.asyncio
+async def test_google_search():
     """Test Google Custom Search API."""
     request = SearchRequest(
         query="artificial intelligence", source_type=TopicEnum.LINKEDIN
     )
     google_provider = GoogleSearchProvider()
-    response = google_provider.search(request)
+    response = await google_provider.search(request)
 
     assert response.success is True
     assert len(response.results) > 0
@@ -34,13 +34,14 @@ def test_google_search():
 
 
 @pytest.mark.integration
-def test_wikipedia_search():
+@pytest.mark.asyncio
+async def test_wikipedia_search():
     """Test Wikipedia search."""
     request = SearchRequest(
         query="artificial intelligence", source_type=TopicEnum.REGULATORY, max_results=5
     )
     wiki_provider = WikipediaSearchProvider()
-    response = wiki_provider.search(request)
+    response = await wiki_provider.search(request)
 
     assert response.success is True
     assert len(response.results) > 0
@@ -56,7 +57,8 @@ def test_wikipedia_search():
     reason="Google API key, CSE ID, or Wikipedia integration not set",
 )
 @pytest.mark.integration
-def test_combined_search(monkeypatch):
+@pytest.mark.asyncio
+async def test_combined_search(monkeypatch):
     """Test combined search with Google and Wikipedia."""
 
     # Use monkeypatch instead of directly modifying os.environ
@@ -69,7 +71,7 @@ def test_combined_search(monkeypatch):
     request = SearchRequest(
         query="artificial intelligence", source_type=TopicEnum.LINKEDIN, max_results=5
     )
-    response = search(request)
+    response = await search(request)
 
     assert response.success is True
     assert len(response.results) > 0
@@ -163,7 +165,8 @@ def mock_duckduckgo_search() -> SearchResponse:
     )
 
 
-def test_search_google_with_mock(
+@pytest.mark.asyncio
+async def test_search_google_with_mock(
     monkeypatch,
     search_request: SearchRequest,
     mock_google_search: SearchResponse,
@@ -188,12 +191,13 @@ def test_search_google_with_mock(
         with patch(
             "riskgpt.helpers.search._execute_search", return_value=mock_google_search
         ):
-            search_response = search(search_request)
+            search_response = await search(search_request)
             assert search_response.success is True
             assert any(result.title == "G" for result in search_response.results)
 
 
-def test_search_duckduckgo_with_mock(
+@pytest.mark.asyncio
+async def test_search_duckduckgo_with_mock(
     monkeypatch,
     search_request: SearchRequest,
     mock_duckduckgo_search: SearchResponse,
@@ -220,12 +224,13 @@ def test_search_duckduckgo_with_mock(
             "riskgpt.helpers.search._execute_search",
             return_value=mock_duckduckgo_search,
         ):
-            search_response = search(search_request)
+            search_response = await search(search_request)
             assert search_response.success is True
             assert any(result.title == "D" for result in search_response.results)
 
 
-def test_search_wikipedia_with_mock(
+@pytest.mark.asyncio
+async def test_search_wikipedia_with_mock(
     monkeypatch, search_request: SearchRequest, mock_wikipedia_search: SearchResponse
 ) -> None:
     """Search using mocked Wikipedia provider."""
@@ -233,12 +238,14 @@ def test_search_wikipedia_with_mock(
         "riskgpt.helpers.search.factory.settings.SEARCH_PROVIDER", "wikipedia"
     )
     monkeypatch.setattr("riskgpt.helpers.search.settings.SEARCH_PROVIDER", "wikipedia")
+    # Use AsyncMock to properly mock the async search method
+    mock_search = AsyncMock(return_value=mock_wikipedia_search)
     with patch.object(
         WikipediaSearchProvider,
         "search",
-        return_value=mock_wikipedia_search,
+        mock_search,
     ):
-        search_response: SearchResponse = search(search_request)
+        search_response: SearchResponse = await search(search_request)
         assert search_response.success is True
         assert search_response.results[0].title.startswith("W")
 
@@ -248,7 +255,8 @@ def test_search_wikipedia_with_mock(
     reason="Google API key or CSE ID not set",
 )
 @pytest.mark.integration
-def test_combined_search_with_context_aware():
+@pytest.mark.asyncio
+async def test_combined_search_with_context_aware():
     """Test combined search with context-aware Wikipedia integration.
 
     This test performs a live search using both the primary provider (Google)
@@ -268,7 +276,7 @@ def test_combined_search_with_context_aware():
         )
 
         # Perform the search
-        response = search(request)
+        response = await search(request)
 
         # Verify the search was successful
         assert response.success is True
@@ -293,7 +301,8 @@ def test_combined_search_with_context_aware():
     reason="Google API key or CSE ID not set",
 )
 @pytest.mark.integration
-def test_combined_search_without_context_aware():
+@pytest.mark.asyncio
+async def test_combined_search_without_context_aware():
     """Test combined search without context-aware Wikipedia integration.
 
     This test performs a live search using both the primary provider (Google)
@@ -313,7 +322,7 @@ def test_combined_search_without_context_aware():
         )
 
         # Perform the search
-        response = search(request)
+        response = await search(request)
 
         # Verify the search was successful
         assert response.success is True
@@ -338,7 +347,8 @@ def test_combined_search_without_context_aware():
     reason="Google API key or CSE ID not set",
 )
 @pytest.mark.integration
-def test_compare_context_aware_modes():
+@pytest.mark.asyncio
+async def test_compare_context_aware_modes():
     """Compare search results with and without context-aware Wikipedia.
 
     This test performs two searches with the same query, one with context-aware
@@ -354,7 +364,7 @@ def test_compare_context_aware_modes():
         patch("riskgpt.helpers.search.settings.SEARCH_PROVIDER", "google"),
     ):
         request = SearchRequest(query=query, source_type=TopicEnum.NEWS, max_results=5)
-        context_aware_response = search(request)
+        context_aware_response = await search(request)
 
         assert context_aware_response.success is True
         assert len(context_aware_response.results) > 0
@@ -366,7 +376,7 @@ def test_compare_context_aware_modes():
         patch("riskgpt.helpers.search.settings.SEARCH_PROVIDER", "google"),
     ):
         request = SearchRequest(query=query, source_type=TopicEnum.NEWS, max_results=5)
-        non_context_aware_response = search(request)
+        non_context_aware_response = await search(request)
 
         assert non_context_aware_response.success is True
         assert len(non_context_aware_response.results) > 0

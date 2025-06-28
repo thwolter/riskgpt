@@ -58,10 +58,18 @@ def get_enrich_context_graph(request: EnrichContextRequest):
         request, TopicEnum.ACADEMIC, provider=SemanticScholarSearchProvider()
     )
 
-    extract_news_key_points = create_extract_key_points_node(TopicEnum.NEWS)
-    extract_professional_key_points = create_extract_key_points_node(TopicEnum.LINKEDIN)
-    extract_regulatory_key_points = create_extract_key_points_node(TopicEnum.REGULATORY)
-    extract_academic_key_points = create_extract_key_points_node(TopicEnum.ACADEMIC)
+    extract_news_key_points = create_extract_key_points_node(
+        TopicEnum.NEWS, focus_keywords=request.focus_keywords
+    )
+    extract_professional_key_points = create_extract_key_points_node(
+        TopicEnum.LINKEDIN, focus_keywords=request.focus_keywords
+    )
+    extract_regulatory_key_points = create_extract_key_points_node(
+        TopicEnum.REGULATORY, focus_keywords=request.focus_keywords
+    )
+    extract_academic_key_points = create_extract_key_points_node(
+        TopicEnum.ACADEMIC, focus_keywords=request.focus_keywords
+    )
 
     # Wrap aggregate to include request
     async def aggregate_node(state: State) -> State:

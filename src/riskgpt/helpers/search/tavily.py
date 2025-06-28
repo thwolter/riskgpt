@@ -23,7 +23,7 @@ class TavilySearchProvider(BaseSearchProvider):
 
     @tavily_breaker
     @with_fallback(lambda self, payload: self.fallback(payload))
-    def search(self, payload: SearchRequest) -> SearchResponse:
+    async def search(self, payload: SearchRequest) -> SearchResponse:
         """Perform a Tavily search and format results."""
 
         if payload.source_type.value.lower() in ["general", "news", "finance"]:
@@ -52,6 +52,8 @@ class TavilySearchProvider(BaseSearchProvider):
                 include_raw_content="text",
             )
 
+            # Note: TavilySearch.invoke is not async, but we're keeping
+            # the method signature async to match the interface
             search_results = tool.invoke(query)
 
             # Check if we got valid results

@@ -5,6 +5,7 @@ from typing import Any, Dict, Optional
 
 from langchain.chat_models import init_chat_model
 from langchain_community.callbacks import get_openai_callback
+from langchain_core.exceptions import OutputParserException
 from langchain_core.output_parsers import BaseOutputParser
 from langchain_core.prompts import ChatPromptTemplate
 from langsmith import traceable
@@ -112,8 +113,27 @@ class BaseChain:
             inputs = flatten_dict(inputs)
             inputs["system_prompt"] = load_system_prompt()
 
-            result = await self.chain.ainvoke(inputs, memory=self.memory)
-            result.response_info = await self.create_response_info(cb, result)
+            try:
+                result = await self.chain.ainvoke(inputs, memory=self.memory)
+                result.response_info = await self.create_response_info(cb, result)
+            except OutputParserException as e:
+                # Log the error
+                logger.error(
+                    "Output parser error for '%s': %s",
+                    self.prompt_name or "prompt",
+                    str(e),
+                )
+
+                # Create a fallback response
+                if hasattr(self.parser, "pydantic_object"):
+                    # Create a minimal valid instance of the pydantic object
+                    result = self._create_fallback_response(e.llm_output)
+                    result.response_info = await self.create_response_info(
+                        cb, result, error=f"Output parser error: {str(e)}"
+                    )
+                else:
+                    # If we can't create a valid pydantic object, re-raise the exception
+                    raise
 
             logger.info(
                 "Consumed %s tokens (%.4f USD) for '%s' using %s",
@@ -124,10 +144,42 @@ class BaseChain:
             )
         return result
 
-    async def create_response_info(self, cb, result):
+    async def create_response_info(self, cb, result, error=None):
         return ResponseInfo(
             consumed_tokens=cb.total_tokens,
             total_cost=cb.total_cost,
             prompt_name=self.prompt_name,
             model_name=self.settings.OPENAI_MODEL_NAME,
+            error=error,
         )
+
+    def _create_fallback_response(self, llm_output=None):
+        """Create a fallback response when the output parser fails."""
+        try:
+            # Create a minimal valid instance of the pydantic object
+            data: Dict[str, Any] = {}
+            for name, field in self.parser.pydantic_object.model_fields.items():
+                if field.is_required():
+                    if (
+                        field.annotation is str
+                        or typing.get_origin(field.annotation) is str
+                    ):
+                        data[name] = "Failed to parse output"
+                    elif (
+                        field.annotation is list
+                        or typing.get_origin(field.annotation) is list
+                    ):
+                        data[name] = []
+                    else:
+                        data[name] = None
+
+            # If we have the LLM output, try to extract some useful information
+            if llm_output:
+                # You could implement some basic extraction logic here
+                # For example, try to find JSON-like structures or key phrases
+                pass
+
+            return self.parser.pydantic_object.model_validate(data)
+        except Exception as e:
+            logger.error("Failed to create fallback response: %s", e)
+            return {"error": "Failed to parse output"}

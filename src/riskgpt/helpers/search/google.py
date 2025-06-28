@@ -22,7 +22,7 @@ class GoogleSearchProvider(BaseSearchProvider):
             "Search service is unavailable"
         )
     )
-    def search(self, payload: SearchRequest) -> SearchResponse:
+    async def search(self, payload: SearchRequest) -> SearchResponse:
         """Perform a Google Custom Search and format results."""
         results: List[SearchResult] = []
         query = f"{payload.source_type.value} {payload.query}"
@@ -43,6 +43,8 @@ class GoogleSearchProvider(BaseSearchProvider):
                 k=payload.max_results,
             )
 
+            # Note: GoogleSearchAPIWrapper.results is not async, but we're keeping
+            # the method signature async to match the interface
             search_results = wrapper.results(
                 query=query, num_results=payload.max_results
             )
