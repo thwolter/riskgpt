@@ -21,7 +21,14 @@ class RiskGPTSettings(BaseSettings):
     SEARCH_PROVIDER: Literal["duckduckgo", "google", "wikipedia", "tavily"] = Field(
         default="tavily"
     )
+    # Enhanced Wikipedia settings
     INCLUDE_WIKIPEDIA: bool = Field(default=False)
+    WIKIPEDIA_CONTEXT_AWARE: bool = Field(
+        default=True, description="Enable context-aware Wikipedia inclusion"
+    )
+    WIKIPEDIA_MAX_RESULTS: int = Field(
+        default=2, description="Maximum number of Wikipedia results to include"
+    )
     GOOGLE_CSE_ID: Optional[str] = None
     GOOGLE_API_KEY: Optional[SecretStr] = None
     TAVILY_API_KEY: Optional[SecretStr] = None
