@@ -1,6 +1,7 @@
 from unittest.mock import patch
 
 import pytest
+
 from riskgpt.models.base import ResponseInfo
 from riskgpt.models.chains.keypoints import (
     ExtractKeyPointsResponse,
@@ -95,9 +96,7 @@ def mock_search(monkeypatch, mock_search_result):
         return mock_search_result
 
     # Patch the search function
-    with patch(
-        "riskgpt.helpers.search._tavily_search", side_effect=mock_search_func
-    ) as mock:
+    with patch("riskgpt.helpers.search.search", side_effect=mock_search_func) as mock:
         yield mock
 
 
@@ -214,6 +213,90 @@ async def test_enrich_context_duckduckgo_and_wikipedia(
     assert response.sector_summary
 
 
+@pytest.mark.integration
+@pytest.mark.asyncio
+async def test_enrich_context_with_context_aware_wiki_enabled_knowledge_query(
+    monkeypatch, mock_settings
+) -> None:
+    """Test enrich_context with context-aware wiki enabled and a knowledge query."""
+    # Create a request with a knowledge query that should include Wikipedia
+    knowledge_request = EnrichContextRequest(
+        business_context=BusinessContext(
+            project_id="AI-Driven Risk Management",
+            project_description="A project focused on leveraging AI for risk registration and management.",
+            domain_knowledge="artificial intelligence and risk assessment",
+        ),
+        focus_keywords=[
+            "what is artificial intelligence",
+            "definition of risk management",
+        ],
+        max_search_results=2,
+        region="en-US",
+    )
+
+    monkeypatch.setattr("riskgpt.helpers.search.settings.SEARCH_PROVIDER", "duckduckgo")
+    monkeypatch.setattr("riskgpt.helpers.search.settings.INCLUDE_WIKIPEDIA", True)
+    monkeypatch.setattr("riskgpt.helpers.search.settings.WIKIPEDIA_CONTEXT_AWARE", True)
+
+    response: EnrichContextResponse = await enrich_context(knowledge_request)
+    assert response.sector_summary
+
+
+@pytest.mark.integration
+@pytest.mark.asyncio
+async def test_enrich_context_with_context_aware_wiki_enabled_news_query(
+    monkeypatch, mock_settings
+) -> None:
+    """Test enrich_context with context-aware wiki enabled and a news query."""
+    # Create a request with a news query that should not include Wikipedia
+    news_request = EnrichContextRequest(
+        business_context=BusinessContext(
+            project_id="AI-Driven Risk Management",
+            project_description="A project focused on leveraging AI for risk registration and management.",
+            domain_knowledge="artificial intelligence and risk assessment",
+        ),
+        focus_keywords=["latest AI developments", "breaking news in risk management"],
+        max_search_results=2,
+        region="en-US",
+    )
+
+    monkeypatch.setattr("riskgpt.helpers.search.settings.SEARCH_PROVIDER", "duckduckgo")
+    monkeypatch.setattr("riskgpt.helpers.search.settings.INCLUDE_WIKIPEDIA", True)
+    monkeypatch.setattr("riskgpt.helpers.search.settings.WIKIPEDIA_CONTEXT_AWARE", True)
+
+    response: EnrichContextResponse = await enrich_context(news_request)
+    assert response.sector_summary
+
+
+@pytest.mark.integration
+@pytest.mark.asyncio
+async def test_enrich_context_with_context_aware_wiki_disabled(
+    monkeypatch, mock_settings
+) -> None:
+    """Test enrich_context with context-aware wiki disabled."""
+    # Create a request with a news query, but Wikipedia should be included anyway
+    # because context-aware wiki is disabled
+    news_request = EnrichContextRequest(
+        business_context=BusinessContext(
+            project_id="AI-Driven Risk Management",
+            project_description="A project focused on leveraging AI for risk registration and management.",
+            domain_knowledge="artificial intelligence and risk assessment",
+        ),
+        focus_keywords=["latest AI developments", "breaking news in risk management"],
+        max_search_results=2,
+        region="en-US",
+    )
+
+    monkeypatch.setattr("riskgpt.helpers.search.settings.SEARCH_PROVIDER", "duckduckgo")
+    monkeypatch.setattr("riskgpt.helpers.search.settings.INCLUDE_WIKIPEDIA", True)
+    monkeypatch.setattr(
+        "riskgpt.helpers.search.settings.WIKIPEDIA_CONTEXT_AWARE", False
+    )
+
+    response: EnrichContextResponse = await enrich_context(news_request)
+    assert response.sector_summary
+
+
 # todo: Check this test: It should mock and not call the LLM
 @pytest.mark.integration
 @pytest.mark.asyncio
@@ -230,3 +313,123 @@ async def test_enrich_context_with_mock(
 
     # Verify the results
     assert len(response.sector_summary) > 0
+
+
+@pytest.mark.integration
+@pytest.mark.asyncio
+async def test_enrich_context_with_context_aware_wiki_enabled_knowledge_query_mock(
+    monkeypatch,
+    mock_settings,
+    mock_search,
+    mock_extract_key_points,
+    mock_keypoints_summary_chain,
+) -> None:
+    """Test enrich_context with context-aware wiki enabled and a knowledge query using mocks."""
+    # Create a request with a knowledge query that should include Wikipedia
+    knowledge_request = EnrichContextRequest(
+        business_context=BusinessContext(
+            project_id="AI-Driven Risk Management",
+            project_description="A project focused on leveraging AI for risk registration and management.",
+            domain_knowledge="artificial intelligence and risk assessment",
+        ),
+        focus_keywords=[
+            "what is artificial intelligence",
+            "definition of risk management",
+        ],
+        max_search_results=2,
+        region="en-US",
+    )
+
+    monkeypatch.setattr("riskgpt.helpers.search.settings.SEARCH_PROVIDER", "duckduckgo")
+    monkeypatch.setattr("riskgpt.helpers.search.settings.INCLUDE_WIKIPEDIA", True)
+    monkeypatch.setattr("riskgpt.helpers.search.settings.WIKIPEDIA_CONTEXT_AWARE", True)
+
+    # Mock the _should_include_wikipedia function to verify it's called with the right parameters
+    with patch(
+        "riskgpt.helpers.search._should_include_wikipedia", return_value=True
+    ) as mock_should_include:
+        response = await enrich_context(knowledge_request)
+
+        # Verify the results
+        assert len(response.sector_summary) > 0
+        # Verify that _should_include_wikipedia was called
+        mock_should_include.assert_called()
+
+
+@pytest.mark.integration
+@pytest.mark.asyncio
+async def test_enrich_context_with_context_aware_wiki_enabled_news_query_mock(
+    monkeypatch,
+    mock_settings,
+    mock_search,
+    mock_extract_key_points,
+    mock_keypoints_summary_chain,
+) -> None:
+    """Test enrich_context with context-aware wiki enabled and a news query using mocks."""
+    # Create a request with a news query that should not include Wikipedia
+    news_request = EnrichContextRequest(
+        business_context=BusinessContext(
+            project_id="AI-Driven Risk Management",
+            project_description="A project focused on leveraging AI for risk registration and management.",
+            domain_knowledge="artificial intelligence and risk assessment",
+        ),
+        focus_keywords=["latest AI developments", "breaking news in risk management"],
+        max_search_results=2,
+        region="en-US",
+    )
+
+    monkeypatch.setattr("riskgpt.helpers.search.settings.SEARCH_PROVIDER", "duckduckgo")
+    monkeypatch.setattr("riskgpt.helpers.search.settings.INCLUDE_WIKIPEDIA", True)
+    monkeypatch.setattr("riskgpt.helpers.search.settings.WIKIPEDIA_CONTEXT_AWARE", True)
+
+    # Mock the _should_include_wikipedia function to verify it's called with the right parameters
+    with patch(
+        "riskgpt.helpers.search._should_include_wikipedia", return_value=False
+    ) as mock_should_include:
+        response = await enrich_context(news_request)
+
+        # Verify the results
+        assert len(response.sector_summary) > 0
+        # Verify that _should_include_wikipedia was called
+        mock_should_include.assert_called()
+
+
+@pytest.mark.integration
+@pytest.mark.asyncio
+async def test_enrich_context_with_context_aware_wiki_disabled_mock(
+    monkeypatch,
+    mock_settings,
+    mock_search,
+    mock_extract_key_points,
+    mock_keypoints_summary_chain,
+) -> None:
+    """Test enrich_context with context-aware wiki disabled using mocks."""
+    # Create a request with a news query, but Wikipedia should be included anyway
+    # because context-aware wiki is disabled
+    news_request = EnrichContextRequest(
+        business_context=BusinessContext(
+            project_id="AI-Driven Risk Management",
+            project_description="A project focused on leveraging AI for risk registration and management.",
+            domain_knowledge="artificial intelligence and risk assessment",
+        ),
+        focus_keywords=["latest AI developments", "breaking news in risk management"],
+        max_search_results=2,
+        region="en-US",
+    )
+
+    monkeypatch.setattr("riskgpt.helpers.search.settings.SEARCH_PROVIDER", "duckduckgo")
+    monkeypatch.setattr("riskgpt.helpers.search.settings.INCLUDE_WIKIPEDIA", True)
+    monkeypatch.setattr(
+        "riskgpt.helpers.search.settings.WIKIPEDIA_CONTEXT_AWARE", False
+    )
+
+    # Mock the _should_include_wikipedia function to verify it's NOT called when context-aware is disabled
+    with patch(
+        "riskgpt.helpers.search._should_include_wikipedia"
+    ) as mock_should_include:
+        response = await enrich_context(news_request)
+
+        # Verify the results
+        assert len(response.sector_summary) > 0
+        # Verify that _should_include_wikipedia was NOT called when context-aware is disabled
+        mock_should_include.assert_not_called()
