@@ -6,19 +6,19 @@ from riskgpt.models.base import BaseResponse
 from riskgpt.models.chains.risk import Risk
 from riskgpt.models.enums import TopicEnum
 from riskgpt.models.helpers import SearchRequest
-from riskgpt.models.workflows.context import EnrichContextRequest, EnrichContextResponse
+from riskgpt.models.workflows.context import EnrichContextRequest
 
 
 class RiskAnalysisRequest(EnrichContextRequest):
     """Input model for risk analysis that extends EnrichContextRequest."""
-    
+
     risk: Risk = Field(description="The risk to analyze")
-    
+
     def create_search_query(self) -> str:
         """Create a search query focused on the risk."""
         keywords = " ".join(self.focus_keywords) if self.focus_keywords else ""
         return f"{self.risk.title} {self.risk.description} {keywords}".strip()
-    
+
     def create_search_request(self, topic: TopicEnum) -> SearchRequest:
         """Create a search request dictionary for the specified topic."""
         return SearchRequest(
@@ -31,7 +31,7 @@ class RiskAnalysisRequest(EnrichContextRequest):
 
 class RiskAnalysisResponse(BaseResponse):
     """Output model containing risk analysis information."""
-    
+
     risk_summary: str
     risk_factors: List[str]
     mitigation_strategies: List[str]

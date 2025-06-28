@@ -6,7 +6,10 @@ from riskgpt.helpers.search import search
 from riskgpt.models.base import ResponseInfo
 from riskgpt.models.enums import TopicEnum
 from riskgpt.models.helpers.search import SearchResponse, Source
-from riskgpt.models.workflows.risk_analysis import RiskAnalysisRequest, RiskAnalysisResponse
+from riskgpt.models.workflows.risk_analysis import (
+    RiskAnalysisRequest,
+    RiskAnalysisResponse,
+)
 
 from ...helpers.search.base import BaseSearchProvider
 from ...models.chains.keypoints import (
@@ -46,10 +49,10 @@ async def topic_search(
     return state
 
 
-
-
 async def extract_topic_key_points(
-    state: RiskAnalysisState, topic: TopicEnum, focus_keywords: Optional[List[str]] = None
+    state: RiskAnalysisState,
+    topic: TopicEnum,
+    focus_keywords: Optional[List[str]] = None,
 ) -> RiskAnalysisState:
     """Extract key points from sources of the specified topic."""
     # Filter sources by topic
@@ -70,8 +73,6 @@ async def extract_topic_key_points(
         state.setdefault("key_points", []).extend(response.points)
 
     return state
-
-
 
 
 def aggregate_response_info(state):
@@ -99,6 +100,7 @@ def create_search_node(
     provider: Optional[BaseSearchProvider] = None,
 ):
     """Create a search node for the specified topic."""
+
     async def search_node(state: RiskAnalysisState) -> RiskAnalysisState:
         return await topic_search(state, request, topic, provider=provider)
 
@@ -109,6 +111,7 @@ def create_extract_key_points_node(
     topic: TopicEnum, focus_keywords: Optional[List[str]] = None
 ):
     """Create a node for extracting key points from the specified topic."""
+
     async def extract_node(state: RiskAnalysisState) -> RiskAnalysisState:
         return await extract_topic_key_points(
             state, topic, focus_keywords=focus_keywords
@@ -172,7 +175,9 @@ async def aggregate_risk_analysis(
         mitigation_strategies = []
         impact_assessment = "Unable to assess impact due to lack of information"
     else:
-        risk_summary = f"Analyzed risk '{request.risk.title}' using {len(sources)} sources."
+        risk_summary = (
+            f"Analyzed risk '{request.risk.title}' using {len(sources)} sources."
+        )
 
         kp_text_response = state.get("keypoint_text_response")
         full_report = kp_text_response.format_output() if kp_text_response else None
@@ -183,19 +188,23 @@ async def aggregate_risk_analysis(
 
         # todo: We need here to call a more sophisticated analysis chain
         risk_factors = [
-            f"Risk factor: {point.content[:50]}..." 
-            for point in key_points[:3] if "risk" in point.content.lower()
+            f"Risk factor: {point.content[:50]}..."
+            for point in key_points[:3]
+            if "risk" in point.content.lower()
         ] or ["No specific risk factors identified"]
 
         mitigation_strategies = [
-            f"Strategy: {point.content[:50]}..." 
-            for point in key_points[:3] if "mitigat" in point.content.lower() or "strateg" in point.content.lower()
+            f"Strategy: {point.content[:50]}..."
+            for point in key_points[:3]
+            if "mitigat" in point.content.lower() or "strateg" in point.content.lower()
         ] or ["No specific mitigation strategies identified"]
 
         impact_assessment = "Medium impact based on available information"
 
     # Prepare document references
-    document_references = request.risk.document_refs if request.risk.document_refs else []
+    document_references = (
+        request.risk.document_refs if request.risk.document_refs else []
+    )
 
     response = RiskAnalysisResponse(
         risk_summary=risk_summary,

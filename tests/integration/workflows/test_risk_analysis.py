@@ -200,8 +200,14 @@ async def test_analyse_risk_with_mock(
     assert len(response.mitigation_strategies) > 0
     assert response.impact_assessment
     assert response.document_references == ["doc-123", "doc-456"]
-    assert response.full_report and "Data migration for CRM systems presents significant risks" in response.full_report
-    assert response.response_info and response.response_info.prompt_name == "risk_analysis"
+    assert (
+        response.full_report
+        and "Data migration for CRM systems presents significant risks"
+        in response.full_report
+    )
+    assert (
+        response.response_info and response.response_info.prompt_name == "risk_analysis"
+    )
 
 
 @pytest.mark.integration
@@ -231,7 +237,10 @@ async def test_analyse_risk_no_results(
         assert response.risk_summary == "No relevant information found for this risk"
         assert len(response.risk_factors) == 0
         assert len(response.mitigation_strategies) == 0
-        assert response.impact_assessment == "Unable to assess impact due to lack of information"
+        assert (
+            response.impact_assessment
+            == "Unable to assess impact due to lack of information"
+        )
         assert response.document_references == ["doc-123", "doc-456"]
         assert response.full_report is None
 
@@ -260,9 +269,15 @@ async def test_analyse_risk_search_failure(
         response: RiskAnalysisResponse = await analyse_risk(test_request)
 
         # Verify the results for failed search
-        assert response.risk_summary == "No external data retrieved due to network restrictions or missing dependencies"
+        assert (
+            response.risk_summary
+            == "No external data retrieved due to network restrictions or missing dependencies"
+        )
         assert len(response.risk_factors) == 0
         assert len(response.mitigation_strategies) == 0
-        assert response.impact_assessment == "Unable to assess impact due to lack of information"
+        assert (
+            response.impact_assessment
+            == "Unable to assess impact due to lack of information"
+        )
         assert response.document_references == ["doc-123", "doc-456"]
         assert response.full_report is None

@@ -26,7 +26,6 @@ def get_risk_analysis_graph(request: RiskAnalysisRequest):
         request, TopicEnum.ACADEMIC, provider=SemanticScholarSearchProvider()
     )
 
-
     extract_news_key_points = create_extract_key_points_node(
         TopicEnum.NEWS, focus_keywords=request.focus_keywords
     )
@@ -39,7 +38,6 @@ def get_risk_analysis_graph(request: RiskAnalysisRequest):
     extract_academic_key_points = create_extract_key_points_node(
         TopicEnum.ACADEMIC, focus_keywords=request.focus_keywords
     )
-
 
     # Wrap aggregate to include request
     async def aggregate_node(state: RiskAnalysisState) -> RiskAnalysisState:

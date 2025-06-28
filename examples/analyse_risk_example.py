@@ -60,7 +60,7 @@ async def main():
         print(f"\nFull Report:\n{response.full_report}")
 
     if response.response_info:
-        print(f"\nResponse Info:")
+        print("\nResponse Info:")
         print(f"- Consumed Tokens: {response.response_info.consumed_tokens}")
         print(f"- Total Cost: ${response.response_info.total_cost:.6f}")
         print(f"- Model Name: {response.response_info.model_name}")
