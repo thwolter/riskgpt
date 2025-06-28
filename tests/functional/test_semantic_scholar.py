@@ -199,7 +199,7 @@ async def test_semantic_scholar_live():
     """
     provider = SemanticScholarSearchProvider()
     request = SearchRequest(
-        query="machine learning explainability",
+        query="machine learning",
         source_type=TopicEnum.ACADEMIC,
         max_results=2,
     )

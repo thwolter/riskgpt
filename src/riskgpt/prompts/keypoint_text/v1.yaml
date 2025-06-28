@@ -8,6 +8,7 @@ template: |
   - Include Harvard-style inline citations (Author, Year) for each key point
   - When one or more sources make the same statement, use multiple citations separated by semicolons, e.g. (Porter, 1983; Porter, 2010)
   - Be concise and to the point without adding information beyond what's in the key points
+  - **Insert empty lines between paragraphs** to improve readability and structure
   - Include a "References" section at the end with Harvard-style references
   - Be written in a professional, academic tone
 

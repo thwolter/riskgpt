@@ -1,6 +1,7 @@
 """Semantic Scholar search provider implementation."""
 
-from typing import Dict, List, Union
+import asyncio
+from typing import Dict, List, Optional, Union
 
 import aiohttp
 
@@ -20,6 +21,8 @@ class SemanticScholarSearchProvider(BaseSearchProvider):
     """Semantic Scholar search provider implementation."""
 
     MAX_QUERY_WORDS: int = 5  # Threshold for extracting keywords from long queries
+    MAX_RETRIES: int = 3  # Maximum number of retry attempts for rate-limited requests
+    RETRY_BASE_DELAY: float = 1.0  # Base delay in seconds for exponential backoff
 
     def __init__(self):
         """Initialize the Semantic Scholar search provider."""
@@ -31,6 +34,61 @@ class SemanticScholarSearchProvider(BaseSearchProvider):
             if settings.SEMANTIC_SCHOLAR_API_KEY
             else None
         )
+
+    async def _fetch_with_retry(
+        self,
+        session: aiohttp.ClientSession,
+        url: str,
+        params: Dict[str, Union[str, int]],
+        headers: Optional[Dict[str, str]] = None,
+    ) -> Dict:
+        """Fetch data from API with retry logic for rate limiting.
+
+        Args:
+            session: The aiohttp ClientSession to use
+            url: The URL to fetch data from
+            params: Query parameters for the request
+            headers: Optional headers for the request
+
+        Returns:
+            The JSON response data
+
+        Raises:
+            Exception: If all retry attempts fail
+        """
+        headers = headers or {}
+        retry_count = 0
+
+        while True:
+            try:
+                async with session.get(url, params=params, headers=headers) as response:
+                    if response.status == 429:  # Too Many Requests
+                        retry_count += 1
+                        if retry_count > self.MAX_RETRIES:
+                            # If we've exceeded max retries, raise the exception
+                            response.raise_for_status()
+
+                        # Calculate backoff delay with exponential increase and some jitter
+                        delay = self.RETRY_BASE_DELAY * (2 ** (retry_count - 1))
+                        # Add a small random jitter (0-0.5 seconds)
+                        delay += asyncio.get_event_loop().time() % 0.5
+
+                        logger.warning(
+                            f"Rate limited by Semantic Scholar API. Retrying in {delay:.2f} seconds "
+                            f"(attempt {retry_count}/{self.MAX_RETRIES})"
+                        )
+                        await asyncio.sleep(delay)
+                        continue
+
+                    # For any other status code, raise_for_status will handle errors
+                    response.raise_for_status()
+                    return await response.json()
+
+            except aiohttp.ClientResponseError as e:
+                if e.status == 429 and retry_count < self.MAX_RETRIES:
+                    # This should be handled by the code above, but just in case
+                    continue
+                raise
 
     @semantic_scholar_breaker
     @with_fallback(lambda self, payload: self.fallback(payload))
@@ -64,17 +122,11 @@ class SemanticScholarSearchProvider(BaseSearchProvider):
                 if self.api_key:
                     # Use the API key for authenticated requests
                     headers["x-api-key"] = self.api_key
-                    async with session.get(
-                        self.api_url, params=params, headers=headers
-                    ) as http_response:
-                        http_response.raise_for_status()
-                        data = await http_response.json()
-                else:
-                    async with session.get(
-                        self.api_url, params=params
-                    ) as http_response:
-                        http_response.raise_for_status()
-                        data = await http_response.json()
+
+                # Use the retry mechanism for API calls
+                data = await self._fetch_with_retry(
+                    session=session, url=self.api_url, params=params, headers=headers
+                )
 
                 for paper in data.get("data", []):
                     # Extract authors (first 3)
