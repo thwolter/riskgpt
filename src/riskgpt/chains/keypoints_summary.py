@@ -19,13 +19,13 @@ async def keypoints_summary_chain(
     The output includes both the text with inline citations and a references
     section formatted in Harvard style.
     """
-    prompt_data = load_prompt("keypoint_text")
+    prompt_data = load_prompt("keypoint_summary")
 
     parser = PydanticOutputParser(pydantic_object=KeyPointSummaryResponse)
     chain = BaseChain(
         prompt_template=prompt_data["template"],
         parser=parser,
-        prompt_name="keypoint_text",
+        prompt_name="keypoint_summary",
     )
 
     # Format key points with proper citations

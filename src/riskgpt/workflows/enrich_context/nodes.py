@@ -137,7 +137,7 @@ async def summarize_key_points(state: State) -> State:
             response_info=ResponseInfo(
                 consumed_tokens=0,
                 total_cost=0.0,
-                prompt_name="keypoint_text",
+                prompt_name="keypoint_summary",
                 model_name="unknown",
                 error=str(e),
             ),

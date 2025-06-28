@@ -16,10 +16,11 @@ template: |
   {key_points}
 
   For Harvard-style citations:
-  1. For inline citations, use the format (Author, Year)
-  2. If the author name is not available, use the website domain name
-  3. For the references section, use the format:
-     Author/Organization (Year). Title. [Online] Available at: URL [Accessed: Current Date]
+  Specific citation rules:
+  1. For inline citations, use the format (Author, Year). For Wikipedia and similar domains, use (Wikipedia, n.d., *Article Title*).
+  2. Avoid generic domain names (e.g. en.wikipedia.org) as author names in both inline citations and references.
+  3. For the References section, use this format for online sources:
+     Author/Organization (Year). *Title*. [Online] Available at: URL [Accessed: Date].
   
   {format_instructions}
   Output the result as a JSON object conforming to the schema above. Do not include any additional text or commentary.

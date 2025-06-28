@@ -137,7 +137,7 @@ def keypoint_text_resp():
         response_info=ResponseInfo(
             consumed_tokens=1068,
             total_cost=0.00018570000000000001,
-            prompt_name="keypoint_text",
+            prompt_name="keypoint_summary",
             model_name="openai:gpt-4.1-nano",
             error=None,
         ),
