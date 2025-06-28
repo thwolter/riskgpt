@@ -23,6 +23,7 @@ RiskGPT supports the following search providers:
 | Google | Google Custom Search Engine | Yes (GOOGLE_CSE_ID and GOOGLE_API_KEY) | No (snippets only) | No |
 | Wikipedia | Encyclopedia search | No | No (summaries only) | No |
 | Tavily | AI-powered search engine | Yes (TAVILY_API_KEY) | Yes (raw content) | No |
+| Semantic Scholar | Academic paper search | Optional (SEMANTIC_SCHOLAR_API_KEY) | Yes (abstracts) | No |
 
 ### Provider Comparison
 
@@ -31,6 +32,7 @@ RiskGPT supports the following search providers:
 - **Google**: Returns snippets of content from the search results
 - **Wikipedia**: Returns summaries of Wikipedia articles
 - **Tavily**: Returns the full raw content of the search results
+- **Semantic Scholar**: Returns paper abstracts, author information, venue, and publication year
 
 #### Source/Topic Handling
 - **DuckDuckGo**: 
@@ -43,24 +45,31 @@ RiskGPT supports the following search providers:
 - **Tavily**: 
   - Supports "general", "news", "finance" as direct topics
   - For other source types, uses "general" as the topic and prepends the source type to the query
+- **Semantic Scholar**:
+  - Specialized for academic papers
+  - Uses the source type in the response but doesn't modify the query based on it
+  - Works best with the ACADEMIC source type
 
 #### Region Support
 - **DuckDuckGo**: Supports region filtering via the `region` parameter
 - **Google**: Does not use the region parameter
 - **Wikipedia**: Does not use the region parameter
 - **Tavily**: Does not use the region parameter
+- **Semantic Scholar**: Does not use the region parameter
 
 #### Date Information
 - **DuckDuckGo**: Provides date information when available
 - **Google**: Does not provide date information
 - **Wikipedia**: Does not provide date information
 - **Tavily**: Provides publication date information
+- **Semantic Scholar**: Provides publication year information
 
 #### Relevance Score
 - **DuckDuckGo**: Does not provide a relevance score
 - **Google**: Does not provide a relevance score
 - **Wikipedia**: Does not provide a relevance score
 - **Tavily**: Provides a relevance score for each result
+- **Semantic Scholar**: Provides a relevance score for each result when available
 
 ## Configuration
 
@@ -68,7 +77,7 @@ The search helper is configured using environment variables:
 
 | Variable | Default | Description |
 |----------|---------|-------------|
-| `SEARCH_PROVIDER` | `duckduckgo` | The primary search provider to use. Options: `duckduckgo`, `google`, `wikipedia`, `tavily` |
+| `SEARCH_PROVIDER` | `duckduckgo` | The primary search provider to use. Options: `duckduckgo`, `google`, `wikipedia`, `tavily`, `semantic_scholar` |
 | `MAX_SEARCH_RESULTS` | `3` | Maximum number of search results to return |
 | `INCLUDE_WIKIPEDIA` | `False` | Master toggle for Wikipedia integration |
 | `WIKIPEDIA_CONTEXT_AWARE` | `True` | Enable/disable context-based Wikipedia inclusion |
@@ -76,6 +85,7 @@ The search helper is configured using environment variables:
 | `GOOGLE_CSE_ID` | – | Google Custom Search Engine ID. Required when `SEARCH_PROVIDER` is set to `google` |
 | `GOOGLE_API_KEY` | – | Google API key. Required when `SEARCH_PROVIDER` is set to `google` |
 | `TAVILY_API_KEY` | – | Tavily API key. Required when `SEARCH_PROVIDER` is set to `tavily` |
+| `SEMANTIC_SCHOLAR_API_KEY` | – | Semantic Scholar API key. Optional when `SEARCH_PROVIDER` is set to `semantic_scholar` |
 
 ## Usage
 
@@ -150,6 +160,36 @@ for result in response.results:
     print("---")
 ```
 
+### Using Semantic Scholar for Academic Papers
+
+```python
+from riskgpt.helpers.search import search
+from riskgpt.models.helpers.search import SearchRequest
+from riskgpt.models.enums import TopicEnum
+import os
+
+# Set the environment variable to use Semantic Scholar
+os.environ["SEARCH_PROVIDER"] = "semantic_scholar"
+
+# Create a search request for academic papers
+request = SearchRequest(
+    query="machine learning explainability",
+    source_type=TopicEnum.ACADEMIC,
+    max_results=3
+)
+
+# Perform the search
+response = search(request)
+
+# Process the results
+for result in response.results:
+    print(f"Title: {result.title}")
+    print(f"URL: {result.url}")
+    print(f"Published: {result.date}")
+    print(f"Content: {result.content}")
+    print("---")
+```
+
 ## Best Practices
 
 - **Choose the right provider**: 
@@ -157,12 +197,14 @@ for result in response.results:
   - Use **DuckDuckGo** when you need region-specific results
   - Use **Google** when you need highly relevant results and have API keys
   - Use **Wikipedia** when you need encyclopedic information
+  - Use **Semantic Scholar** when you need academic papers and research
 
 - **Set appropriate source types**:
   - Use `TopicEnum.NEWS` for news articles
   - Use `TopicEnum.PROFESSIONAL` for professional or industry sources
   - Use `TopicEnum.REGULATORY` for regulatory information
-  - Use `TopicEnum.PEER` for peer-reviewed or academic sources
+  - Use `TopicEnum.PEER` for peer-reviewed sources
+  - Use `TopicEnum.ACADEMIC` for academic papers (especially with Semantic Scholar)
 
 - **Limit results appropriately**:
   - Set `max_results` to a reasonable number to avoid excessive API usage

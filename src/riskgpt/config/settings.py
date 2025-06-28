@@ -18,9 +18,9 @@ class RiskGPTSettings(BaseSettings):
     DEFAULT_PROMPT_VERSION: str = Field(default="v1")
 
     # Search provider settings
-    SEARCH_PROVIDER: Literal["duckduckgo", "google", "wikipedia", "tavily"] = Field(
-        default="tavily"
-    )
+    SEARCH_PROVIDER: Literal[
+        "duckduckgo", "google", "wikipedia", "tavily", "semantic_scholar"
+    ] = Field(default="tavily")
     # Enhanced Wikipedia settings
     INCLUDE_WIKIPEDIA: bool = Field(default=False)
     WIKIPEDIA_CONTEXT_AWARE: bool = Field(
@@ -32,6 +32,7 @@ class RiskGPTSettings(BaseSettings):
     GOOGLE_CSE_ID: Optional[str] = None
     GOOGLE_API_KEY: Optional[SecretStr] = None
     TAVILY_API_KEY: Optional[SecretStr] = None
+    SEMANTIC_SCHOLAR_API_KEY: Optional[SecretStr] = None
 
     # Document service settings
     DOCUMENT_SERVICE_URL: Optional[str] = None

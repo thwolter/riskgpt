@@ -46,6 +46,11 @@ tavily_breaker = pybreaker.CircuitBreaker(
     reset_timeout=30,  # Seconds before attempting to close the circuit
 )
 
+semantic_scholar_breaker = pybreaker.CircuitBreaker(
+    fail_max=3,  # Number of failures before opening the circuit
+    reset_timeout=30,  # Seconds before attempting to close the circuit
+)
+
 document_service_breaker = pybreaker.CircuitBreaker(
     fail_max=3,
     reset_timeout=30,
@@ -68,6 +73,7 @@ duckduckgo_breaker.add_listener(CircuitStateListener())
 google_search_breaker.add_listener(CircuitStateListener())
 wikipedia_breaker.add_listener(CircuitStateListener())
 tavily_breaker.add_listener(CircuitStateListener())
+semantic_scholar_breaker.add_listener(CircuitStateListener())
 document_service_breaker.add_listener(CircuitStateListener())
 
 

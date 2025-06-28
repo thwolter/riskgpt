@@ -95,9 +95,11 @@ def search(search_request: SearchRequest) -> SearchResponse:
     search_tasks = [(provider, search_request, provider.__class__.__name__)]
 
     # Add Wikipedia search if enabled and appropriate for this query
+    # Exclude Wikipedia for academic searches
     include_wiki = (
         settings.INCLUDE_WIKIPEDIA
         and settings.SEARCH_PROVIDER != "wikipedia"
+        and search_request.source_type.value.lower() != "academic"
         and (
             not settings.WIKIPEDIA_CONTEXT_AWARE
             or _should_include_wikipedia(search_request)

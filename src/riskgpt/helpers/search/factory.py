@@ -4,6 +4,7 @@ from riskgpt.config.settings import RiskGPTSettings
 from riskgpt.helpers.search.base import BaseSearchProvider
 from riskgpt.helpers.search.duckduckgo import DuckDuckGoSearchProvider
 from riskgpt.helpers.search.google import GoogleSearchProvider
+from riskgpt.helpers.search.semantic_scholar import SemanticScholarSearchProvider
 from riskgpt.helpers.search.tavily import TavilySearchProvider
 from riskgpt.helpers.search.wikipedia import WikipediaSearchProvider
 from riskgpt.logger import logger
@@ -22,6 +23,8 @@ def get_search_provider() -> BaseSearchProvider:
         return WikipediaSearchProvider()
     elif settings.SEARCH_PROVIDER == "tavily":
         return TavilySearchProvider()
+    elif settings.SEARCH_PROVIDER == "semantic_scholar":
+        return SemanticScholarSearchProvider()
     else:
         # Default to DuckDuckGo if provider is not recognized
         logger.warning(
