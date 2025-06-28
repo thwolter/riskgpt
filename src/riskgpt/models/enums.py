@@ -49,6 +49,7 @@ class TopicEnum(Enum):
     REGULATORY = "regulatory"
     PEER = "peer"
     ACADEMIC = "academic"
+    DOCUMENT = "document"
 
     def source_key(self) -> str:
         return f"{self.value.lower()}_sources"

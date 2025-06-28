@@ -44,7 +44,7 @@ class Risk(BaseModel):
     )
 
 
-class RiskRequest(BaseRequest):
+class RisksIdentificationRequest(BaseRequest):
     """
     Input model for risk identification.
 
@@ -90,7 +90,7 @@ class IdentifiedRisk(BaseModel):
     )
 
 
-class RiskResponse(BaseResponse):
+class RisksIdentificationResponse(BaseResponse):
     """
     Output model for identified risks.
 

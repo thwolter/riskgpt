@@ -23,9 +23,9 @@ The `risk_identification_chain` identifies specific risks for a given risk categ
 ```python
 from riskgpt import risk_identification_chain
 from riskgpt.models.common import BusinessContext
-from riskgpt.models.chains import RiskRequest
+from riskgpt.models.chains import RisksIdentificationRequest
 
-request = RiskRequest(
+request = RisksIdentificationRequest(
     business_context=BusinessContext(
         project_id="ACME-CRM-2023",
         project_name="ACME Corp CRM Implementation",

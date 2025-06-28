@@ -16,7 +16,10 @@ from riskgpt.helpers.circuit_breaker import document_service_breaker, with_fallb
 from riskgpt.helpers.search import search
 from riskgpt.logger import logger
 from riskgpt.models.base import ResponseInfo
-from riskgpt.models.chains import RiskRequest, RiskResponse
+from riskgpt.models.chains import (
+    RisksIdentificationRequest,
+    RisksIdentificationResponse,
+)
 from riskgpt.models.chains.assessment import AssessmentRequest
 
 
@@ -62,7 +65,9 @@ def fetch_relevant_documents(context: BusinessContext) -> List[str]:
     return [str(d) for d in docs]
 
 
-def _build_risk_workflow_graph(request: RiskRequest, use_full_workflow: bool = True):
+def _build_risk_workflow_graph(
+    request: RisksIdentificationRequest, use_full_workflow: bool = True
+):
     """
     Build and compile the risk workflow graph.
 
@@ -80,7 +85,9 @@ def _build_risk_workflow_graph(request: RiskRequest, use_full_workflow: bool = T
 
     def initialize_state(state: Dict[str, Any]) -> Dict[str, Any]:
         """Initialize the state with the request if it exists in the input."""
-        if "request" in state and isinstance(state["request"], RiskRequest):
+        if "request" in state and isinstance(
+            state["request"], RisksIdentificationRequest
+        ):
             # Use the request from the input state
             pass
         else:
@@ -133,7 +140,7 @@ def _build_risk_workflow_graph(request: RiskRequest, use_full_workflow: bool = T
         logger.info("Identify risks for category '%s'", req.category)
 
         # Create a copy of the request with document_refs if available
-        risk_request = RiskRequest(
+        risk_request = RisksIdentificationRequest(
             business_context=req.business_context,
             category=req.category,
             max_risks=req.max_risks,
@@ -220,11 +227,11 @@ def _build_risk_workflow_graph(request: RiskRequest, use_full_workflow: bool = T
         # Check if risk_response is None before accessing its attributes
         if risk_response is None:
             # If risk_response is None, create a response with empty lists
-            response = RiskResponse(
+            response = RisksIdentificationResponse(
                 risks=[],
             )
         else:
-            response = RiskResponse(
+            response = RisksIdentificationResponse(
                 risks=risk_response.risks,
             )
 
@@ -266,7 +273,9 @@ def _build_risk_workflow_graph(request: RiskRequest, use_full_workflow: bool = T
     return graph.compile()
 
 
-async def risk_workflow(request: RiskRequest) -> RiskResponse:
+async def risk_workflow(
+    request: RisksIdentificationRequest,
+) -> RisksIdentificationResponse:
     """
     Asynchronous version of the risk workflow.
 

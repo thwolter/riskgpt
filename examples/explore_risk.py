@@ -18,7 +18,7 @@ from dotenv import load_dotenv
 from riskgpt.chains.challenge_questions import challenge_questions_chain
 from riskgpt.logger import configure_logging
 from riskgpt.models.chains.questions import ChallengeQuestionsRequest
-from riskgpt.models.chains.risk import Risk, RiskRequest
+from riskgpt.models.chains.risk import Risk, RisksIdentificationRequest
 from riskgpt.models.common import BusinessContext
 from riskgpt.models.enums import AudienceEnum
 from riskgpt.models.workflows.context import EnrichContextRequest
@@ -218,7 +218,7 @@ async def run_risk_workflow(context):
             print("Falling back to default risk workflow config")
 
     # Create a request
-    risk_request = RiskRequest(
+    risk_request = RisksIdentificationRequest(
         business_context=context,
         category=category,
         max_risks=max_risks,

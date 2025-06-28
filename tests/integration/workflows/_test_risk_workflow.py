@@ -4,7 +4,12 @@ import pytest
 from api import fetch_documents
 from riskgpt.models.base import ResponseInfo
 from riskgpt.models.chains.assessment import AssessmentResponse
-from riskgpt.models.chains.risk import IdentifiedRisk, Risk, RiskRequest, RiskResponse
+from riskgpt.models.chains.risk import (
+    IdentifiedRisk,
+    Risk,
+    RisksIdentificationRequest,
+    RisksIdentificationResponse,
+)
 from riskgpt.models.common import BusinessContext
 from riskgpt.workflows.risk_workflow import risk_workflow
 
@@ -12,7 +17,7 @@ from riskgpt.workflows.risk_workflow import risk_workflow
 @pytest.fixture
 def test_request():
     """Fixture to create a sample RiskRequest."""
-    return RiskRequest(
+    return RisksIdentificationRequest(
         business_context=BusinessContext(
             project_id="123",
             project_description="A new IT project to implement a CRM system.",
@@ -150,7 +155,7 @@ async def test_risk_workflow_with_search(mock_search, test_request):
 @pytest.mark.asyncio
 async def test_risk_workflow_with_mock(monkeypatch, test_request):
     # Mock response for get_risks_chain
-    risk_response = RiskResponse(
+    risk_response = RisksIdentificationResponse(
         risks=[IdentifiedRisk(title="Mock Risk", description="Mock Description")],
         response_info=ResponseInfo(
             consumed_tokens=5,
@@ -174,7 +179,7 @@ async def test_risk_workflow_with_mock(monkeypatch, test_request):
     )
 
     # Mock final response
-    final_response = RiskResponse(
+    final_response = RisksIdentificationResponse(
         risks=[IdentifiedRisk(title="Mock Risk", description="Mock Description")],
         document_refs=["doc1"],
         response_info=ResponseInfo(

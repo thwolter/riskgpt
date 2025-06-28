@@ -28,4 +28,4 @@
 ## Additional Notes
 - For API documentation, use docstrings compatible with Sphinx.
 - When in doubt, refer to the [project README](./README.md).
-- 
+- After a doc string, leave a blank line before the next code line to maintain readability.

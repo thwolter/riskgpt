@@ -2,13 +2,18 @@ from langchain_core.output_parsers import PydanticOutputParser
 
 from riskgpt.chains.base import BaseChain
 from riskgpt.helpers.prompt_loader import load_prompt
-from riskgpt.models.chains.risk import RiskRequest, RiskResponse
+from riskgpt.models.chains.risk import (
+    RisksIdentificationRequest,
+    RisksIdentificationResponse,
+)
 
 
-async def risk_identification_chain(request: RiskRequest) -> RiskResponse:
+async def risk_identification_chain(
+    request: RisksIdentificationRequest,
+) -> RisksIdentificationResponse:
     prompt_data = load_prompt("risk_identification")
 
-    parser = PydanticOutputParser(pydantic_object=RiskResponse)
+    parser = PydanticOutputParser(pydantic_object=RisksIdentificationResponse)
     chain = BaseChain(
         prompt_template=prompt_data["template"],
         parser=parser,

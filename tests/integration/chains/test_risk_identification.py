@@ -5,15 +5,15 @@ from riskgpt.chains.risk_identification import risk_identification_chain
 from riskgpt.models.chains.risk import (
     IdentifiedRisk,
     Risk,
-    RiskRequest,
-    RiskResponse,
+    RisksIdentificationRequest,
+    RisksIdentificationResponse,
 )
 from riskgpt.models.common import BusinessContext
 
 
 @pytest.fixture
 def test_request():
-    return RiskRequest(
+    return RisksIdentificationRequest(
         business_context=BusinessContext(
             project_id="CRM-2023",
             project_description="Development of a new CRM system",
@@ -39,7 +39,7 @@ async def test_get_risks_chain(test_request):
 
 @pytest.mark.asyncio
 async def test_get_risks_chain_with_mock(test_request):
-    expected = RiskResponse(
+    expected = RisksIdentificationResponse(
         risks=[IdentifiedRisk(title="mock", description="desc")],
     )
 

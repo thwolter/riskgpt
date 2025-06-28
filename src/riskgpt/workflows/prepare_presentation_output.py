@@ -20,7 +20,7 @@ from riskgpt.models.chains import (
     Mitigation,
     MitigationRequest,
     Risk,
-    RiskRequest,
+    RisksIdentificationRequest,
 )
 from riskgpt.models.chains.assessment import AssessmentRequest
 from riskgpt.models.chains.drivers import DriverRequest, RiskDriver
@@ -89,7 +89,7 @@ def _build_graph(request: PresentationRequest):
         category = (req.focus_areas or ["General"])[0]
         logger.info("Identify risks for category '%s'", category)
         res = await risk_identification_chain(
-            RiskRequest(
+            RisksIdentificationRequest(
                 business_context=req.business_context,
                 category=category,
             )

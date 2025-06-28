@@ -30,7 +30,12 @@ from .questions import (
     ChallengeRisksResponse,
     RiskQuestions,
 )
-from .risk import IdentifiedRisk, Risk, RiskRequest, RiskResponse
+from .risk import (
+    IdentifiedRisk,
+    Risk,
+    RisksIdentificationRequest,
+    RisksIdentificationResponse,
+)
 
 __all__ = [
     "AssessmentRequest",
@@ -73,6 +78,6 @@ __all__ = [
     "RiskIndicatorRequest",
     "RiskIndicatorResponse",
     "RiskQuestions",
-    "RiskRequest",
-    "RiskResponse",
+    "RisksIdentificationRequest",
+    "RisksIdentificationResponse",
 ]

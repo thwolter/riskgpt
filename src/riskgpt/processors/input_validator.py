@@ -3,7 +3,7 @@ from pydantic import ValidationError
 from riskgpt.models.chains.assessment import AssessmentRequest
 from riskgpt.models.chains.categorization import CategoryRequest
 from riskgpt.models.chains.mitigation import MitigationRequest
-from riskgpt.models.chains.risk import RiskRequest
+from riskgpt.models.chains.risk import RisksIdentificationRequest
 
 
 def validate_category_request(data: dict) -> CategoryRequest:
@@ -13,10 +13,10 @@ def validate_category_request(data: dict) -> CategoryRequest:
         raise ValueError(f"Invalid input data: {e}")
 
 
-def validate_risk_request(data: dict) -> RiskRequest:
+def validate_risk_request(data: dict) -> RisksIdentificationRequest:
     """Validate dict input and return a :class:`RiskRequest` instance."""
     try:
-        return RiskRequest(**data)
+        return RisksIdentificationRequest(**data)
     except ValidationError as e:
         raise ValueError(f"Invalid input data: {e}")
 
