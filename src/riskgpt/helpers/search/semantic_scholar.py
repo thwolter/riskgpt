@@ -12,6 +12,7 @@ from riskgpt.helpers.search.base import BaseSearchProvider
 from riskgpt.helpers.search.utils import create_fallback_function
 from riskgpt.logger import logger
 from riskgpt.models.chains.keywords import ExtractKeywordsRequest
+from riskgpt.models.helpers.citation import Citation
 from riskgpt.models.helpers.search import SearchRequest, SearchResponse, SearchResult
 
 settings = RiskGPTSettings()
@@ -144,6 +145,30 @@ class SemanticScholarSearchProvider(BaseSearchProvider):
                     content += f"Venue: {paper.get('venue', 'Unknown venue')}\n"
                     content += f"Year: {paper.get('year', 'Unknown year')}"
 
+                    # Create Citation object
+                    from datetime import datetime
+
+                    publication_date = None
+                    if paper.get("year"):
+                        try:
+                            publication_date = datetime.strptime(
+                                str(paper.get("year")), "%Y"
+                            ).date()
+                        except (ValueError, TypeError):
+                            # If year is not a valid format, leave publication_date as None
+                            pass
+
+                    citation = Citation(
+                        url=paper.get("url", ""),
+                        title=paper.get("title", ""),
+                        authors=[
+                            author.get("name", "")
+                            for author in paper.get("authors", [])
+                        ],
+                        publication_date=publication_date,
+                        venue=paper.get("venue"),
+                    )
+
                     results.append(
                         SearchResult(
                             title=paper.get("title", ""),
@@ -152,6 +177,7 @@ class SemanticScholarSearchProvider(BaseSearchProvider):
                             type=payload.source_type.value,
                             content=content,
                             score=paper.get("score", 0.0),
+                            citation=citation,
                         )
                     )
 

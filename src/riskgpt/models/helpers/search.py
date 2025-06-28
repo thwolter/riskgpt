@@ -1,6 +1,9 @@
+from typing import Optional
+
 from pydantic import BaseModel, Field
 
 from riskgpt.models.enums import TopicEnum
+from riskgpt.models.helpers.citation import Citation
 
 
 class SearchResult(BaseModel):
@@ -16,6 +19,9 @@ class SearchResult(BaseModel):
     )
     score: float = Field(
         default=0.0, description="Relevance score of the search result, if applicable"
+    )
+    citation: Optional[Citation] = Field(
+        default=None, description="Structured citation information"
     )
 
 
@@ -35,6 +41,7 @@ class Source(SearchResult):
             date=search_result.date,
             type=search_result.type,
             content=search_result.content,
+            citation=search_result.citation,
             topic=topic,
         )
 

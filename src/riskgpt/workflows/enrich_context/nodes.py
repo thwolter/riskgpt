@@ -58,9 +58,11 @@ async def extract_topic_key_points(
         )
         response: ExtractKeyPointsResponse = await extract_key_points_chain(request)
 
-        # Attach source.url to each point in response.points
+        # Attach source.url and citation to each point in response.points
         for point in response.points:
             point.source_url = source.url
+            if hasattr(source, "citation") and source.citation:
+                point.citation = source.citation
 
         state.setdefault("response_info_list", []).append(response.response_info)
         state.setdefault("key_points", []).extend(response.points)

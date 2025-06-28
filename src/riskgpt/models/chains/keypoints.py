@@ -5,6 +5,7 @@ from pydantic import BaseModel, ConfigDict
 from riskgpt.models.base import BaseResponse
 from riskgpt.models.enums import TopicEnum
 from riskgpt.models.helpers import Source
+from riskgpt.models.helpers.citation import Citation
 
 
 class KeyPoint(BaseModel):
@@ -14,6 +15,20 @@ class KeyPoint(BaseModel):
     topic: TopicEnum
     source_url: Optional[str] = None
     additional_sources: List[str] = []
+    citation: Optional[Citation] = None
+    additional_citations: List[Citation] = []
+
+    def get_inline_citation(self) -> str:
+        """Get Harvard-style inline citation."""
+        if self.citation:
+            return self.citation.format_harvard_citation()
+        elif self.source_url:
+            # Fallback to simple URL-based citation
+            from urllib.parse import urlparse
+
+            domain = urlparse(self.source_url).netloc
+            return domain
+        return ""
 
 
 class ExtractKeyPointsRequest(BaseModel):

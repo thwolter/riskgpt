@@ -28,16 +28,36 @@ async def keypoints_summary_chain(
         prompt_name="keypoint_text",
     )
 
-    # Format key points, handling multiple sources if available
+    # Format key points with proper citations
     formatted_points = []
     for kp in request.key_points:
-        sources = [kp.source_url] if kp.source_url else []
-        if hasattr(kp, "additional_sources") and kp.additional_sources:
-            sources.extend(kp.additional_sources)
+        citation = kp.get_inline_citation()
+        citation_text = f" ({citation})" if citation else ""
 
-        # Format with all available sources
-        source_str = ", ".join([s for s in sources if s])
-        formatted_points.append(f"- {kp.topic.value}: {kp.content} {source_str}")
+        formatted_points.append(f"- {kp.topic.value}: {kp.content}{citation_text}")
 
-    inputs = {"key_points": "\n".join(formatted_points)}
+    # Generate references section
+    references = []
+    for kp in request.key_points:
+        if kp.citation:
+            ref = kp.citation.format_harvard_reference()
+            if ref not in references:
+                references.append(ref)
+        elif kp.source_url:
+            # Fallback to simple URL-based reference
+            from datetime import datetime
+            from urllib.parse import urlparse
+
+            domain = urlparse(kp.source_url).netloc
+            current_date = datetime.now().strftime("%d %B %Y")
+            ref = f"{domain}. [Online] Available at: {kp.source_url} [Accessed: {current_date}]"
+            if ref not in references:
+                references.append(ref)
+
+    inputs = {
+        "key_points": "\n".join(formatted_points),
+        "references": "\n".join(references)
+        if references
+        else "No references available.",
+    }
     return await chain.invoke(inputs)
