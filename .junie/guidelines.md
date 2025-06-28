@@ -10,6 +10,7 @@
 - sort imports using isort (via Ruff)
 
 ## Testing
+- run mypy and ruff after making changes
 - All new features must include tests in the `/tests` directory.
 - Use `pytest` as the testing framework.
  
