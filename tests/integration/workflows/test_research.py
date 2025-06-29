@@ -9,7 +9,6 @@ from riskgpt.models.chains.keypoints import (
 )
 from riskgpt.models.common import BusinessContext
 from riskgpt.models.enums import ScopeEnum
-from riskgpt.models.helpers.search import SearchResponse, SearchResult
 from riskgpt.models.workflows.context import (
     ResearchRequest,
     ResearchResponse,
@@ -33,133 +32,6 @@ def test_request():
         # Limit scopes to reduce the research graph
         scopes=[ScopeEnum.NEWS],
     )
-
-
-@pytest.fixture
-def mock_search_result():
-    return SearchResponse(
-        results=[
-            SearchResult(
-                title="Two New Chapters in Supply Chain Data-Driven Intelligence - The Maritime Executive",
-                url="https://www.maritime-executive.com/editorials/two-new-chapters-in-supply-chain-data-driven-intelligence",
-                date="Thu, 19 Jun 2025 03:35:21 GMT",
-                type="news",
-                content=(
-                    "Two New Chapters in Supply Chain Data-Driven Intelligence\n"
-                    "Published\nby\nMikael Lind et al.\n\n"
-                    "French Shipping Magnate Philippe Louis-Dreyfus Passes at 80\n"
-                    "Published\nby\nThe Maritime Executive\n\n"
-                    "Former NOAA Officials Call on Industry to Oppose Budget Cuts\n"
-                    "Published\nby\nThe Maritime Executive\n\n"
-                    "Maritime NZ Charges KiwiRail Over Ro/Ro Grounding\n"
-                    "Published\nby\nThe Maritime Executive\n"
-                    "Two New Chapters in Supply Chain Data-Driven Intelligence\n\n"
-                    "Published\nJun 18, 2025 11:35 PM by\nMikael Lind et al.\n"
-                    "[By Mikael Lind, Wolfgang Lehmacher, Xiuju Fu, Jens Lund-Nielsen]\n"
-                    "Years of extreme volatility, caused by pandemic shocks, trade wars, and climate-driven disruptions, "
-                    "have exposed the complexity of the world’s logistics networks. Thanks to the increasing availability of "
-                    "multi-source data and rapid advancements in AI technologies, we now have unprecedented opportunities to "
-                    "unravel the complexities of supply chain operations. By harnessing collective intelligence, organizations can "
-                    "drive both cost efficiencies and significant reductions in emissions.\n"
-                    "The unveiling of project44’s next-generation Movement platform marks another step toward managing supply chain "
-                    "and logistics networks more effectively, which are often battered by volatility. With its promise of “Decision Intelligence,” "
-                    "a concept not new, Movement is an AI-powered engine designed to transform logistics data into actionable, automated outcomes. "
-                    "As the industry assesses this development, a parallel story is unfolding: the rise of the Virtual Watch Tower (VWT), an ecosystem "
-                    "comprising supply chain and logistics actors, co-creating a federated, community-driven digital backbone designed to enhance supply "
-                    "chain and transport resilience and sustainability, leveraging collective intelligence with multiple source data inputs from different partners.\n"
-                    "Both innovations are ambitious, but their philosophies, architectures, and real-world impacts diverge in fundamental ways. This article explores "
-                    "these differences, drawing on concrete examples and the lived experience of industry actors, to ask: What kind of digital infrastructure does the "
-                    "supply chain truly need?\n"
-                    "The Movement Platform’s Vision\n"
-                    "Movement by project44 weaves together a network of APIs, connecting over 240,000 carriers, 1,400 telematics partners, and 80+ TMS/ERP systems..."
-                    # Note: Truncated for brevity, include full comment as provided in your codebase if needed
-                ),
-                score=0.95,
-            ),
-        ],
-        success=True,
-        error_message="",
-    )
-
-
-@pytest.fixture
-def mock_settings(monkeypatch):
-    """Fixture to patch the settings to use tavily as the search provider."""
-    # Patch the settings instances in the modules that are used by the research workflow
-    monkeypatch.setattr("riskgpt.config.settings.settings.SEARCH_PROVIDER", "tavily")
-    monkeypatch.setattr("riskgpt.config.settings.settings.INCLUDE_WIKIPEDIA", False)
-    monkeypatch.setattr(
-        "riskgpt.helpers.search.__init__.settings.SEARCH_PROVIDER", "tavily"
-    )
-    monkeypatch.setattr(
-        "riskgpt.helpers.search.__init__.settings.INCLUDE_WIKIPEDIA", False
-    )
-    monkeypatch.setattr(
-        "riskgpt.helpers.search.factory.settings.SEARCH_PROVIDER", "tavily"
-    )
-
-    # Set up SCOPE_SEARCH_PROVIDERS to use specific providers for each scope
-    scope_providers = {
-        "news": "tavily",  # Default for tests
-        "academic": "semantic_scholar",
-        "regulatory": "google",
-        "linkedin": "duckduckgo",
-        "peer": "tavily",
-        "document": "tavily",
-    }
-    monkeypatch.setattr(
-        "riskgpt.config.settings.settings.SCOPE_SEARCH_PROVIDERS", scope_providers
-    )
-    monkeypatch.setattr(
-        "riskgpt.helpers.search.__init__.settings.SCOPE_SEARCH_PROVIDERS",
-        scope_providers,
-    )
-
-    yield
-
-
-@pytest.fixture
-def mock_search(monkeypatch, mock_search_result):
-    """Fixture to patch the search providers instead of the search function.
-
-    This allows the tests to use the specified search provider while still returning mock results.
-    """
-
-    # Create a mock search method for any provider
-    async def mock_search_method(*args, **kwargs):
-        return mock_search_result
-
-    # Patch each provider's search method instead of the entire search function
-    with (
-        patch(
-            "riskgpt.helpers.search.tavily.TavilySearchProvider.search",
-            side_effect=mock_search_method,
-        ) as tavily_mock,
-        patch(
-            "riskgpt.helpers.search.duckduckgo.DuckDuckGoSearchProvider.search",
-            side_effect=mock_search_method,
-        ) as duckduckgo_mock,
-        patch(
-            "riskgpt.helpers.search.google.GoogleSearchProvider.search",
-            side_effect=mock_search_method,
-        ) as google_mock,
-        patch(
-            "riskgpt.helpers.search.wikipedia.WikipediaSearchProvider.search",
-            side_effect=mock_search_method,
-        ) as wiki_mock,
-        patch(
-            "riskgpt.helpers.search.semantic_scholar.SemanticScholarSearchProvider.search",
-            side_effect=mock_search_method,
-        ) as scholar_mock,
-    ):
-        # Return a dictionary of mocks so tests can verify which provider was used
-        yield {
-            "tavily": tavily_mock,
-            "duckduckgo": duckduckgo_mock,
-            "google": google_mock,
-            "wikipedia": wiki_mock,
-            "semantic_scholar": scholar_mock,
-        }
 
 
 @pytest.fixture
@@ -291,6 +163,8 @@ async def test_research_google(
     monkeypatch,
     test_request,
 ) -> None:
+    test_request.scopes = [ScopeEnum.LINKEDIN]
+
     monkeypatch.setattr("riskgpt.config.settings.settings.SEARCH_PROVIDER", "google")
     monkeypatch.setattr("riskgpt.config.settings.settings.INCLUDE_WIKIPEDIA", False)
 

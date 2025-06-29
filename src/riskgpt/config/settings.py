@@ -29,7 +29,7 @@ class RiskGPTSettings(BaseSettings):
             "academic": "semantic_scholar",
             "news": "tavily",
             "regulatory": "tavily",
-            "linkedin": "google",
+            "linkedin": "google",  # todo: Check if google is the best choice for linkedin
             "peer": "tavily",
             "document": "tavily",
         },
