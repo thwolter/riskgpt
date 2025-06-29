@@ -61,3 +61,4 @@ async def test_communicate_risks_chain_with_mock(test_request):
         resp = await communicate_risks_chain(test_request)
         assert resp.summary == expected.summary
         assert resp.key_points == expected.key_points
+        assert resp.technical_annex == expected.technical_annex

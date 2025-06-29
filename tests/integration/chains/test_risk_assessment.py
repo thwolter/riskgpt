@@ -24,7 +24,9 @@ def test_request():
 async def test_get_assessment_chain(test_request):
     response = await risk_assessment_chain(test_request)
     assert hasattr(response, "impact")
-    assert response.impact is not None
+    assert hasattr(response, "probability")
+    assert hasattr(response, "evidence")
+    assert response.evidence is not None
 
 
 @pytest.mark.asyncio
