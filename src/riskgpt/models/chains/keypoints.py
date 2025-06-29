@@ -16,7 +16,6 @@ class KeyPoint(BaseModel):
         description="Type of the source, e.g., NEWS, RESEARCH, etc.",
         default=ScopeEnum.NEWS,
     )
-    source_url: Optional[str] = None
     additional_sources: List[str] = []
     citation: Citation = Field(
         description="Citation information for the key point, including author, title, and publication details",
@@ -76,17 +75,26 @@ class ExtractKeyPointsResponse(BaseResponse):
                     {
                         "content": "Key point 1",
                         "scope": "NEWS",
-                        "source_url": "https://example.com",
+                        "citation": {
+                            "url": "https://example.com",
+                            "title": "Example Title",
+                        },
                     },
                     {
                         "content": "Key point 2",
                         "scope": "NEWS",
-                        "source_url": "https://example.com",
+                        "citation": {
+                            "url": "https://example.com",
+                            "title": "Example Title",
+                        },
                     },
                     {
                         "content": "Key point 3",
                         "scope": "NEWS",
-                        "source_url": "https://example.com",
+                        "citation": {
+                            "url": "https://example.com",
+                            "title": "Example Title",
+                        },
                     },
                 ],
                 "response_info": {

@@ -1,6 +1,7 @@
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
+from pydantic import HttpUrl
 from riskgpt.helpers.search import _should_include_wikipedia, search
 from riskgpt.helpers.search.utils import deduplicate_results, rank_results
 from riskgpt.models.enums import ScopeEnum
@@ -17,17 +18,17 @@ class TestDeduplication:
             SearchResult(
                 scope=ScopeEnum.NEWS,
                 content="Content 1",
-                citation=Citation(title="Result 1", url="http://example.com"),
+                citation=Citation(title="Result 1", url=HttpUrl("http://example.com")),
             ),
             SearchResult(
                 scope=ScopeEnum.NEWS,
                 content="Content 2",
-                citation=Citation(title="Result 2", url="http://example.com"),
+                citation=Citation(title="Result 2", url=HttpUrl("http://example.com")),
             ),
             SearchResult(
                 scope=ScopeEnum.NEWS,
                 content="Content 3",
-                citation=Citation(title="Result 3", url="http://other.com"),
+                citation=Citation(title="Result 3", url=HttpUrl("http://other.com")),
             ),
         ]
 
@@ -35,8 +36,8 @@ class TestDeduplication:
 
         # Should only have 2 results after deduplication
         assert len(deduplicated) == 2
-        assert deduplicated[0].citation.url == "http://example.com"
-        assert deduplicated[1].citation.url == "http://other.com"
+        assert str(deduplicated[0].citation.url).rstrip("/") == "http://example.com"
+        assert str(deduplicated[1].citation.url).rstrip("/") == "http://other.com"
 
     def test_deduplicate_similar_url(self):
         """Test deduplication of results with similar URLs."""
@@ -44,17 +45,17 @@ class TestDeduplication:
             SearchResult(
                 scope=ScopeEnum.NEWS,
                 content="Content 1",
-                citation=Citation(title="Result 1", url="http://example.com"),
+                citation=Citation(title="Result 1", url=HttpUrl("http://example.com")),
             ),
             SearchResult(
                 scope=ScopeEnum.NEWS,
                 content="Content 2",
-                citation=Citation(title="Result 2", url="http://example.com/"),
+                citation=Citation(title="Result 2", url=HttpUrl("http://example.com/")),
             ),
             SearchResult(
                 scope=ScopeEnum.NEWS,
                 content="Content 3",
-                citation=Citation(title="Result 3", url="http://EXAMPLE.COM"),
+                citation=Citation(title="Result 3", url=HttpUrl("http://EXAMPLE.COM")),
             ),
         ]
 
@@ -62,7 +63,10 @@ class TestDeduplication:
 
         # Should only have 1 result after deduplication
         assert len(deduplicated) == 1
-        assert deduplicated[0].citation.url.lower().rstrip("/") == "http://example.com"
+        assert (
+            str(deduplicated[0].citation.url).lower().rstrip("/")
+            == "http://example.com"
+        )
 
     def test_deduplicate_content_similarity(self):
         """Test deduplication based on content similarity."""
@@ -72,7 +76,7 @@ class TestDeduplication:
                 scope=ScopeEnum.NEWS,
                 content="Artificial intelligence is a branch of computer science that aims to create systems capable of performing tasks that normally require human intelligence.",
                 citation=Citation(
-                    title="Artificial Intelligence", url="http://example1.com"
+                    title="Artificial Intelligence", url=HttpUrl("http://example1.com")
                 ),
             ),
             SearchResult(
@@ -80,35 +84,59 @@ class TestDeduplication:
                 content="Artificial intelligence is a branch of computer science that aims to create systems capable of performing tasks that normally require human intelligence.",
                 citation=Citation(
                     title="Introduction to Artificial Intelligence",
-                    url="http://example2.com",
+                    url=HttpUrl("http://example2.com"),
                 ),
             ),
             SearchResult(
                 scope=ScopeEnum.NEWS,
                 content="This content is not related to AI at all.",
                 citation=Citation(
-                    title="Something completely different", url="http://example3.com"
+                    title="Something completely different",
+                    url=HttpUrl("http://example3.com"),
                 ),
             ),
         ]
 
+        # Print the original results for debugging
+        print("\nOriginal results:")
+        for r in results:
+            print(
+                f"URL: {r.citation.url}, Title: {r.citation.title}, Content: {r.content[:30]}..."
+            )
+
         deduplicated = deduplicate_results(results)
+
+        # Print the deduplicated results for debugging
+        print("\nDeduplicated results:")
+        for r in deduplicated:
+            print(
+                f"URL: {r.citation.url}, Title: {r.citation.title}, Content: {r.content[:30]}..."
+            )
 
         # Should have 2 results after deduplication (the first two are similar)
         assert len(deduplicated) == 2
+
+        # Check which URLs are in the deduplicated results
+        urls_in_deduplicated = [str(r.citation.url) for r in deduplicated]
+        print(f"\nURLs in deduplicated results: {urls_in_deduplicated}")
+
         # Either the first or second result should be kept, but not both
         assert (
             len(
                 [
                     r
                     for r in deduplicated
-                    if r.citation.url in ["http://example1.com", "http://example2.com"]
+                    if str(r.citation.url).rstrip("/")
+                    in ["http://example1.com", "http://example2.com"]
                 ]
             )
             == 1
         )
         # The third result should always be kept
-        assert any(r.citation.url == "http://example3.com" for r in deduplicated)
+        assert any(
+            str(r.citation.url).rstrip("/") == "http://example3.com"
+            for r in deduplicated
+        )
 
 
 class TestRanking:
@@ -121,25 +149,25 @@ class TestRanking:
                 scope=ScopeEnum.NEWS,
                 score=1.0,
                 content="News content",
-                citation=Citation(title="News", url="http://news.com"),
+                citation=Citation(title="News", url=HttpUrl("http://news.com")),
             ),
             SearchResult(
                 scope=ScopeEnum.REGULATORY,
                 score=1.0,
                 content="Regulatory content",
-                citation=Citation(title="Regulatory", url="http://reg.com"),
+                citation=Citation(title="Regulatory", url=HttpUrl("http://reg.com")),
             ),
             SearchResult(
                 scope=ScopeEnum.PEER,
                 score=1.0,
                 content="Professional content",
-                citation=Citation(title="Professional", url="http://prof.com"),
+                citation=Citation(title="Professional", url=HttpUrl("http://prof.com")),
             ),
             SearchResult(
                 scope=ScopeEnum.PEER,
                 score=1.0,
                 content="Peer content",
-                citation=Citation(title="Peer", url="http://peer.com"),
+                citation=Citation(title="Peer", url=HttpUrl("http://peer.com")),
             ),
         ]
 
@@ -160,21 +188,25 @@ class TestRanking:
                 scope=ScopeEnum.NEWS,
                 score=1.0,
                 content="News content",
-                citation=Citation(title="News", url="http://news.com"),
+                citation=Citation(title="News", url=HttpUrl("http://news.com")),
             ),
             SearchResult(
                 scope=ScopeEnum.NEWS,
                 score=1.0,
                 content="Wiki content",
-                citation=Citation(title="Wiki", url="http://wikipedia.org/wiki/Test"),
+                citation=Citation(
+                    title="Wiki", url=HttpUrl("http://wikipedia.org/wiki/Test")
+                ),
             ),
         ]
 
         ranked = rank_results(results)
 
         # News should be ranked higher than Wikipedia
-        assert ranked[0].citation.url == "http://news.com"
-        assert ranked[1].citation.url == "http://wikipedia.org/wiki/Test"
+        assert str(ranked[0].citation.url).rstrip("/") == "http://news.com"
+        assert (
+            str(ranked[1].citation.url).rstrip("/") == "http://wikipedia.org/wiki/Test"
+        )
 
 
 class TestContextualWikipedia:
@@ -240,7 +272,9 @@ async def test_search_provider_selection(
                 SearchResult(
                     scope=ScopeEnum.NEWS,
                     content="Primary content",
-                    citation=Citation(title="Primary Result", url="http://example.com"),
+                    citation=Citation(
+                        title="Primary Result", url=HttpUrl("http://example.com")
+                    ),
                 )
             ],
             success=True,
@@ -255,7 +289,8 @@ async def test_search_provider_selection(
                     scope=ScopeEnum.NEWS,
                     content="Wiki content",
                     citation=Citation(
-                        title="Wiki Result", url="http://wikipedia.org/wiki/Test"
+                        title="Wiki Result",
+                        url=HttpUrl("http://wikipedia.org/wiki/Test"),
                     ),
                 )
             ],
@@ -302,7 +337,9 @@ async def test_parallel_execution(monkeypatch):
             SearchResult(
                 scope=ScopeEnum.NEWS,
                 content="Test content",
-                citation=Citation(title="Test Result", url="http://example.com"),
+                citation=Citation(
+                    title="Test Result", url=HttpUrl("http://example.com")
+                ),
             )
         ],
         success=True,

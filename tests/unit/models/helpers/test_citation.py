@@ -1,12 +1,13 @@
 from datetime import date
 
+from pydantic import HttpUrl
 from riskgpt.models.helpers.citation import Citation
 
 
 class TestCitation:
     def test_format_harvard_citation_with_one_author(self):
         citation = Citation(
-            url="https://example.com",
+            url=HttpUrl("https://example.com"),
             title="Example Title",
             authors=["John Doe"],
             publication_date=date(2023, 1, 1),
@@ -18,7 +19,7 @@ class TestCitation:
 
     def test_format_harvard_citation_with_two_authors(self):
         citation = Citation(
-            url="https://example.com",
+            url=HttpUrl("https://example.com"),
             title="Example Title",
             authors=["John Doe", "Jane Smith"],
             publication_date=date(2023, 1, 1),
@@ -30,7 +31,7 @@ class TestCitation:
 
     def test_format_harvard_citation_with_multiple_authors(self):
         citation = Citation(
-            url="https://example.com",
+            url=HttpUrl("https://example.com"),
             title="Example Title",
             authors=["John Doe", "Jane Smith", "Bob Johnson"],
             publication_date=date(2023, 1, 1),
@@ -42,7 +43,7 @@ class TestCitation:
 
     def test_format_harvard_citation_without_authors(self):
         citation = Citation(
-            url="https://example.com",
+            url=HttpUrl("https://example.com"),
             title="Example Title",
             authors=[],
             publication_date=date(2023, 1, 1),
@@ -54,7 +55,7 @@ class TestCitation:
 
     def test_format_harvard_citation_without_date(self):
         citation = Citation(
-            url="https://example.com",
+            url=HttpUrl("https://example.com"),
             title="Example Title",
             authors=["John Doe"],
             publication_date=None,
@@ -66,7 +67,7 @@ class TestCitation:
 
     def test_format_harvard_reference_with_one_author(self):
         citation = Citation(
-            url="https://example.com",
+            url=HttpUrl("https://example.com"),
             title="Example Title",
             authors=["John Doe"],
             publication_date=date(2023, 1, 1),
@@ -80,7 +81,7 @@ class TestCitation:
 
     def test_format_harvard_reference_with_multiple_authors(self):
         citation = Citation(
-            url="https://example.com",
+            url=HttpUrl("https://example.com"),
             title="Example Title",
             authors=["John Doe", "Jane Smith", "Bob Johnson"],
             publication_date=date(2023, 1, 1),
@@ -97,7 +98,7 @@ class TestCitation:
 
     def test_format_harvard_reference_with_many_authors(self):
         citation = Citation(
-            url="https://example.com",
+            url=HttpUrl("https://example.com"),
             title="Example Title",
             authors=["John Doe", "Jane Smith", "Bob Johnson", "Alice Brown"],
             publication_date=date(2023, 1, 1),
@@ -111,7 +112,7 @@ class TestCitation:
 
     def test_format_harvard_reference_without_authors(self):
         citation = Citation(
-            url="https://example.com",
+            url=HttpUrl("https://example.com"),
             title="Example Title",
             authors=[],
             publication_date=date(2023, 1, 1),
@@ -125,7 +126,7 @@ class TestCitation:
 
     def test_format_harvard_reference_without_title(self):
         citation = Citation(
-            url="https://example.com",
+            url=HttpUrl("https://example.com"),
             title=None,
             authors=["John Doe"],
             publication_date=date(2023, 1, 1),
@@ -139,7 +140,7 @@ class TestCitation:
 
     def test_format_harvard_reference_without_venue(self):
         citation = Citation(
-            url="https://example.com",
+            url=HttpUrl("https://example.com"),
             title="Example Title",
             authors=["John Doe"],
             publication_date=date(2023, 1, 1),

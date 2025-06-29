@@ -58,11 +58,8 @@ async def extract_scope_key_points(
         )
         response: ExtractKeyPointsResponse = await extract_key_points_chain(request)
 
-        # Attach source.url and citation to each point in response.points
+        # Attach citation to each point in response.points
         for point in response.points:
-            # Set source_url from source
-            point.source_url = source.citation.url
-
             # Always ensure point.citation has the source URL
             point.citation.url = source.citation.url
 

@@ -15,7 +15,7 @@
 - All changes must be tested by running the tests.
 - Use `pytest` as the testing framework.
 - Run only test not marketed as `integration` unless necessary.
-- When running multiple integration tests, use the '-n auto' option to run them in parallel.
+- When running multiple tests marked with integration, use the '-n auto' option to run them in parallel.
  
 ## Commit Messages
 - Use the format: `<type>: <short description>`

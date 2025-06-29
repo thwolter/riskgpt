@@ -1,13 +1,13 @@
 from datetime import date
 from typing import List, Optional
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, HttpUrl, field_serializer
 
 
 class Citation(BaseModel):
     """Structured citation information for a source."""
 
-    url: str = Field(description="URL of the source")
+    url: HttpUrl = Field(description="URL of the source")
     title: Optional[str] = Field(default=None, description="Title of the source")
     authors: List[str] = Field(default_factory=list, description="List of author names")
     publication_date: Optional[date] = Field(
@@ -17,6 +17,41 @@ class Citation(BaseModel):
         default=None, description="Publication venue (journal, conference, etc.)"
     )
     publisher: Optional[str] = Field(default=None, description="Publisher name")
+
+    @field_serializer("url")
+    def serialize_url(self, url: HttpUrl) -> str:
+        """Serialize HttpUrl to string."""
+        return str(url)
+
+    class Config:
+        """Pydantic model configuration."""
+
+        arbitrary_types_allowed = True
+
+    def __eq__(self, other):
+        """Override equality to handle string comparison for url."""
+        if isinstance(other, Citation):
+            return super().__eq__(other)
+        elif isinstance(other, str) and hasattr(self, "url"):
+            return str(self.url) == other
+        return NotImplemented
+
+    def model_dump(self, **kwargs):
+        """Override model_dump to convert HttpUrl to string."""
+        data = super().model_dump(**kwargs)
+        if "url" in data and data["url"] is not None:
+            data["url"] = str(data["url"])
+        return data
+
+    def is_complete(self) -> bool:
+        """Check if the citation has all available data."""
+        return (
+            self.title is not None
+            and len(self.authors) > 0
+            and self.publication_date is not None
+            and self.venue is not None
+            and self.publisher is not None
+        )
 
     def format_harvard_citation(self) -> str:
         """Format the citation in Harvard style."""
@@ -33,7 +68,7 @@ class Citation(BaseModel):
             # Use domain name from URL if no authors
             from urllib.parse import urlparse
 
-            domain = urlparse(self.url).netloc
+            domain = urlparse(str(self.url)).netloc
             author_text = domain
 
         # Year formatting
@@ -56,7 +91,7 @@ class Citation(BaseModel):
             # Use domain name from URL if no authors
             from urllib.parse import urlparse
 
-            domain = urlparse(self.url).netloc
+            domain = urlparse(str(self.url)).netloc
             author_text = domain
 
         # Year formatting

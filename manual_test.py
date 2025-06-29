@@ -1,4 +1,5 @@
 """Manual test script for search improvements."""
+from pydantic import HttpUrl
 
 from riskgpt.helpers.search import _should_include_wikipedia
 from riskgpt.helpers.search.utils import deduplicate_results, rank_results
@@ -8,9 +9,9 @@ from riskgpt.models.helpers.search import SearchRequest, SearchResult
 # Test deduplication
 print("Testing deduplication...")
 results = [
-    SearchResult(title="Result 1", url="http://example.com", content="Content 1"),
-    SearchResult(title="Result 2", url="http://example.com/", content="Content 2"),
-    SearchResult(title="Result 3", url="http://other.com", content="Content 3"),
+    SearchResult(title="Result 1", url=HttpUrl("http://example.com", content="Content 1"),
+    SearchResult(title="Result 2", url=HttpUrl("http://example.com/", content="Content 2"),
+    SearchResult(title="Result 3", url=HttpUrl("http://other.com", content="Content 3"),
 ]
 deduplicated = deduplicate_results(results)
 print(f"Original results: {len(results)}")
@@ -21,12 +22,12 @@ for result in deduplicated:
 # Test ranking
 print("\nTesting ranking...")
 results = [
-    SearchResult(title="News", url="http://news.com", scope="news", score=1.0),
+    SearchResult(title="News", url=HttpUrl("http://news.com", scope="news", score=1.0),
     SearchResult(
-        title="Regulatory", url="http://reg.com", type="regulatory", score=1.0
+        title="Regulatory", url=HttpUrl("http://reg.com", type="regulatory", score=1.0
     ),
     SearchResult(
-        title="Wiki", url="http://wikipedia.org/wiki/Test", type="news", score=1.0
+        title="Wiki", url=HttpUrl("http://wikipedia.org/wiki/Test", type="news", score=1.0
     ),
 ]
 ranked = rank_results(results)

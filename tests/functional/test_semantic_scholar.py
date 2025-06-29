@@ -3,6 +3,7 @@
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
+from pydantic import HttpUrl
 from riskgpt.helpers.search import search
 from riskgpt.helpers.search.semantic_scholar import (
     SemanticScholarSearchProvider,
@@ -75,7 +76,7 @@ async def test_semantic_scholar_search_provider(mock_semantic_scholar_response):
             response.results[0].citation.title
             == "Machine Learning Explainability: A Survey"
         )
-        assert response.results[0].citation.url == "https://example.com/paper1"
+        assert str(response.results[0].citation.url) == "https://example.com/paper1"
         assert response.results[0].citation.publication_date.strftime("%Y") == "2023"
         assert response.results[0].scope == ScopeEnum.ACADEMIC
         assert "This paper provides a survey" in response.results[0].content
@@ -86,7 +87,7 @@ async def test_semantic_scholar_search_provider(mock_semantic_scholar_response):
             response.results[1].citation.title
             == "Explainable AI: Concepts and Applications"
         )
-        assert response.results[1].citation.url == "https://example.com/paper2"
+        assert str(response.results[1].citation.url) == "https://example.com/paper2"
         assert response.results[1].citation.publication_date.strftime("%Y") == "2022"
         assert response.results[1].scope == ScopeEnum.ACADEMIC
         assert "This paper explores the concepts" in response.results[1].content
@@ -118,8 +119,7 @@ async def test_academic_search_excludes_wikipedia():
                 content="Academic paper content",
                 score=1.0,
                 citation=Citation(
-                    title="Academic Paper",
-                    url="https://example.com/paper",
+                    title="Academic Paper", url=HttpUrl("https://example.com/paper")
                 ),
             )
         ],

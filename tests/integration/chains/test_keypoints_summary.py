@@ -5,6 +5,7 @@ from unittest.mock import AsyncMock, patch
 
 import pytest
 import yaml
+from pydantic import HttpUrl
 from riskgpt.chains.keypoints_summary import keypoints_summary_chain
 from riskgpt.models.chains.keypoints import (
     KeyPoint,
@@ -22,18 +23,17 @@ def test_key_points() -> List[KeyPoint]:
         KeyPoint(
             content="The global market for AI is expected to grow by 37% annually until 2030.",
             scope=ScopeEnum.NEWS,
-            citation=Citation(url="https://example.com/ai-market-report-2023"),
+            citation=Citation(url=HttpUrl("https://example.com/ai-market-report-2023")),
         ),
         KeyPoint(
             content="Regulatory frameworks for AI are being developed in the EU, with the AI Act expected to be implemented by 2025.",
             scope=ScopeEnum.REGULATORY,
-            source_url="https://example.eu/ai-regulations-2023",
-            citation=Citation(url="https://example.com/ai-market-report-2023"),
+            citation=Citation(url=HttpUrl("https://example.eu/ai-regulations-2023")),
         ),
         KeyPoint(
             content="Industry leaders are investing heavily in responsible AI development to address ethical concerns.",
             scope=ScopeEnum.LINKEDIN,
-            citation=Citation(url="https://example.com/ai-market-report-2023"),
+            citation=Citation(url=HttpUrl("https://example.com/ai-market-report-2023")),
         ),
     ]
 
@@ -112,7 +112,6 @@ def test_long_key_points() -> List[KeyPoint]:
                     KeyPoint(
                         content=content.strip(),
                         scope=scope,
-                        source_url=url.strip(),
                         citation=Citation(url=url.strip()),
                     )
                 )
@@ -124,7 +123,7 @@ async def test_keypoints_summary_with_citations():
     """Test keypoints summary with academic citations."""
     # Create Citations
     citation1 = Citation(
-        url="https://example.com/paper1",
+        url=HttpUrl("https://example.com/paper1"),
         title="Example Paper 1",
         authors=["John Doe", "Jane Smith"],
         publication_date=date(2023, 1, 1),
@@ -132,7 +131,7 @@ async def test_keypoints_summary_with_citations():
     )
 
     citation2 = Citation(
-        url="https://example.com/paper2",
+        url=HttpUrl("https://example.com/paper2"),
         title="Example Paper 2",
         authors=["Alice Johnson"],
         publication_date=date(2022, 5, 15),
@@ -144,13 +143,11 @@ async def test_keypoints_summary_with_citations():
         KeyPoint(
             content="This is key point 1",
             scope=ScopeEnum.PEER,
-            source_url="https://example.com/paper1",
             citation=citation1,
         ),
         KeyPoint(
             content="This is key point 2",
             scope=ScopeEnum.PEER,
-            source_url="https://example.com/paper2",
             citation=citation2,
         ),
     ]
@@ -193,7 +190,7 @@ async def test_keypoints_summary_with_mixed_citations():
     """Test keypoints summary with mixed citation sources."""
     # Create a Citation
     citation = Citation(
-        url="https://example.com/paper",
+        url=HttpUrl("https://example.com/paper"),
         title="Example Paper",
         authors=["John Doe"],
         publication_date=date(2023, 1, 1),
@@ -210,7 +207,7 @@ async def test_keypoints_summary_with_mixed_citations():
         KeyPoint(
             content="This is key point 2",
             scope=ScopeEnum.NEWS,
-            citation=Citation(url="https://news.example.com/article"),
+            citation=Citation(url=HttpUrl("https://news.example.com/article")),
         ),
     ]
 

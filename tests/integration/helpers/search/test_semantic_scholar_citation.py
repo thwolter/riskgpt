@@ -53,7 +53,7 @@ async def test_semantic_scholar_creates_citation():
 
     # Verify citation fields
     citation = result.citation
-    assert citation.url == "https://example.com/paper"
+    assert str(citation.url) == "https://example.com/paper"
     assert citation.title == "Example Paper"
     assert citation.authors == ["John Doe", "Jane Smith"]
     assert citation.publication_date == date(2023, 1, 1)
@@ -112,7 +112,7 @@ async def test_semantic_scholar_handles_missing_fields():
 
     # Verify citation fields
     citation = result.citation
-    assert citation.url == "https://example.com/paper"
+    assert str(citation.url) == "https://example.com/paper"
     assert citation.title == "Example Paper"
     assert citation.authors == []
     assert citation.publication_date is None

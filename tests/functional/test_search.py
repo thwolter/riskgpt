@@ -3,6 +3,7 @@ from typing import Generator
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
+from pydantic import HttpUrl
 from riskgpt.helpers.search import search
 from riskgpt.helpers.search.google import GoogleSearchProvider
 from riskgpt.helpers.search.wikipedia import WikipediaSearchProvider
@@ -118,7 +119,7 @@ def mock_google_search() -> SearchResponse:
                 score=1.0,
                 citation=Citation(
                     title="G",
-                    url="u",
+                    url=HttpUrl("http://example.com/google"),
                 ),
             )
         ],
@@ -138,7 +139,7 @@ def mock_wikipedia_search() -> SearchResponse:
                 score=0.8,  # Lower score for Wikipedia
                 citation=Citation(
                     title="W",
-                    url="u",
+                    url=HttpUrl("http://wikipedia.org/wiki/Test"),
                 ),
             )
         ],
@@ -158,7 +159,7 @@ def mock_duckduckgo_search() -> SearchResponse:
                 score=1.0,
                 citation=Citation(
                     title="D",
-                    url="u",
+                    url=HttpUrl("http://example.com/duckduckgo"),
                 ),
             )
         ],
@@ -291,7 +292,7 @@ async def test_combined_search_with_context_aware():
 
         # Check if any results are from Wikipedia
         has_wikipedia = any(
-            "wikipedia.org" in result.citation.url for result in response.results
+            "wikipedia.org" in str(result.citation.url) for result in response.results
         )
         assert has_wikipedia, "No Wikipedia results found in context-aware mode"
 

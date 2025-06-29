@@ -1,4 +1,5 @@
 from langchain_core.output_parsers import PydanticOutputParser
+from pydantic import HttpUrl
 
 from riskgpt.chains.base import BaseChain
 from riskgpt.helpers.prompt_loader import load_prompt
@@ -26,18 +27,47 @@ async def extract_key_points_chain(
     inputs = request.model_dump(mode="json", exclude_none=True)
     result = await chain.invoke(inputs)
 
-    # todo: the attribute additional_citations must be filled in by the chain
-    # todo: we have to handel the citation accordingly - when provided, it should be used for all points
-    # todo: if not, the citation has to be extracted from the content
-
+    # Handle citations for each key point
     for point in result.points:
-        # Use the URL from the citation if available
+        # Case 1: If point.citation already includes all available data, keep it as is
+        if (
+            hasattr(point, "citation")
+            and point.citation
+            and point.citation.is_complete()
+        ):
+            continue
+        # todo: clen this up, this is a workaround for the fact that the citation model is not fully implemented yet
+        # Case 2: If request has a citation with URL, use it
         if request.citation and request.citation.url:
-            point.source_url = request.citation.url
-            point.citation = request.citation
+            # If point already has a citation, try to merge with request citation
+            if hasattr(point, "citation") and point.citation:
+                # Keep existing citation data if it has more information
+                request_citation = request.citation.model_copy()
+                # Don't override the URL if it already exists
+                if not point.citation.url:
+                    point.citation.url = request_citation.url
+                if not point.citation.title and request_citation.title:
+                    point.citation.title = request_citation.title
+                if not point.citation.authors and request_citation.authors:
+                    point.citation.authors = request_citation.authors
+                if (
+                    not point.citation.publication_date
+                    and request_citation.publication_date
+                ):
+                    point.citation.publication_date = request_citation.publication_date
+                if not point.citation.venue and request_citation.venue:
+                    point.citation.venue = request_citation.venue
+                if not point.citation.publisher and request_citation.publisher:
+                    point.citation.publisher = request_citation.publisher
+            else:
+                # No existing citation, use the request citation
+                point.citation = request.citation
         else:
-            # Create a minimal citation if none is provided
-            url = point.source_url or ""
-            point.citation = Citation(url=url)
+            # Case 3: Ensure the citation has a URL
+            # If we don't have a citation at all, create a minimal one
+            if not hasattr(point, "citation") or not point.citation:
+                # Create a minimal citation with an empty URL
+                # This should not happen in practice since the KeyPoint model requires a citation
+                point.citation = Citation(url=HttpUrl("https://example.com"))
 
     return result

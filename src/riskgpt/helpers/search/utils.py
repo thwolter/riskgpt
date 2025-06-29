@@ -47,19 +47,36 @@ def deduplicate_results(results: List[SearchResult]) -> List[SearchResult]:
 
     for result in results:
         # Normalize URL to handle slight variations
-        normalized_url = result.citation.url.rstrip("/").lower()
+        normalized_url = str(result.citation.url).rstrip("/").lower()
         if normalized_url not in unique_urls:
             unique_urls.add(normalized_url)
             unique_results.append(result)
 
     # Second pass: Check for content similarity (simple approach)
     final_results: List[SearchResult] = []
-    for i, result in enumerate(unique_results):
+    for result in unique_results:
         is_duplicate = False
         # Compare with results we've already decided to keep
         for kept_result in final_results:
-            # Simple similarity check - if titles are very similar or content has high overlap
-            if (
+            # Check content similarity if both have content
+            if result.content and kept_result.content:
+                # Simple overlap check - can be improved with more sophisticated methods
+                content_overlap = len(
+                    set(result.content.lower().split())
+                    & set(kept_result.content.lower().split())
+                )
+                total_words = len(
+                    set(result.content.lower().split())
+                    | set(kept_result.content.lower().split())
+                )
+                similarity = content_overlap / total_words if total_words > 0 else 0
+
+                # If content is very similar (>70% overlap), consider it a duplicate
+                if similarity > 0.7:
+                    is_duplicate = True
+                    break
+            # If content similarity check didn't find a duplicate, check title similarity
+            elif (
                 result.citation.title
                 and kept_result.citation.title
                 and (
@@ -68,25 +85,15 @@ def deduplicate_results(results: List[SearchResult]) -> List[SearchResult]:
                     in result.citation.title.lower()
                 )
             ):
-                # Check content similarity if both have content
-                if result.content and kept_result.content:
-                    # Simple overlap check - can be improved with more sophisticated methods
-                    content_overlap = len(
-                        set(result.content.lower().split())
-                        & set(kept_result.content.lower().split())
-                    )
-                    total_words = len(
-                        set(result.content.lower().split())
-                        | set(kept_result.content.lower().split())
-                    )
-                    if (
-                        total_words > 0 and content_overlap / total_words > 0.7
-                    ):  # 70% similarity threshold
-                        is_duplicate = True
-                        break
+                is_duplicate = True
+                break
 
         if not is_duplicate:
             final_results.append(result)
+
+    # If we've filtered out all results, keep at least one from the original set
+    if not final_results and unique_results:
+        final_results.append(unique_results[0])
 
     return final_results
 
@@ -121,7 +128,7 @@ def rank_results(results: List[SearchResult]) -> List[SearchResult]:
         source_weight = source_weights.get(scope, 0.5)
 
         # Identify Wikipedia results
-        is_wikipedia = "wikipedia.org" in result.citation.url.lower()
+        is_wikipedia = "wikipedia.org" in str(result.citation.url).lower()
 
         # Apply source weighting
         if is_wikipedia:
