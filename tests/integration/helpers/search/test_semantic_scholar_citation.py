@@ -35,7 +35,7 @@ async def test_semantic_scholar_creates_citation():
     # Create search request
     request = SearchRequest(
         query="example query",
-        source_type=ScopeEnum.PEER,
+        scope=ScopeEnum.PEER,
         max_results=1,
     )
 
@@ -94,7 +94,7 @@ async def test_semantic_scholar_handles_missing_fields():
     # Create search request
     request = SearchRequest(
         query="example query",
-        source_type=ScopeEnum.PEER,
+        scope=ScopeEnum.PEER,
         max_results=1,
     )
 

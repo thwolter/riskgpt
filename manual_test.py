@@ -37,14 +37,14 @@ for result in ranked:
 # Test contextual Wikipedia inclusion
 print("\nTesting contextual Wikipedia inclusion...")
 requests = [
-    SearchRequest(query="what is artificial intelligence", source_type=ScopeEnum.NEWS),
-    SearchRequest(query="latest tech news today", source_type=ScopeEnum.NEWS),
-    SearchRequest(query="GDPR compliance", source_type=ScopeEnum.REGULATORY),
+    SearchRequest(query="what is artificial intelligence", scope=ScopeEnum.NEWS),
+    SearchRequest(query="latest tech news today", scope=ScopeEnum.NEWS),
+    SearchRequest(query="GDPR compliance", scope=ScopeEnum.REGULATORY),
 ]
 for request in requests:
     include = _should_include_wikipedia(request)
     print(
-        f"Query: '{request.query}', Type: {request.source_type.value}, Include Wikipedia: {include}"
+        f"Query: '{request.query}', Type: {request.scope.value}, Include Wikipedia: {include}"
     )
 
 print("\nManual tests completed successfully!")

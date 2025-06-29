@@ -69,7 +69,7 @@ from riskgpt.models.enums import TopicEnum
 # Create a search request with a long query
 request = SearchRequest(
     query="Recent developments in artificial intelligence have shown promising applications in risk management. Companies are increasingly using AI to identify potential risks in their operations and to automate risk assessment processes.",
-    source_type=TopicEnum.ACADEMIC,
+    scope=TopicEnum.ACADEMIC,
     max_results=3
 )
 

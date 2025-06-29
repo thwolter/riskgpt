@@ -25,7 +25,7 @@ class GoogleSearchProvider(BaseSearchProvider):
     async def search(self, payload: SearchRequest) -> SearchResponse:
         """Perform a Google Custom Search and format results."""
         results: List[SearchResult] = []
-        query = f"{payload.source_type.value} {payload.query}"
+        query = f"{payload.scope.value} {payload.query}"
 
         if not settings.GOOGLE_CSE_ID or not settings.GOOGLE_API_KEY:
             logger.warning("Google CSE ID or API key not configured")
@@ -66,7 +66,7 @@ class GoogleSearchProvider(BaseSearchProvider):
                         title=item.get("title", ""),
                         url=item.get("link", ""),
                         date="",  # Google doesn't provide date in the same way
-                        type=payload.source_type.value,
+                        type=payload.scope.value,
                         content=item.get("snippet", ""),
                     )
                 )

@@ -34,7 +34,8 @@ async def keypoints_summary_chain(
         citation = kp.get_inline_citation()
         citation_text = f" ({citation})" if citation else ""
 
-        formatted_points.append(f"- {kp.topic.value}: {kp.content}{citation_text}")
+        scope_text = f"{kp.scope.value}: " if kp.scope is not None else ""
+        formatted_points.append(f"- {scope_text}{kp.content}{citation_text}")
 
     # Generate references section
     references = []

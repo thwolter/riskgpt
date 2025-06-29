@@ -52,7 +52,7 @@ async def test_semantic_scholar_search_provider(mock_semantic_scholar_response):
     provider = SemanticScholarSearchProvider()
     request = SearchRequest(
         query="machine learning explainability",
-        source_type=ScopeEnum.ACADEMIC,
+        scope=ScopeEnum.ACADEMIC,
         max_results=2,
     )
 
@@ -128,7 +128,7 @@ async def test_academic_search_excludes_wikipedia():
     ):
         request = SearchRequest(
             query="machine learning explainability",
-            source_type=ScopeEnum.ACADEMIC,
+            scope=ScopeEnum.ACADEMIC,
             max_results=5,
         )
 
@@ -156,7 +156,7 @@ async def test_semantic_scholar_long_query_extraction(mock_semantic_scholar_resp
 
     request = SearchRequest(
         query=long_query,
-        source_type=ScopeEnum.ACADEMIC,
+        scope=ScopeEnum.ACADEMIC,
         max_results=2,
     )
 
@@ -200,7 +200,7 @@ async def test_semantic_scholar_live():
     provider = SemanticScholarSearchProvider()
     request = SearchRequest(
         query="machine learning",
-        source_type=ScopeEnum.ACADEMIC,
+        scope=ScopeEnum.ACADEMIC,
         max_results=2,
     )
 

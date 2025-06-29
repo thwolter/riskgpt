@@ -98,7 +98,7 @@ from riskgpt.models.enums import TopicEnum
 # Create a search request
 request = SearchRequest(
     query="latest developments in AI regulation",
-    source_type=TopicEnum.NEWS,
+    scope=TopicEnum.NEWS,
     max_results=3
 )
 
@@ -125,7 +125,7 @@ from riskgpt.models.enums import TopicEnum
 # Create a search request with region
 request = SearchRequest(
     query="local business regulations",
-    source_type=TopicEnum.REGULATORY,
+    scope=TopicEnum.REGULATORY,
     max_results=3,
     region="us-en"  # Use US English results
 )
@@ -145,7 +145,7 @@ from riskgpt.models.enums import TopicEnum
 # This will automatically include Wikipedia results due to the nature of the query
 request = SearchRequest(
     query="what is artificial intelligence",
-    source_type=TopicEnum.NEWS,
+    scope=TopicEnum.NEWS,
     max_results=5
 )
 
@@ -174,7 +174,7 @@ os.environ["SEARCH_PROVIDER"] = "semantic_scholar"
 # Create a search request for academic papers
 request = SearchRequest(
     query="machine learning explainability",
-    source_type=TopicEnum.ACADEMIC,
+    scope=TopicEnum.ACADEMIC,
     max_results=3
 )
 

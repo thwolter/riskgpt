@@ -1,30 +1,39 @@
 """
 test_extract_keypoints.py
 
-This module contains both unit and integration tests for the `extract_key_points` function from the `riskgpt.chains.extract_keypoints` module.
-The tests focus on verifying correct extraction of key points from different source types.
+This module contains tests for the key points extraction functionality:
+1. Basic extraction from different source types
+2. Citation handling in extracted key points
+3. Integration with research workflow
 
 Key Components:
 ---------------
-- Unit tests:
+- Basic extraction tests:
     - test_extract_key_points_news: Tests extracting key points from a news source with mocked LLM
     - test_extract_key_points_research: Tests extracting key points from a research source with mocked LLM
     - test_extract_key_points_from_source: Tests creating a request from a Source object with mocked LLM
 
+- Citation functionality tests:
+    - test_extract_scope_key_points_with_citation: Tests extraction with citation information
+    - test_extract_scope_key_points_without_citation: Tests extraction without citation information
+
 - Integration tests:
     - test_extract_key_points_integration: Tests the full chain with a real LLM call
+    - test_extract_key_points_with_llm: Tests extraction with citation using a real LLM
 
 Dependencies:
 -------------
 - pytest (with asyncio support)
-- riskgpt.chains.extract_keypoints.extract_key_points
-- riskgpt.models.workflows.context.ExtractKeyPointsRequest
-- riskgpt.models.workflows.context.ExtractKeyPointsResponse
-- riskgpt.models.workflows.context.KeyPoint
+- riskgpt.chains.extract_keypoints.extract_key_points_chain
+- riskgpt.models.chains.keypoints
 - riskgpt.models.enums.ScopeEnum
+- riskgpt.models.helpers.citation.Citation
+- riskgpt.models.helpers.search.Source
+- riskgpt.workflows.research.nodes.extract_scope_key_points
 """
 
 import logging
+from datetime import date
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
@@ -37,6 +46,12 @@ from riskgpt.models.chains.keypoints import (
     KeyPoint,
 )
 from riskgpt.models.enums import ScopeEnum
+from riskgpt.models.helpers.citation import Citation
+from riskgpt.models.helpers.search import Source
+from riskgpt.workflows.research.nodes import extract_scope_key_points
+from riskgpt.workflows.research.state import State
+
+# SECTION 1: Basic key points extraction tests
 
 
 @pytest.mark.asyncio
@@ -50,13 +65,13 @@ async def test_extract_key_points_news(monkeypatch, caplog):
         points=[
             KeyPoint(
                 content="Key point 1 about technology",
-                topic=ScopeEnum.NEWS,
                 source_url="https://example.com/news1",
+                scope=ScopeEnum.NEWS,
             ),
             KeyPoint(
                 content="Key point 2 about finance",
-                topic=ScopeEnum.REGULATORY,
                 source_url="https://example.com/news1",
+                scope=ScopeEnum.NEWS,
             ),
         ],
         response_info=ResponseInfo(
@@ -75,7 +90,7 @@ async def test_extract_key_points_news(monkeypatch, caplog):
     with patch("riskgpt.chains.extract_keypoints.BaseChain", return_value=mock_chain):
         # Create a test request
         request = ExtractKeyPointsRequest(
-            source_type="NEWS",
+            scope="NEWS",
             content="Title: Test News Article\n\nContent: This is a test news article about technology and finance.",
         )
 
@@ -86,15 +101,15 @@ async def test_extract_key_points_news(monkeypatch, caplog):
         assert isinstance(result, ExtractKeyPointsResponse)
         assert len(result.points) == 2
         assert result.points[0].content == "Key point 1 about technology"
-        assert result.points[0].topic == ScopeEnum.NEWS
+        assert result.points[0].scope == ScopeEnum.NEWS
         assert result.points[1].content == "Key point 2 about finance"
-        assert result.points[1].topic == ScopeEnum.REGULATORY
+        assert result.points[1].scope == ScopeEnum.NEWS
         assert result.response_info.prompt_name == "extract_NEWS_key_points"
 
         # Verify that the chain was invoked with the correct inputs
         mock_chain.invoke.assert_called_once()
         call_args = mock_chain.invoke.call_args[0][0]
-        assert call_args["source_type"] == "NEWS"
+        assert call_args["scope"] == "NEWS"
         assert "content" in call_args
 
 
@@ -109,13 +124,13 @@ async def test_extract_key_points_research(monkeypatch, caplog):
         points=[
             KeyPoint(
                 content="Research finding 1",
-                topic=ScopeEnum.PEER,
                 source_url="https://example.com/research1",
+                scope=ScopeEnum.PEER,
             ),
             KeyPoint(
                 content="Research finding 2",
-                topic=ScopeEnum.PEER,
                 source_url="https://example.com/research1",
+                scope=ScopeEnum.PEER,
             ),
         ],
         response_info=ResponseInfo(
@@ -134,7 +149,7 @@ async def test_extract_key_points_research(monkeypatch, caplog):
     with patch("riskgpt.chains.extract_keypoints.BaseChain", return_value=mock_chain):
         # Create a test request
         request = ExtractKeyPointsRequest(
-            source_type="RESEARCH",
+            scope="RESEARCH",
             content="Title: Research Paper\n\nContent: This is a test research paper with important findings.",
         )
 
@@ -145,15 +160,15 @@ async def test_extract_key_points_research(monkeypatch, caplog):
         assert isinstance(result, ExtractKeyPointsResponse)
         assert len(result.points) == 2
         assert result.points[0].content == "Research finding 1"
-        assert result.points[0].topic == ScopeEnum.PEER
+        assert result.points[0].scope == ScopeEnum.PEER
         assert result.points[1].content == "Research finding 2"
-        assert result.points[1].topic == ScopeEnum.PEER
+        assert result.points[1].scope == ScopeEnum.PEER
         assert result.response_info.prompt_name == "extract_RESEARCH_key_points"
 
         # Verify that the chain was invoked with the correct inputs
         mock_chain.invoke.assert_called_once()
         call_args = mock_chain.invoke.call_args[0][0]
-        assert call_args["source_type"] == "RESEARCH"
+        assert call_args["scope"] == "RESEARCH"
         assert "content" in call_args
 
 
@@ -168,7 +183,7 @@ async def test_extract_key_points_from_source(monkeypatch, caplog):
         points=[
             KeyPoint(
                 content="Source key point 1",
-                topic=ScopeEnum.NEWS,
+                scope=ScopeEnum.NEWS,
                 source_url="https://example.com/source1",
             ),
         ],
@@ -202,16 +217,137 @@ async def test_extract_key_points_from_source(monkeypatch, caplog):
         assert isinstance(result, ExtractKeyPointsResponse)
         assert len(result.points) == 1
         assert result.points[0].content == "Source key point 1"
-        assert result.points[0].topic == ScopeEnum.NEWS
+        assert result.points[0].scope == ScopeEnum.NEWS
         assert result.response_info.prompt_name == "extract_NEWS_key_points"
 
         # Verify that the chain was invoked with the correct inputs
         mock_chain.invoke.assert_called_once()
         call_args = mock_chain.invoke.call_args[0][0]
-        assert call_args["source_type"] == "NEWS"
+        assert call_args["scope"] == "NEWS"
         assert "content" in call_args
         assert "Title: Source Title" in call_args["content"]
         assert "Content: Source Content" in call_args["content"]
+
+
+# SECTION 2: Citation functionality tests
+
+
+@pytest.mark.asyncio
+async def test_extract_scope_key_points_with_citation():
+    """Test extracting key points with citation information."""
+    # Create a mock Citation
+    citation = Citation(
+        url="https://example.com",
+        title="Example Paper",
+        authors=["John Doe", "Jane Smith"],
+        publication_date=date(2023, 1, 1),
+        venue="Example Conference",
+    )
+
+    # Create a mock Source with citation
+    source = Source(
+        title="Example Paper",
+        url="https://example.com",
+        date="2023",
+        type="PEER",
+        content="This is an example paper content.",
+        scope=ScopeEnum.PEER,
+        topic=ScopeEnum.PEER,  # Required for backward compatibility
+        citation=citation,
+    )
+
+    # Create a mock State with the source
+    state = State(sources=[source])
+
+    # Create a mock ExtractKeyPointsResponse
+    mock_response = ExtractKeyPointsResponse(
+        points=[
+            KeyPoint(
+                content="This is key point 1",
+                topic=ScopeEnum.PEER,
+            ),
+            KeyPoint(
+                content="This is key point 2",
+                topic=ScopeEnum.PEER,
+            ),
+        ],
+    )
+
+    # Mock the extract_key_points_chain function
+    with patch(
+        "riskgpt.workflows.research.nodes.extract_key_points_chain",
+        AsyncMock(return_value=mock_response),
+    ):
+        # Call the extract_scope_key_points function
+        result_state = await extract_scope_key_points(state, ScopeEnum.PEER)
+
+        # Verify that key points were added to the state
+        assert "key_points" in result_state
+        assert len(result_state["key_points"]) == 2
+
+        # Verify that each key point has the source URL and citation
+        for key_point in result_state["key_points"]:
+            assert key_point.source_url == "https://example.com"
+            assert key_point.citation is not None
+            assert key_point.citation == citation
+
+            # Verify that the citation can be formatted
+            assert key_point.get_inline_citation() == "John Doe and Jane Smith (2023)"
+
+
+@pytest.mark.asyncio
+async def test_extract_scope_key_points_without_citation():
+    """Test extracting key points without citation information."""
+    # Create a mock Source without citation
+    source = Source(
+        title="Example Paper",
+        url="https://example.com",
+        date="2023",
+        type="PEER",
+        content="This is an example paper content.",
+        scope=ScopeEnum.PEER,
+        topic=ScopeEnum.PEER,  # Required for backward compatibility
+    )
+
+    # Create a mock State with the source
+    state = State(sources=[source])
+
+    # Create a mock ExtractKeyPointsResponse
+    mock_response = ExtractKeyPointsResponse(
+        points=[
+            KeyPoint(
+                content="This is key point 1",
+                topic=ScopeEnum.PEER,
+            ),
+            KeyPoint(
+                content="This is key point 2",
+                topic=ScopeEnum.PEER,
+            ),
+        ],
+    )
+
+    # Mock the extract_key_points_chain function
+    with patch(
+        "riskgpt.workflows.research.nodes.extract_key_points_chain",
+        AsyncMock(return_value=mock_response),
+    ):
+        # Call the extract_scope_key_points function
+        result_state = await extract_scope_key_points(state, ScopeEnum.PEER)
+
+        # Verify that key points were added to the state
+        assert "key_points" in result_state
+        assert len(result_state["key_points"]) == 2
+
+        # Verify that each key point has the source URL but no citation
+        for key_point in result_state["key_points"]:
+            assert key_point.source_url == "https://example.com"
+            assert key_point.citation is None
+
+            # Verify that the inline citation falls back to the URL
+            assert key_point.get_inline_citation() == "example.com"
+
+
+# SECTION 3: Integration tests
 
 
 @pytest.mark.integration
@@ -220,7 +356,7 @@ async def test_extract_key_points_integration():
     """Integration test for extract_key_points with a real LLM call."""
     # Create a test request with sample content
     request = ExtractKeyPointsRequest(
-        source_type="NEWS",
+        scope="NEWS",
         content=(
             "Title: AI Advances in Risk Management\n\n"
             "Content: Recent developments in artificial intelligence have shown promising "
@@ -246,9 +382,69 @@ async def test_extract_key_points_integration():
         assert isinstance(point, KeyPoint)
         assert isinstance(point.content, str)
         assert len(point.content) > 0
-        assert isinstance(point.topic, ScopeEnum)
+        assert isinstance(point.scope, ScopeEnum)
 
     # Verify response info
     assert result.response_info is not None
     assert result.response_info.consumed_tokens > 0
     assert result.response_info.prompt_name == "extract_NEWS_key_points"
+
+
+@pytest.mark.integration
+@pytest.mark.asyncio
+async def test_extract_key_points_with_llm():
+    """Integration test for extract_key_points with citation using a real LLM."""
+    # Create a Citation
+    citation = Citation(
+        url="https://example.com",
+        title="AI Safety Research Paper",
+        authors=["John Doe", "Jane Smith"],
+        publication_date=date(2023, 1, 1),
+        venue="AI Safety Conference",
+    )
+
+    # Create a Source with citation
+    source = Source(
+        title="AI Safety Research Paper",
+        url="https://example.com",
+        date="2023",
+        type="PEER",
+        content=(
+            "AI safety is a critical concern as artificial intelligence systems become more powerful. "
+            "Researchers have identified several key risks including alignment problems, "
+            "where AI systems might optimize for goals that don't align with human values. "
+            "Another concern is the potential for unintended consequences when deploying "
+            "complex AI systems in real-world environments."
+        ),
+        scope=ScopeEnum.PEER,
+        topic=ScopeEnum.PEER,  # Required for backward compatibility
+        citation=citation,
+    )
+
+    # Create an ExtractKeyPointsRequest from the Source
+    request = ExtractKeyPointsRequest.from_source(source)
+
+    # Call extract_key_points_chain directly with the request
+    response = await extract_key_points_chain(request)
+
+    # Verify the response
+    assert isinstance(response, ExtractKeyPointsResponse)
+    assert len(response.points) > 0
+
+    # Verify response_info is present
+    assert response.response_info is not None
+    assert response.response_info.consumed_tokens > 0
+    assert response.response_info.model_name is not None
+
+    # Verify the content of the key points
+    for point in response.points:
+        assert point.content
+        assert point.scope == ScopeEnum.PEER
+
+        # Verify that each key point has the source URL and citation
+        assert point.source_url == "https://example.com"
+        assert point.citation is not None
+        assert point.citation == citation
+
+        # Verify that the citation can be formatted
+        assert point.get_inline_citation() == "John Doe and Jane Smith (2023)"

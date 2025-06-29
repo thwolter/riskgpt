@@ -26,12 +26,12 @@ class TavilySearchProvider(BaseSearchProvider):
     async def search(self, payload: SearchRequest) -> SearchResponse:
         """Perform a Tavily search and format results."""
 
-        if payload.source_type.value.lower() in ["general", "news", "finance"]:
-            topic = payload.source_type.value.lower()
+        if payload.scope.value.lower() in ["general", "news", "finance"]:
+            topic = payload.scope.value.lower()
             query = payload.query
         else:
             topic = "general"  # Default to general for unsupported types
-            query = f"{payload.source_type.value} {payload.query}"
+            query = f"{payload.scope.value} {payload.query}"
 
         results: List[SearchResult] = []
 
@@ -71,7 +71,7 @@ class TavilySearchProvider(BaseSearchProvider):
                         title=item.get("title", ""),
                         url=item.get("url", ""),
                         date=item.get("published_date", ""),
-                        type=payload.source_type.value,
+                        type=payload.scope.value,
                         content=item.get("raw_content", ""),
                         score=item.get("score", None),
                     )

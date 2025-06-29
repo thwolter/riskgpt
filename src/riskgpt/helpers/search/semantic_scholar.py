@@ -174,7 +174,7 @@ class SemanticScholarSearchProvider(BaseSearchProvider):
                             title=paper.get("title", ""),
                             url=paper.get("url", ""),
                             date=str(paper.get("year", "")),
-                            type=payload.source_type.value,
+                            type=payload.scope.value,
                             content=content,
                             score=paper.get("score", 0.0),
                             citation=citation,

@@ -56,11 +56,11 @@ def _should_include_wikipedia(request: SearchRequest) -> bool:
             return True
 
     # For regulatory searches, Wikipedia often has good background information
-    if request.source_type.value.lower() == "regulatory":
+    if request.scope.value.lower() == "regulatory":
         return True
 
     # For news searches, Wikipedia might be less relevant for current events
-    if request.source_type.value.lower() == "news":
+    if request.scope.value.lower() == "news":
         # Check for time-sensitive keywords
         time_keywords = [
             "latest",
@@ -103,7 +103,7 @@ async def search(
     include_wiki = (
         settings.INCLUDE_WIKIPEDIA
         and settings.SEARCH_PROVIDER != "wikipedia"
-        and search_request.source_type != ScopeEnum.ACADEMIC
+        and search_request.scope != ScopeEnum.ACADEMIC
         and (
             not settings.WIKIPEDIA_CONTEXT_AWARE
             or _should_include_wikipedia(search_request)
@@ -114,7 +114,7 @@ async def search(
         # Create a modified request with limited results for Wikipedia
         wiki_request = SearchRequest(
             query=search_request.query,
-            source_type=search_request.source_type,
+            scope=search_request.scope,
             max_results=min(search_request.max_results, settings.WIKIPEDIA_MAX_RESULTS),
             region=search_request.region,
         )

@@ -23,19 +23,19 @@ class DuckDuckGoSearchProvider(BaseSearchProvider):
     async def search(self, payload: SearchRequest) -> SearchResponse:
         """Perform a DuckDuckGo search and format results."""
 
-        if payload.source_type.value.lower() in ["news"]:
-            source_type = payload.source_type.value.lower()
+        if payload.scope.value.lower() in ["news"]:
+            scope = payload.scope.value.lower()
             query = payload.query
         else:
-            source_type = "text"  # Default to text for unsupported types
-            query = f"{payload.source_type.value} {payload.query}"
+            scope = "text"  # Default to text for unsupported types
+            query = f"{payload.scope.value} {payload.query}"
 
         results: List[SearchResult] = []
         try:
             wrapper = DuckDuckGoSearchAPIWrapper(
                 max_results=payload.max_results,
                 region=payload.region,
-                source=source_type,
+                source=scope,
             )
             # Note: DuckDuckGoSearchAPIWrapper.results is not async, but we're keeping
             # the method signature async to match the interface
@@ -48,7 +48,7 @@ class DuckDuckGoSearchProvider(BaseSearchProvider):
                         title=item.get("title", ""),
                         url=item.get("link", ""),
                         date=item.get("date") or "",
-                        type=payload.source_type.value,
+                        type=payload.scope.value,
                         content=item.get("snippet", ""),
                     )
                 )

@@ -117,23 +117,15 @@ class BaseChain:
                 result = await self.chain.ainvoke(inputs, memory=self.memory)
                 result.response_info = await self.create_response_info(cb, result)
             except OutputParserException as e:
-                # Log the error
-                logger.error(
-                    "Output parser error for '%s': %s",
-                    self.prompt_name or "prompt",
-                    str(e),
-                )
-
+                logger.error("Output parser error: %s", str(e))
                 # Create a fallback response
                 if hasattr(self.parser, "pydantic_object"):
-                    # Create a minimal valid instance of the pydantic object
-                    result = self._create_fallback_response(e.llm_output)
+                    result = await self._fallback_response(inputs)
                     result.response_info = await self.create_response_info(
                         cb, result, error=f"Output parser error: {str(e)}"
                     )
                 else:
-                    # If we can't create a valid pydantic object, re-raise the exception
-                    raise
+                    result = {"error": f"Output parser error: {str(e)}"}
 
             logger.info(
                 "Consumed %s tokens (%.4f USD) for '%s' using %s",
@@ -152,34 +144,3 @@ class BaseChain:
             model_name=self.settings.OPENAI_MODEL_NAME,
             error=error,
         )
-
-    def _create_fallback_response(self, llm_output=None):
-        """Create a fallback response when the output parser fails."""
-        try:
-            # Create a minimal valid instance of the pydantic object
-            data: Dict[str, Any] = {}
-            for name, field in self.parser.pydantic_object.model_fields.items():
-                if field.is_required():
-                    if (
-                        field.annotation is str
-                        or typing.get_origin(field.annotation) is str
-                    ):
-                        data[name] = "Failed to parse output"
-                    elif (
-                        field.annotation is list
-                        or typing.get_origin(field.annotation) is list
-                    ):
-                        data[name] = []
-                    else:
-                        data[name] = None
-
-            # If we have the LLM output, try to extract some useful information
-            if llm_output:
-                # You could implement some basic extraction logic here
-                # For example, try to find JSON-like structures or key phrases
-                pass
-
-            return self.parser.pydantic_object.model_validate(data)
-        except Exception as e:
-            logger.error("Failed to create fallback response: %s", e)
-            return {"error": "Failed to parse output"}

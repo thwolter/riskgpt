@@ -54,7 +54,7 @@ class SearchRequest(BaseModel):
     """Request model for search queries."""
 
     query: str = Field(description="Search query string")
-    source_type: ScopeEnum = Field(
+    scope: ScopeEnum = Field(
         default=ScopeEnum.NEWS,
         description="Type of source to search (e.g., news, professional, regulatory, peer)",
     )
@@ -67,7 +67,7 @@ class SearchRequest(BaseModel):
         "json_schema_extra": {
             "example": {
                 "query": "latest developments in AI regulation",
-                "source_type": "news",
+                "scope": "news",
             }
         }
     }

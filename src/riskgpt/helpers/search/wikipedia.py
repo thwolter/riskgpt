@@ -38,7 +38,7 @@ class WikipediaSearchProvider(BaseSearchProvider):
                         title=item.metadata.get("title", ""),
                         url=item.metadata.get("source", ""),
                         date="",  # Wikipedia doesn't provide date in the same way
-                        type=payload.source_type.value,
+                        type=payload.scope.value,
                         content=item.metadata.get("summary", ""),
                     )
                 )

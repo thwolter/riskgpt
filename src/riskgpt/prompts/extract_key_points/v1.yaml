@@ -2,9 +2,9 @@ version: "v1"
 description: "Extract contextually clear key points from the provided content with a focus on defined keywords for risk assessment."
 
 template: |
-  You are an expert in extracting precise and contextually complete key points from {source_type} sources.
+  You are an expert in extracting precise and contextually complete key points from {scope} sources.
 
-  Please analyse the following {source_type} source and extract up to five key points based on the following rules:
+  Please analyse the following {scope} source and extract up to five key points based on the following rules:
 
   - Focus on key points clearly related to the following focus keywords: {focus_keywords}.
   - Each key point must be **fully self-contained and contextually clear**. Avoid vague references such as “these” or “such”.

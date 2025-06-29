@@ -19,7 +19,7 @@ async def extract_key_points_chain(
     chain = BaseChain(
         prompt_template=prompt_data["template"],
         parser=parser,
-        prompt_name=f"extract_{request.source_type}_key_points",
+        prompt_name=f"extract_{request.scope}_key_points",
     )
 
     inputs = request.model_dump(mode="json", exclude_none=True)

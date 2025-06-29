@@ -55,7 +55,7 @@ class ResearchRequest(BaseRequest):
         """Create a search request for the specified scope."""
         return SearchRequest(
             query=self.query,
-            source_type=scope,
+            scope=scope,
             max_results=self.max_search_results,
             region=self.region,
         )

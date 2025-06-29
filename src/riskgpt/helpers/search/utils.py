@@ -115,8 +115,8 @@ def rank_results(results: List[SearchResult]) -> List[SearchResult]:
         score = result.score
 
         # Adjust score based on source type
-        source_type = result.type.lower() if result.type else ""
-        source_weight = source_weights.get(source_type, 0.5)
+        scope = result.type.lower() if result.type else ""
+        source_weight = source_weights.get(scope, 0.5)
 
         # Identify Wikipedia results
         is_wikipedia = "wikipedia.org" in result.url.lower()
