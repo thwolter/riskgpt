@@ -12,18 +12,14 @@ class KeyPoint(BaseModel):
     """Model for a key point extracted from a source."""
 
     content: str
-    scope: Optional[ScopeEnum] = (
-        None  # New field, will replace topic in future versions
+    scope: ScopeEnum = Field(
+        description="Type of the source, e.g., NEWS, RESEARCH, etc.",
+        default=ScopeEnum.NEWS,
     )
     source_url: Optional[str] = None
     additional_sources: List[str] = []
     citation: Optional[Citation] = None
     additional_citations: List[Citation] = []
-
-    def model_post_init(self, __context):
-        """Initialize scope from topic if not provided."""
-        if self.scope is None:
-            self.scope = self.scope
 
     def get_inline_citation(self) -> str:
         """Get Harvard-style inline citation."""
@@ -44,6 +40,8 @@ class ExtractKeyPointsRequest(BaseModel):
     scope: str = Field(description="Type of the source, e.g., NEWS, RESEARCH, etc.")
     content: str
     focus_keywords: Optional[List[str]] = []
+    source_url: Optional[str] = None
+    citation: Optional[Citation] = None
 
     @classmethod
     def from_source(
@@ -54,6 +52,8 @@ class ExtractKeyPointsRequest(BaseModel):
             scope=source.type,
             content=f"Title: {source.title}\n\nContent: {source.content}",
             focus_keywords=focus_keywords or [],
+            source_url=source.url,
+            citation=source.citation,
         )
 
     model_config = ConfigDict(

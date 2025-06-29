@@ -25,4 +25,9 @@ async def extract_key_points_chain(
     inputs = request.model_dump(mode="json", exclude_none=True)
     result = await chain.invoke(inputs)
 
+    # Add source URL, citation, and scope to each key point
+    for point in result.points:
+        point.source_url = request.source_url
+        point.citation = request.citation
+
     return result

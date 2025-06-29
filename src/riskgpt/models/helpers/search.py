@@ -28,9 +28,9 @@ class SearchResult(BaseModel):
 class Source(SearchResult):
     """Source class that extends SearchResult with scope information."""
 
-    scope: ScopeEnum
-    topic: (
-        ScopeEnum  # Kept for backward compatibility, will be removed in future versions
+    scope: ScopeEnum = Field(
+        default=ScopeEnum.NEWS,
+        description="Type of source, e.g., news, professional, regulatory, peer",
     )
 
     @classmethod
@@ -46,7 +46,6 @@ class Source(SearchResult):
             content=search_result.content,
             citation=search_result.citation,
             scope=scope,
-            topic=scope,  # Set both scope and topic for backward compatibility
         )
 
 

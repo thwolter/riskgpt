@@ -206,6 +206,8 @@ async def test_extract_key_points_from_source(monkeypatch, caplog):
         mock_source.type = "NEWS"
         mock_source.title = "Source Title"
         mock_source.content = "Source Content"
+        mock_source.url = "https://example.com/source1"
+        mock_source.citation = None
 
         # Create a request from the source
         request = ExtractKeyPointsRequest.from_source(mock_source)
@@ -252,7 +254,6 @@ async def test_extract_scope_key_points_with_citation():
         type="PEER",
         content="This is an example paper content.",
         scope=ScopeEnum.PEER,
-        topic=ScopeEnum.PEER,  # Required for backward compatibility
         citation=citation,
     )
 
@@ -264,11 +265,11 @@ async def test_extract_scope_key_points_with_citation():
         points=[
             KeyPoint(
                 content="This is key point 1",
-                topic=ScopeEnum.PEER,
+                scope=ScopeEnum.PEER,
             ),
             KeyPoint(
                 content="This is key point 2",
-                topic=ScopeEnum.PEER,
+                scope=ScopeEnum.PEER,
             ),
         ],
     )
@@ -306,7 +307,6 @@ async def test_extract_scope_key_points_without_citation():
         type="PEER",
         content="This is an example paper content.",
         scope=ScopeEnum.PEER,
-        topic=ScopeEnum.PEER,  # Required for backward compatibility
     )
 
     # Create a mock State with the source
@@ -317,11 +317,11 @@ async def test_extract_scope_key_points_without_citation():
         points=[
             KeyPoint(
                 content="This is key point 1",
-                topic=ScopeEnum.PEER,
+                scope=ScopeEnum.PEER,
             ),
             KeyPoint(
                 content="This is key point 2",
-                topic=ScopeEnum.PEER,
+                scope=ScopeEnum.PEER,
             ),
         ],
     )
@@ -404,7 +404,7 @@ async def test_extract_key_points_with_llm():
     )
 
     # Create a Source with citation
-    source = Source(
+    source = Source.model_construct(
         title="AI Safety Research Paper",
         url="https://example.com",
         date="2023",
@@ -417,7 +417,6 @@ async def test_extract_key_points_with_llm():
             "complex AI systems in real-world environments."
         ),
         scope=ScopeEnum.PEER,
-        topic=ScopeEnum.PEER,  # Required for backward compatibility
         citation=citation,
     )
 
