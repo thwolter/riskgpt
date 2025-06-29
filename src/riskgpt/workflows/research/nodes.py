@@ -6,7 +6,7 @@ from riskgpt.helpers.search import search
 from riskgpt.models.base import ResponseInfo
 from riskgpt.models.enums import TopicEnum
 from riskgpt.models.helpers.search import SearchResponse, Source
-from riskgpt.models.workflows.context import EnrichContextRequest, EnrichContextResponse
+from riskgpt.models.workflows.context import ResearchRequest, ResearchResponse
 
 from ...helpers.search.base import BaseSearchProvider
 from ...models.chains.keypoints import (
@@ -21,7 +21,7 @@ from .state import State
 
 async def topic_search(
     state: State,
-    request: EnrichContextRequest,
+    request: ResearchRequest,
     topic: TopicEnum,
     provider: Optional[BaseSearchProvider] = None,
 ) -> State:
@@ -89,7 +89,7 @@ def aggregate_response_info(state):
 
 # Create node factory functions
 def create_search_node(
-    request: EnrichContextRequest,
+    request: ResearchRequest,
     topic: TopicEnum,
     provider: Optional[BaseSearchProvider] = None,
 ):
@@ -149,7 +149,7 @@ async def summarize_key_points(state: State) -> State:
     return state
 
 
-async def aggregate(state: State, request: EnrichContextRequest) -> State:
+async def aggregate(state: State, request: ResearchRequest) -> State:
     sources: List[Source] = state.get("sources", [])
 
     if not sources:
@@ -160,7 +160,7 @@ async def aggregate(state: State, request: EnrichContextRequest) -> State:
         full_report = None
         recommendation = None
     else:
-        summary = f"Collected {len(sources)} external sources for {request.business_context.project_id}."
+        summary = f"Collected {len(sources)} external sources."
 
         kp_text_response = state.get("keypoint_text_response")
         full_report = kp_text_response.format_output() if kp_text_response else None
@@ -170,9 +170,9 @@ async def aggregate(state: State, request: EnrichContextRequest) -> State:
             f"Review source: {s.title} ({s.url})" for s in sorted_sources[:2]
         ]
 
-    response = EnrichContextResponse(
-        sector_summary=summary,
-        workshop_recommendations=recommendation if recommendation else [],
+    response = ResearchResponse(
+        summary=summary,
+        recommendations=recommendation if recommendation else [],
         full_report=full_report,
     )
     response.response_info = aggregate_response_info(state)

@@ -1,7 +1,7 @@
 from langgraph.graph import END, StateGraph
 
 from riskgpt.models.enums import TopicEnum
-from riskgpt.models.workflows.context import EnrichContextRequest
+from riskgpt.models.workflows.context import ResearchRequest
 
 from ...helpers.search.semantic_scholar import SemanticScholarSearchProvider
 from .nodes import (
@@ -14,7 +14,7 @@ from .nodes import (
 from .state import State
 
 
-def get_enrich_context_graph(request: EnrichContextRequest):
+def get_enrich_context_graph(request: ResearchRequest):
     """
     Returns the uncompiled graph for visualization purposes.
 
@@ -23,7 +23,7 @@ def get_enrich_context_graph(request: EnrichContextRequest):
     Example:
         ```python
         from IPython.display import Image, display
-        from src.workflows.enrich_context import get_enrich_context_graph
+        from src.workflows.research import get_enrich_context_graph
         from src.models.workflows.context import ExternalContextRequest
         from src.models.common import BusinessContext
 

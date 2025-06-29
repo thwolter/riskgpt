@@ -5,7 +5,7 @@ from langgraph.graph import add_messages
 from riskgpt.models.base import ResponseInfo
 from riskgpt.models.chains.keypoints import KeyPoint, KeyPointSummaryResponse
 from riskgpt.models.helpers.search import Source
-from riskgpt.models.workflows.context import EnrichContextResponse
+from riskgpt.models.workflows.context import ResearchResponse
 
 # Define reducer functions for lists
 T = TypeVar("T")
@@ -39,4 +39,4 @@ class State(TypedDict):
     response_info_list: Annotated[List[ResponseInfo], extend_list]
     search_failed: Annotated[bool, combine_bool_or]
     keypoint_text_response: KeyPointSummaryResponse
-    response: EnrichContextResponse
+    response: ResearchResponse

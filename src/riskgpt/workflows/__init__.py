@@ -1,3 +1,3 @@
-from .enrich_context import enrich_context
+from .research import research
 
-__all__ = ["enrich_context"]
+__all__ = ["research"]

@@ -121,8 +121,8 @@ Basic usage example:
 ```python
 from riskgpt.logger import configure_logging
 from riskgpt.models.common import BusinessContext
-from riskgpt.workflows import enrich_context
-from riskgpt.models.workflows import EnrichContextRequest
+from riskgpt.workflows import research
+from riskgpt.models.workflows import ResearchRequest
 
 # Configure logging
 configure_logging()
@@ -134,7 +134,7 @@ context = BusinessContext(
 )
 
 # Create a risk request
-request = EnrichContextRequest(
+request = ResearchRequest(
     business_context=context,
     focus_keywords=['cybersecurity'],
     time_horizon_months=12
@@ -142,7 +142,8 @@ request = EnrichContextRequest(
 
 # Run the risk workflow (async function)
 import asyncio
-result = asyncio.run(enrich_context(request))
+
+result = asyncio.run(research(request))
 ```
 
 ### Google Colab Usage

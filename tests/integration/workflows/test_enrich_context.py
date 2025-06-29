@@ -11,21 +11,22 @@ from riskgpt.models.common import BusinessContext
 from riskgpt.models.enums import TopicEnum
 from riskgpt.models.helpers.search import SearchResponse, SearchResult
 from riskgpt.models.workflows.context import (
-    EnrichContextRequest,
-    EnrichContextResponse,
+    ResearchRequest,
+    ResearchResponse,
 )
-from riskgpt.workflows.enrich_context import enrich_context
+from riskgpt.workflows.research import research
 
 
 @pytest.fixture
 def test_request():
     """Fixture to create a sample ExternalContextRequest."""
-    return EnrichContextRequest(
-        business_context=BusinessContext(
-            project_id="AI-Driven Risk Management",
-            project_description="A project focused on leveraging AI for risk registration and management.",
-            domain_knowledge="artificial intelligence and risk assessment",
-        ),
+    business_context = BusinessContext(
+        project_id="AI-Driven Risk Management",
+        project_description="A project focused on leveraging AI for risk registration and management.",
+        domain_knowledge="artificial intelligence and risk assessment",
+    )
+    return ResearchRequest.from_business_context(
+        business_context=business_context,
         focus_keywords=["ethic"],
         max_search_results=2,
         region="de-DE",
@@ -150,12 +151,12 @@ def keypoint_text_resp():
 
 @pytest.fixture
 def mock_extract_key_points(mock_key_points):
-    """Fixture to patch extract_key_points function used by enrich_context."""
+    """Fixture to patch extract_key_points function used by research."""
 
     async def mock_extract_key_points_func(*args, **kwargs):
         return mock_key_points
 
-    # Patch at the location where enrich_context imports/calls it
+    # Patch at the location where research imports/calls it
     with patch(
         "riskgpt.chains.extract_keypoints.extract_key_points_chain",
         side_effect=mock_extract_key_points_func,
@@ -190,8 +191,8 @@ async def test_enrich_context_tavily(
 ) -> None:
     monkeypatch.setattr("riskgpt.helpers.search.settings.SEARCH_PROVIDER", "tavily")
     monkeypatch.setattr("riskgpt.helpers.search.settings.INCLUDE_WIKIPEDIA", False)
-    response: EnrichContextResponse = await enrich_context(test_request)
-    assert response.sector_summary
+    response: ResearchResponse = await research(test_request)
+    assert response.summary
 
 
 @pytest.mark.integration
@@ -206,8 +207,8 @@ async def test_enrich_context_duckduckgo(
 ) -> None:
     monkeypatch.setattr("riskgpt.helpers.search.settings.SEARCH_PROVIDER", "duckduckgo")
     monkeypatch.setattr("riskgpt.helpers.search.settings.INCLUDE_WIKIPEDIA", False)
-    response: EnrichContextResponse = await enrich_context(test_request)
-    assert response.sector_summary
+    response: ResearchResponse = await research(test_request)
+    assert response.summary
 
 
 @pytest.mark.integration
@@ -222,8 +223,8 @@ async def test_enrich_context_google(
 ) -> None:
     monkeypatch.setattr("riskgpt.helpers.search.settings.SEARCH_PROVIDER", "google")
     monkeypatch.setattr("riskgpt.helpers.search.settings.INCLUDE_WIKIPEDIA", False)
-    response: EnrichContextResponse = await enrich_context(test_request)
-    assert response.sector_summary
+    response: ResearchResponse = await research(test_request)
+    assert response.summary
 
 
 @pytest.mark.integration
@@ -238,8 +239,8 @@ async def test_enrich_context_duckduckgo_and_wikipedia(
 ) -> None:
     monkeypatch.setattr("riskgpt.helpers.search.settings.SEARCH_PROVIDER", "duckduckgo")
     monkeypatch.setattr("riskgpt.helpers.search.settings.INCLUDE_WIKIPEDIA", True)
-    response: EnrichContextResponse = await enrich_context(test_request)
-    assert response.sector_summary
+    response: ResearchResponse = await research(test_request)
+    assert response.summary
 
 
 @pytest.mark.integration
@@ -251,14 +252,15 @@ async def test_enrich_context_with_context_aware_wiki_enabled_knowledge_query(
     mock_extract_key_points,
     mock_keypoints_summary_chain,
 ) -> None:
-    """Test enrich_context with context-aware wiki enabled and a knowledge query."""
+    """Test research with context-aware wiki enabled and a knowledge query."""
     # Create a request with a knowledge query that should include Wikipedia
-    knowledge_request = EnrichContextRequest(
-        business_context=BusinessContext(
-            project_id="AI-Driven Risk Management",
-            project_description="A project focused on leveraging AI for risk registration and management.",
-            domain_knowledge="artificial intelligence and risk assessment",
-        ),
+    business_context = BusinessContext(
+        project_id="AI-Driven Risk Management",
+        project_description="A project focused on leveraging AI for risk registration and management.",
+        domain_knowledge="artificial intelligence and risk assessment",
+    )
+    knowledge_request = ResearchRequest.from_business_context(
+        business_context=business_context,
         focus_keywords=[
             "what is artificial intelligence",
             "definition of risk management",
@@ -271,8 +273,8 @@ async def test_enrich_context_with_context_aware_wiki_enabled_knowledge_query(
     monkeypatch.setattr("riskgpt.helpers.search.settings.INCLUDE_WIKIPEDIA", True)
     monkeypatch.setattr("riskgpt.helpers.search.settings.WIKIPEDIA_CONTEXT_AWARE", True)
 
-    response: EnrichContextResponse = await enrich_context(knowledge_request)
-    assert response.sector_summary
+    response: ResearchResponse = await research(knowledge_request)
+    assert response.summary
 
 
 @pytest.mark.integration
@@ -284,14 +286,15 @@ async def test_enrich_context_with_context_aware_wiki_enabled_news_query(
     mock_extract_key_points,
     mock_keypoints_summary_chain,
 ) -> None:
-    """Test enrich_context with context-aware wiki enabled and a news query."""
+    """Test research with context-aware wiki enabled and a news query."""
     # Create a request with a news query that should not include Wikipedia
-    news_request = EnrichContextRequest(
-        business_context=BusinessContext(
-            project_id="AI-Driven Risk Management",
-            project_description="A project focused on leveraging AI for risk registration and management.",
-            domain_knowledge="artificial intelligence and risk assessment",
-        ),
+    business_context = BusinessContext(
+        project_id="AI-Driven Risk Management",
+        project_description="A project focused on leveraging AI for risk registration and management.",
+        domain_knowledge="artificial intelligence and risk assessment",
+    )
+    news_request = ResearchRequest.from_business_context(
+        business_context=business_context,
         focus_keywords=["latest AI developments", "breaking news in risk management"],
         max_search_results=2,
         region="en-US",
@@ -301,8 +304,8 @@ async def test_enrich_context_with_context_aware_wiki_enabled_news_query(
     monkeypatch.setattr("riskgpt.helpers.search.settings.INCLUDE_WIKIPEDIA", True)
     monkeypatch.setattr("riskgpt.helpers.search.settings.WIKIPEDIA_CONTEXT_AWARE", True)
 
-    response: EnrichContextResponse = await enrich_context(news_request)
-    assert response.sector_summary
+    response: ResearchResponse = await research(news_request)
+    assert response.summary
 
 
 @pytest.mark.integration
@@ -314,15 +317,16 @@ async def test_enrich_context_with_context_aware_wiki_disabled(
     mock_extract_key_points,
     mock_keypoints_summary_chain,
 ) -> None:
-    """Test enrich_context with context-aware wiki disabled."""
+    """Test research with context-aware wiki disabled."""
     # Create a request with a news query, but Wikipedia should be included anyway
     # because context-aware wiki is disabled
-    news_request = EnrichContextRequest(
-        business_context=BusinessContext(
-            project_id="AI-Driven Risk Management",
-            project_description="A project focused on leveraging AI for risk registration and management.",
-            domain_knowledge="artificial intelligence and risk assessment",
-        ),
+    business_context = BusinessContext(
+        project_id="AI-Driven Risk Management",
+        project_description="A project focused on leveraging AI for risk registration and management.",
+        domain_knowledge="artificial intelligence and risk assessment",
+    )
+    news_request = ResearchRequest.from_business_context(
+        business_context=business_context,
         focus_keywords=["latest AI developments", "breaking news in risk management"],
         max_search_results=2,
         region="en-US",
@@ -334,8 +338,8 @@ async def test_enrich_context_with_context_aware_wiki_disabled(
         "riskgpt.helpers.search.settings.WIKIPEDIA_CONTEXT_AWARE", False
     )
 
-    response: EnrichContextResponse = await enrich_context(news_request)
-    assert response.sector_summary
+    response: ResearchResponse = await research(news_request)
+    assert response.summary
 
 
 # todo: Check this test: It should mock and not call the LLM
@@ -348,12 +352,12 @@ async def test_enrich_context_with_mock(
     mock_extract_key_points,
     mock_keypoints_summary_chain,
 ) -> None:
-    """Test enrich_context with mocked search results and key points extraction."""
+    """Test research with mocked search results and key points extraction."""
 
-    response = await enrich_context(test_request)
+    response = await research(test_request)
 
     # Verify the results
-    assert len(response.sector_summary) > 0
+    assert len(response.summary) > 0
 
 
 @pytest.mark.integration
@@ -365,14 +369,15 @@ async def test_enrich_context_with_context_aware_wiki_enabled_knowledge_query_mo
     mock_extract_key_points,
     mock_keypoints_summary_chain,
 ) -> None:
-    """Test enrich_context with context-aware wiki enabled and a knowledge query using mocks."""
+    """Test research with context-aware wiki enabled and a knowledge query using mocks."""
     # Create a request with a knowledge query that should include Wikipedia
-    knowledge_request = EnrichContextRequest(
-        business_context=BusinessContext(
-            project_id="AI-Driven Risk Management",
-            project_description="A project focused on leveraging AI for risk registration and management.",
-            domain_knowledge="artificial intelligence and risk assessment",
-        ),
+    business_context = BusinessContext(
+        project_id="AI-Driven Risk Management",
+        project_description="A project focused on leveraging AI for risk registration and management.",
+        domain_knowledge="artificial intelligence and risk assessment",
+    )
+    knowledge_request = ResearchRequest.from_business_context(
+        business_context=business_context,
         focus_keywords=[
             "what is artificial intelligence",
             "definition of risk management",
@@ -389,10 +394,10 @@ async def test_enrich_context_with_context_aware_wiki_enabled_knowledge_query_mo
     with patch(
         "riskgpt.helpers.search._should_include_wikipedia", return_value=True
     ) as mock_should_include:
-        response = await enrich_context(knowledge_request)
+        response = await research(knowledge_request)
 
         # Verify the results
-        assert len(response.sector_summary) > 0
+        assert len(response.summary) > 0
         # Verify that _should_include_wikipedia was called
         mock_should_include.assert_called()
 
@@ -406,14 +411,15 @@ async def test_enrich_context_with_context_aware_wiki_enabled_news_query_mock(
     mock_extract_key_points,
     mock_keypoints_summary_chain,
 ) -> None:
-    """Test enrich_context with context-aware wiki enabled and a news query using mocks."""
+    """Test research with context-aware wiki enabled and a news query using mocks."""
     # Create a request with a news query that should not include Wikipedia
-    news_request = EnrichContextRequest(
-        business_context=BusinessContext(
-            project_id="AI-Driven Risk Management",
-            project_description="A project focused on leveraging AI for risk registration and management.",
-            domain_knowledge="artificial intelligence and risk assessment",
-        ),
+    business_context = BusinessContext(
+        project_id="AI-Driven Risk Management",
+        project_description="A project focused on leveraging AI for risk registration and management.",
+        domain_knowledge="artificial intelligence and risk assessment",
+    )
+    news_request = ResearchRequest.from_business_context(
+        business_context=business_context,
         focus_keywords=["latest AI developments", "breaking news in risk management"],
         max_search_results=2,
         region="en-US",
@@ -427,10 +433,10 @@ async def test_enrich_context_with_context_aware_wiki_enabled_news_query_mock(
     with patch(
         "riskgpt.helpers.search._should_include_wikipedia", return_value=False
     ) as mock_should_include:
-        response = await enrich_context(news_request)
+        response = await research(news_request)
 
         # Verify the results
-        assert len(response.sector_summary) > 0
+        assert len(response.summary) > 0
         # Verify that _should_include_wikipedia was called
         mock_should_include.assert_called()
 
@@ -444,15 +450,16 @@ async def test_enrich_context_with_context_aware_wiki_disabled_mock(
     mock_extract_key_points,
     mock_keypoints_summary_chain,
 ) -> None:
-    """Test enrich_context with context-aware wiki disabled using mocks."""
+    """Test research with context-aware wiki disabled using mocks."""
     # Create a request with a news query, but Wikipedia should be included anyway
     # because context-aware wiki is disabled
-    news_request = EnrichContextRequest(
-        business_context=BusinessContext(
-            project_id="AI-Driven Risk Management",
-            project_description="A project focused on leveraging AI for risk registration and management.",
-            domain_knowledge="artificial intelligence and risk assessment",
-        ),
+    business_context = BusinessContext(
+        project_id="AI-Driven Risk Management",
+        project_description="A project focused on leveraging AI for risk registration and management.",
+        domain_knowledge="artificial intelligence and risk assessment",
+    )
+    news_request = ResearchRequest.from_business_context(
+        business_context=business_context,
         focus_keywords=["latest AI developments", "breaking news in risk management"],
         max_search_results=2,
         region="en-US",
@@ -468,9 +475,9 @@ async def test_enrich_context_with_context_aware_wiki_disabled_mock(
     with patch(
         "riskgpt.helpers.search._should_include_wikipedia"
     ) as mock_should_include:
-        response = await enrich_context(news_request)
+        response = await research(news_request)
 
         # Verify the results
-        assert len(response.sector_summary) > 0
+        assert len(response.summary) > 0
         # Verify that _should_include_wikipedia was NOT called when context-aware is disabled
         mock_should_include.assert_not_called()

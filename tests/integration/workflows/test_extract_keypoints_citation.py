@@ -6,8 +6,8 @@ from riskgpt.models.chains.keypoints import ExtractKeyPointsResponse, KeyPoint
 from riskgpt.models.enums import TopicEnum
 from riskgpt.models.helpers.citation import Citation
 from riskgpt.models.helpers.search import Source
-from riskgpt.workflows.enrich_context.nodes import extract_topic_key_points
-from riskgpt.workflows.enrich_context.state import State
+from riskgpt.workflows.research.nodes import extract_topic_key_points
+from riskgpt.workflows.research.state import State
 
 
 @pytest.mark.asyncio
@@ -51,7 +51,7 @@ async def test_extract_topic_key_points_with_citation():
 
     # Mock the extract_key_points_chain function
     with patch(
-        "riskgpt.workflows.enrich_context.nodes.extract_key_points_chain",
+        "riskgpt.workflows.research.nodes.extract_key_points_chain",
         AsyncMock(return_value=mock_response),
     ):
         # Call the extract_topic_key_points function
@@ -102,7 +102,7 @@ async def test_extract_topic_key_points_without_citation():
 
     # Mock the extract_key_points_chain function
     with patch(
-        "riskgpt.workflows.enrich_context.nodes.extract_key_points_chain",
+        "riskgpt.workflows.research.nodes.extract_key_points_chain",
         AsyncMock(return_value=mock_response),
     ):
         # Call the extract_topic_key_points function

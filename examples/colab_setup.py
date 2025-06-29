@@ -100,7 +100,7 @@ from riskgpt.models.chains.questions import ChallengeQuestionsRequest, Challenge
 from riskgpt.chains.challenge_questions import challenge_questions_chain
 from riskgpt.chains.challenge_risk import challenge_risk_chain
 from riskgpt.models.workflows.context import EnrichContextRequest
-from riskgpt.workflows.enrich_context import enrich_context
+from riskgpt.workflows.research import research
 
 # Configure logging
 configure_logging()
@@ -157,7 +157,7 @@ async def run_enrich_context():
         focus_keywords=["cloud migration", "financial services", "data security"],
         time_horizon_months=12
     )
-    response = await enrich_context(enrich_request)
+    response = await research(enrich_request)
     print("Sector Summary:")
     print(response.sector_summary)
     print("\\nWorkshop Recommendations:")

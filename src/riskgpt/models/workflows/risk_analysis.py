@@ -2,31 +2,35 @@ from typing import List, Optional
 
 from pydantic import Field
 
-from riskgpt.models.base import BaseResponse
+from riskgpt.models.base import BaseRequest, BaseResponse
 from riskgpt.models.chains.risk import Risk
 from riskgpt.models.enums import TopicEnum
 from riskgpt.models.helpers import SearchRequest
-from riskgpt.models.workflows.context import EnrichContextRequest
+from riskgpt.models.workflows.context import ResearchRequest
 
 
-class RiskAnalysisRequest(EnrichContextRequest):
-    """Input model for risk analysis that extends EnrichContextRequest."""
+class RiskAnalysisRequest(BaseRequest):
+    """Input model for risk analysis."""
 
+    research_request: ResearchRequest
     risk: Risk = Field(description="The risk to analyze")
 
-    def create_search_query(self) -> str:
-        """Create a search query focused on the risk."""
-        keywords = " ".join(self.focus_keywords) if self.focus_keywords else ""
-        return f"{self.risk.title} {self.risk.description} {keywords}".strip()
+    @classmethod
+    def from_risk(
+        cls, risk: Risk, focus_keywords: Optional[List[str]] = None, **kwargs
+    ) -> "RiskAnalysisRequest":
+        """Create a RiskAnalysisRequest from a Risk."""
+        research_request = ResearchRequest.from_risk(
+            risk=risk, focus_keywords=focus_keywords, **kwargs
+        )
+        return cls(
+            research_request=research_request,
+            risk=risk,
+        )
 
     def create_search_request(self, topic: TopicEnum) -> SearchRequest:
-        """Create a search request dictionary for the specified topic."""
-        return SearchRequest(
-            query=self.create_search_query(),
-            source_type=topic,
-            max_results=self.max_search_results,
-            region=self.region,
-        )
+        """Create a search request for the specified topic."""
+        return self.research_request.create_search_request(topic)
 
 
 class RiskAnalysisResponse(BaseResponse):

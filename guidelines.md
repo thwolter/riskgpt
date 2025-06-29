@@ -6,7 +6,7 @@ Junie is an AI assistant designed to help you navigate, understand, and develop 
 
 ## Quick Start
 1. Ask Junie about specific parts of the codebase: "How does the circuit breaker pattern work in RiskGPT?"
-2. Get help with implementing new features: "How would I add a new search provider to the enrich_context workflow?"
+2. Get help with implementing new features: "How would I add a new search provider to the research workflow?"
 3. Debug issues: "Why might my chain be failing when processing this input?"
 4. Understand project structure: "Explain how the workflows are organized in RiskGPT"
 

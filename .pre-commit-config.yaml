@@ -13,6 +13,5 @@ repos:
     hooks:
       - id: mypy
         language: system
-        entry: poetry run mypy
+        entry: mypy
         stages: [pre-commit, pre-push]  # Lint bei commit UND push (alternativ nur "push")
-

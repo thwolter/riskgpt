@@ -21,8 +21,8 @@ from riskgpt.models.chains.questions import ChallengeQuestionsRequest
 from riskgpt.models.chains.risk import Risk, RisksIdentificationRequest
 from riskgpt.models.common import BusinessContext
 from riskgpt.models.enums import AudienceEnum
-from riskgpt.models.workflows.context import EnrichContextRequest
-from riskgpt.workflows.enrich_context import enrich_context
+from riskgpt.models.workflows.context import ResearchRequest
+from riskgpt.workflows.research import research
 from riskgpt.workflows.risk_workflow import risk_workflow
 
 load_dotenv()
@@ -150,7 +150,7 @@ async def run_challenge_questions(context):
 
 
 async def run_enrich_context(context):
-    """Run the enrich_context workflow."""
+    """Run the research workflow."""
     # Default values
     focus_keywords = ["cloud migration", "financial services", "data security"]
     time_horizon_months = 12
@@ -161,8 +161,8 @@ async def run_enrich_context(context):
             with open(CONFIG_FILE, "r", encoding="utf-8") as f:
                 config = yaml.safe_load(f)
 
-            if "enrich_context" in config:
-                ec_config = config["enrich_context"]
+            if "research" in config:
+                ec_config = config["research"]
                 if "focus_keywords" in ec_config:
                     focus_keywords = ec_config["focus_keywords"]
                 if "time_horizon_months" in ec_config:
@@ -172,18 +172,18 @@ async def run_enrich_context(context):
             print("Falling back to default enrich context config")
 
     # Create a request
-    enrich_request = EnrichContextRequest(
+    enrich_request = ResearchRequest.from_business_context(
         business_context=context,
         focus_keywords=focus_keywords,
         time_horizon_months=time_horizon_months,
     )
 
     # Run the workflow
-    response = await enrich_context(enrich_request)
+    response = await research(enrich_request)
     print("Sector Summary:")
-    print(response.sector_summary)
+    print(response.summary)
     print("\nWorkshop Recommendations:")
-    for i, rec in enumerate(response.workshop_recommendations, 1):
+    for i, rec in enumerate(response.recommendations, 1):
         print(f"{i}. {rec}")
     if response.full_report:
         print("\nFull Report:")

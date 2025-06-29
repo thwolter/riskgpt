@@ -136,7 +136,7 @@ These models are used in the external_context_enrichment workflow to collect and
 
 ```python
 from src import BusinessContext, ExternalContextRequest
-from src import enrich_context
+from src import research
 
 # Create a request
 request = ExternalContextRequest(
@@ -153,7 +153,7 @@ request = ExternalContextRequest(
 response = external_context_enrichment(request)
 
 # Access the results
-print(f"Sector Summary: {response.sector_summary}")
+print(f"Sector Summary: {response.summary}")
 
 print("\nExternal Risks:")
 for risk in response.external_risks:
@@ -170,7 +170,7 @@ for source in response.source_table:
         print(f"  Comment: {source['comment']}")
 
 print("\nWorkshop Recommendations:")
-for recommendation in response.workshop_recommendations:
+for recommendation in response.recommendations:
     print(f"- {recommendation}")
 ```
 
@@ -198,7 +198,7 @@ The external context information can be used to enhance the risk workflow:
 
 ```python
 from src import BusinessContext, ExternalContextRequest, RiskRequest
-from src import enrich_context, risk_workflow
+from src import research, risk_workflow
 
 # First, get external context
 context_request = ExternalContextRequest(
@@ -211,7 +211,7 @@ context_request = ExternalContextRequest(
 context_response = external_context_enrichment(context_request)
 
 # Extract key insights from external context
-external_insights = context_response.sector_summary
+external_insights = context_response.summary
 if context_response.external_risks:
     external_insights += "\n\nExternal risks:\n" + "\n".join(context_response.external_risks)
 

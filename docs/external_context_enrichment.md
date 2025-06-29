@@ -1,6 +1,6 @@
 # External Context Enrichment
 
-The `enrich_context` workflow collects recent external information about a project or sector and provides a short summary for workshop preparation.
+The `research` workflow collects recent external information about a project or sector and provides a short summary for workshop preparation.
 
 **Note**: The workflow relies on live searches using the configured search provider (DuckDuckGo, Google Custom Search API, or Wikipedia). If network access is
 restricted or the required API keys are missing, the search steps will fail and the response may be empty.
@@ -17,7 +17,7 @@ The search provider can be configured using environment variables:
 
 ## Input
 
-`EnrichContextRequest`
+`ResearchRequest`
 - `business_context` (`BusinessContext`): object containing:
   - `project_id` (`str`): unique identifier for the project.
   - `project_description` (`str`, optional): detailed description of the project.
@@ -32,7 +32,7 @@ The search provider can be configured using environment variables:
 
 ## Output
 
-`EnrichContextResponse`
+`ResearchResponse`
 - `sector_summary` (`str`): short overview of relevant developments.
 - `workshop_recommendations` (`List[str]`): suggestions for the workshop.
 - `full_report` (`str | None`, optional): optional long-form text.
@@ -41,25 +41,25 @@ The search provider can be configured using environment variables:
 ## Example
 
 ```python
-from riskgpt.workflows import enrich_context
-from riskgpt.models.workflows import EnrichContextRequest, EnrichContextResponse
+from riskgpt.workflows import research
+from riskgpt.models.workflows import ResearchRequest, ResearchResponse
 from riskgpt.models.common import BusinessContext
 
-request = EnrichContextRequest(
-    business_context=BusinessContext(
-        project_id="FiberOpticProject2023",
-        project_description="Fiber optic infrastructure deployment for high-speed internet in rural areas",
-        domain_knowledge="We have capabilities in telecommunications and network infrastructure.",
-    ),
-    focus_keywords=["ethics, sustainability, regulatory compliance"],
+request = ResearchRequest(
+  business_context=BusinessContext(
+    project_id="FiberOpticProject2023",
+    project_description="Fiber optic infrastructure deployment for high-speed internet in rural areas",
+    domain_knowledge="We have capabilities in telecommunications and network infrastructure.",
+  ),
+  focus_keywords=["ethics, sustainability, regulatory compliance"],
 )
 
-result: EnrichContextResponse = await enrich_context(request)
+result: ResearchResponse = await research(request)
 print("Sector Summary:")
-print(result.sector_summary)
+print(result.summary)
 print("\nFull Report Risks:")
 print(result.full_report)
 print("\nWorkshop Recommendations:")
-for i, rec in enumerate(result.workshop_recommendations, 1):
-    print(f"{i}. {rec}")
+for i, rec in enumerate(result.recommendations, 1):
+  print(f"{i}. {rec}")
 ```

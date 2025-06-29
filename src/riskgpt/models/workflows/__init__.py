@@ -1,9 +1,9 @@
 from .context import (
-    EnrichContextRequest,
-    EnrichContextResponse,
+    ResearchRequest,
+    ResearchResponse,
 )
 
 __all__ = [
-    "EnrichContextRequest",
-    "EnrichContextResponse",
+    "ResearchRequest",
+    "ResearchResponse",
 ]
