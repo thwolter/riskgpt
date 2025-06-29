@@ -37,7 +37,10 @@ class KeyPoint(BaseModel):
 class ExtractKeyPointsRequest(BaseModel):
     """Input model for extracting key points from a source."""
 
-    scope: str = Field(description="Type of the source, e.g., NEWS, RESEARCH, etc.")
+    scope: ScopeEnum = Field(
+        default=ScopeEnum.NEWS,
+        description="Type of source to extract key points from, e.g., NEWS, RESEARCH, etc.",
+    )
     content: str
     focus_keywords: Optional[List[str]] = []
     source_url: Optional[str] = None
@@ -49,7 +52,7 @@ class ExtractKeyPointsRequest(BaseModel):
     ) -> "ExtractKeyPointsRequest":
         """Create an ExtractKeyPointsRequest from a Source object."""
         return ExtractKeyPointsRequest(
-            scope=source.type,
+            scope=source.scope,
             content=f"Title: {source.title}\n\nContent: {source.content}",
             focus_keywords=focus_keywords or [],
             source_url=source.url,

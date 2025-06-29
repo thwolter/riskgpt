@@ -90,7 +90,7 @@ async def test_extract_key_points_news(monkeypatch, caplog):
     with patch("riskgpt.chains.extract_keypoints.BaseChain", return_value=mock_chain):
         # Create a test request
         request = ExtractKeyPointsRequest(
-            scope="NEWS",
+            scope=ScopeEnum.NEWS,
             content="Title: Test News Article\n\nContent: This is a test news article about technology and finance.",
         )
 
@@ -109,7 +109,7 @@ async def test_extract_key_points_news(monkeypatch, caplog):
         # Verify that the chain was invoked with the correct inputs
         mock_chain.invoke.assert_called_once()
         call_args = mock_chain.invoke.call_args[0][0]
-        assert call_args["scope"] == "NEWS"
+        assert call_args["scope"] == "news"
         assert "content" in call_args
 
 
@@ -149,7 +149,7 @@ async def test_extract_key_points_research(monkeypatch, caplog):
     with patch("riskgpt.chains.extract_keypoints.BaseChain", return_value=mock_chain):
         # Create a test request
         request = ExtractKeyPointsRequest(
-            scope="RESEARCH",
+            scope=ScopeEnum.ACADEMIC,
             content="Title: Research Paper\n\nContent: This is a test research paper with important findings.",
         )
 
@@ -168,7 +168,7 @@ async def test_extract_key_points_research(monkeypatch, caplog):
         # Verify that the chain was invoked with the correct inputs
         mock_chain.invoke.assert_called_once()
         call_args = mock_chain.invoke.call_args[0][0]
-        assert call_args["scope"] == "RESEARCH"
+        assert call_args["scope"] == "academic"
         assert "content" in call_args
 
 
@@ -203,7 +203,7 @@ async def test_extract_key_points_from_source(monkeypatch, caplog):
     with patch("riskgpt.chains.extract_keypoints.BaseChain", return_value=mock_chain):
         # Create a mock Source object
         mock_source = MagicMock()
-        mock_source.type = "NEWS"
+        mock_source.scope = "news"
         mock_source.title = "Source Title"
         mock_source.content = "Source Content"
         mock_source.url = "https://example.com/source1"
@@ -225,7 +225,7 @@ async def test_extract_key_points_from_source(monkeypatch, caplog):
         # Verify that the chain was invoked with the correct inputs
         mock_chain.invoke.assert_called_once()
         call_args = mock_chain.invoke.call_args[0][0]
-        assert call_args["scope"] == "NEWS"
+        assert call_args["scope"] == "news"
         assert "content" in call_args
         assert "Title: Source Title" in call_args["content"]
         assert "Content: Source Content" in call_args["content"]
@@ -356,7 +356,7 @@ async def test_extract_key_points_integration():
     """Integration test for extract_key_points with a real LLM call."""
     # Create a test request with sample content
     request = ExtractKeyPointsRequest(
-        scope="NEWS",
+        scope=ScopeEnum.NEWS,
         content=(
             "Title: AI Advances in Risk Management\n\n"
             "Content: Recent developments in artificial intelligence have shown promising "
@@ -404,11 +404,10 @@ async def test_extract_key_points_with_llm():
     )
 
     # Create a Source with citation
-    source = Source.model_construct(
+    source = Source(
         title="AI Safety Research Paper",
         url="https://example.com",
         date="2023",
-        type="PEER",
         content=(
             "AI safety is a critical concern as artificial intelligence systems become more powerful. "
             "Researchers have identified several key risks including alignment problems, "
@@ -416,7 +415,7 @@ async def test_extract_key_points_with_llm():
             "Another concern is the potential for unintended consequences when deploying "
             "complex AI systems in real-world environments."
         ),
-        scope=ScopeEnum.PEER,
+        scope=ScopeEnum.ACADEMIC,
         citation=citation,
     )
 
