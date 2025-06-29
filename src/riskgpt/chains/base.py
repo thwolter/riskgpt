@@ -16,7 +16,7 @@ from riskgpt.helpers.memory_factory import get_memory
 from riskgpt.helpers.misc import flatten_dict
 from riskgpt.helpers.prompt_loader import load_system_prompt
 from riskgpt.logger import logger
-from riskgpt.models.base import ResponseInfo
+from riskgpt.models.base import BaseResponse, ResponseInfo
 
 
 class BaseChain:
@@ -107,7 +107,7 @@ class BaseChain:
     @openai_breaker
     @with_fallback(_fallback_response)
     @traceable
-    async def invoke(self, inputs: Dict[str, Any]):
+    async def invoke(self, inputs: Dict[str, Any]) -> BaseResponse:
         """Invoke the underlying chain asynchronously."""
         with get_openai_callback() as cb:
             inputs = flatten_dict(inputs)
@@ -117,15 +117,7 @@ class BaseChain:
                 result = await self.chain.ainvoke(inputs, memory=self.memory)
                 result.response_info = await self.create_response_info(cb, result)
             except OutputParserException as e:
-                logger.error("Output parser error: %s", str(e))
-                # Create a fallback response
-                if hasattr(self.parser, "pydantic_object"):
-                    result = await self._fallback_response(inputs)
-                    result.response_info = await self.create_response_info(
-                        cb, result, error=f"Output parser error: {str(e)}"
-                    )
-                else:
-                    result = {"error": f"Output parser error: {str(e)}"}
+                result = await self.handle_parser_error(cb=cb, e=e, inputs=inputs)
 
             logger.info(
                 "Consumed %s tokens (%.4f USD) for '%s' using %s",
@@ -136,7 +128,35 @@ class BaseChain:
             )
         return result
 
-    async def create_response_info(self, cb, result, error=None):
+    async def handle_parser_error(self, cb, e, inputs) -> BaseResponse:
+        logger.error("Output parser error: %s", str(e))
+
+        # Make this configurable: error-hard for testing, fallback for prod
+        if self.settings.FAIL_ON_PARSER_ERROR:
+            raise OutputParserException(f"Output parser error: {str(e)}")
+
+        error_message = f"Output parser error: {str(e)}"
+
+        if hasattr(self.parser, "pydantic_object"):
+            result: BaseResponse = await self._fallback_response(inputs)
+            result.response_info = await self.create_response_info(
+                cb, result, error=error_message
+            )
+
+        else:
+            result = BaseResponse(
+                response_info=ResponseInfo(
+                    consumed_tokens=cb.total_tokens,
+                    total_cost=cb.total_cost,
+                    prompt_name=self.prompt_name,
+                    model_name=self.settings.OPENAI_MODEL_NAME,
+                    error=error_message,
+                ),
+            )
+
+        return result
+
+    async def create_response_info(self, cb, result, error=None) -> ResponseInfo:
         return ResponseInfo(
             consumed_tokens=cb.total_tokens,
             total_cost=cb.total_cost,

@@ -9,6 +9,7 @@ class RiskGPTSettings(BaseSettings):
         env_file="../.env", env_ignore_empty=True, extra="ignore"
     )
 
+    FAIL_ON_PARSER_ERROR: bool = False
     MEMORY_TYPE: Literal["none", "buffer", "redis"] = Field(default="buffer")
     REDIS_URL: Optional[str] = None
     OPENAI_API_KEY: Optional[SecretStr] = None

@@ -94,7 +94,12 @@ async def test_invoke_with_parser_exception(monkeypatch, caplog):
 
     # Use PydanticOutputParser instead of DummyParser
     parser = PydanticOutputParser(pydantic_object=CategoryResponse)
-    chain = BaseChain(prompt_template="hi", parser=parser)
+
+    # Test with FAIL_ON_PARSER_ERROR=False
+    from riskgpt.config.settings import RiskGPTSettings
+
+    settings_no_fail = RiskGPTSettings(FAIL_ON_PARSER_ERROR=False)
+    chain = BaseChain(prompt_template="hi", parser=parser, settings=settings_no_fail)
 
     async def fake_ainvoke_with_error(inputs, memory=None):
         raise OutputParserException("Failed to parse output", llm_output="Invalid JSON")
@@ -115,6 +120,7 @@ async def test_invoke_with_parser_exception(monkeypatch, caplog):
         "langchain_community.callbacks.get_openai_callback", lambda: DummyCB()
     )
 
+    # Test default behavior (FAIL_ON_PARSER_ERROR=False)
     result = await chain.invoke({})
 
     # Verify that the error was logged
@@ -128,3 +134,23 @@ async def test_invoke_with_parser_exception(monkeypatch, caplog):
     # Verify that the response_info contains the error
     assert result.response_info is not None
     assert "Output parser error" in result.response_info.error
+
+    # Reset caplog
+    caplog.clear()
+
+    # Test with FAIL_ON_PARSER_ERROR=True
+    from riskgpt.config.settings import RiskGPTSettings
+
+    settings = RiskGPTSettings(FAIL_ON_PARSER_ERROR=True)
+    chain_with_error = BaseChain(prompt_template="hi", parser=parser, settings=settings)
+
+    monkeypatch.setattr(
+        chain_with_error, "chain", SimpleNamespace(ainvoke=fake_ainvoke_with_error)
+    )
+
+    # The exception should be re-raised when FAIL_ON_PARSER_ERROR=True
+    with pytest.raises(OutputParserException) as excinfo:
+        await chain_with_error.invoke({})
+
+    # Verify that the exception contains the expected error message
+    assert "Output parser error" in str(excinfo.value)

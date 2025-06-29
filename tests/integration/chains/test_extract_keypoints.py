@@ -77,7 +77,7 @@ async def test_extract_key_points_news(monkeypatch, caplog):
         response_info=ResponseInfo(
             consumed_tokens=100,
             total_cost=0.002,
-            prompt_name="extract_NEWS_key_points",
+            prompt_name="extract_news_key_points",
             model_name="gpt-4",
         ),
     )
@@ -104,7 +104,7 @@ async def test_extract_key_points_news(monkeypatch, caplog):
         assert result.points[0].scope == ScopeEnum.NEWS
         assert result.points[1].content == "Key point 2 about finance"
         assert result.points[1].scope == ScopeEnum.NEWS
-        assert result.response_info.prompt_name == "extract_NEWS_key_points"
+        assert result.response_info.prompt_name == "extract_news_key_points"
 
         # Verify that the chain was invoked with the correct inputs
         mock_chain.invoke.assert_called_once()
@@ -136,7 +136,7 @@ async def test_extract_key_points_research(monkeypatch, caplog):
         response_info=ResponseInfo(
             consumed_tokens=120,
             total_cost=0.0024,
-            prompt_name="extract_RESEARCH_key_points",
+            prompt_name="extract_research_key_points",
             model_name="gpt-4",
         ),
     )
@@ -163,7 +163,7 @@ async def test_extract_key_points_research(monkeypatch, caplog):
         assert result.points[0].scope == ScopeEnum.PEER
         assert result.points[1].content == "Research finding 2"
         assert result.points[1].scope == ScopeEnum.PEER
-        assert result.response_info.prompt_name == "extract_RESEARCH_key_points"
+        assert result.response_info.prompt_name == "extract_research_key_points"
 
         # Verify that the chain was invoked with the correct inputs
         mock_chain.invoke.assert_called_once()
@@ -190,7 +190,7 @@ async def test_extract_key_points_from_source(monkeypatch, caplog):
         response_info=ResponseInfo(
             consumed_tokens=80,
             total_cost=0.0016,
-            prompt_name="extract_NEWS_key_points",
+            prompt_name="extract_news_key_points",
             model_name="gpt-4",
         ),
     )
@@ -220,7 +220,7 @@ async def test_extract_key_points_from_source(monkeypatch, caplog):
         assert len(result.points) == 1
         assert result.points[0].content == "Source key point 1"
         assert result.points[0].scope == ScopeEnum.NEWS
-        assert result.response_info.prompt_name == "extract_NEWS_key_points"
+        assert result.response_info.prompt_name == "extract_news_key_points"
 
         # Verify that the chain was invoked with the correct inputs
         mock_chain.invoke.assert_called_once()
@@ -387,7 +387,7 @@ async def test_extract_key_points_integration():
     # Verify response info
     assert result.response_info is not None
     assert result.response_info.consumed_tokens > 0
-    assert result.response_info.prompt_name == "extract_NEWS_key_points"
+    assert result.response_info.prompt_name == "extract_news_key_points"
 
 
 @pytest.mark.integration
@@ -437,7 +437,7 @@ async def test_extract_key_points_with_llm():
     # Verify the content of the key points
     for point in response.points:
         assert point.content
-        assert point.scope == ScopeEnum.PEER
+        assert point.scope == ScopeEnum.ACADEMIC
 
         # Verify that each key point has the source URL and citation
         assert point.source_url == "https://example.com"

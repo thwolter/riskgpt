@@ -176,17 +176,17 @@ def mock_key_points():
         points=[
             KeyPoint(
                 content="Years of extreme volatility, caused by pandemic shocks, trade wars, and climate-driven disruptions, have exposed the complexity of the world’s logistics networks.",
-                topic=ScopeEnum.NEWS,
+                scope=ScopeEnum.NEWS,
                 source_url="https://www.maritime-executive.com/article/two-new-chapters-in-supply-chain-data-driven-intelligence",
             ),
             KeyPoint(
                 content="Thanks to the increasing availability of multi-source data and rapid advancements in AI technologies, organizations now have unprecedented opportunities to unravel the complexities of supply chain operations.",
-                topic=ScopeEnum.NEWS,
+                scope=ScopeEnum.NEWS,
                 source_url="https://www.maritime-executive.com/article/two-new-chapters-in-supply-chain-data-driven-intelligence",
             ),
             KeyPoint(
                 content="Organizations can drive both cost efficiencies and significant reductions in emissions by harnessing collective intelligence.",
-                topic=ScopeEnum.NEWS,
+                scope=ScopeEnum.NEWS,
                 source_url="https://www.maritime-executive.com/article/two-new-chapters-in-supply-chain-data-driven-intelligence",
             ),
         ],
