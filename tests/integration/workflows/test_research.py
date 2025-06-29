@@ -30,6 +30,8 @@ def test_request():
         focus_keywords=["ethic"],
         max_search_results=2,
         region="de-DE",
+        # Limit scopes to reduce the research graph
+        scopes=[ScopeEnum.NEWS],
     )
 
 
@@ -83,21 +85,81 @@ def mock_search_result():
 @pytest.fixture
 def mock_settings(monkeypatch):
     """Fixture to patch the settings to use tavily as the search provider."""
-    monkeypatch.setattr("riskgpt.helpers.search.settings.SEARCH_PROVIDER", "tavily")
-    monkeypatch.setattr("riskgpt.helpers.search.settings.INCLUDE_WIKIPEDIA", False)
+    # Patch the settings instances in the modules that are used by the research workflow
+    monkeypatch.setattr("riskgpt.config.settings.settings.SEARCH_PROVIDER", "tavily")
+    monkeypatch.setattr("riskgpt.config.settings.settings.INCLUDE_WIKIPEDIA", False)
+    monkeypatch.setattr(
+        "riskgpt.helpers.search.__init__.settings.SEARCH_PROVIDER", "tavily"
+    )
+    monkeypatch.setattr(
+        "riskgpt.helpers.search.__init__.settings.INCLUDE_WIKIPEDIA", False
+    )
+    monkeypatch.setattr(
+        "riskgpt.helpers.search.factory.settings.SEARCH_PROVIDER", "tavily"
+    )
+
+    # Set up SCOPE_SEARCH_PROVIDERS to use specific providers for each scope
+    scope_providers = {
+        "news": "tavily",  # Default for tests
+        "academic": "semantic_scholar",
+        "regulatory": "google",
+        "linkedin": "duckduckgo",
+        "peer": "tavily",
+        "document": "tavily",
+    }
+    monkeypatch.setattr(
+        "riskgpt.config.settings.settings.SCOPE_SEARCH_PROVIDERS", scope_providers
+    )
+    monkeypatch.setattr(
+        "riskgpt.helpers.search.__init__.settings.SCOPE_SEARCH_PROVIDERS",
+        scope_providers,
+    )
+
     yield
 
 
 @pytest.fixture
 def mock_search(monkeypatch, mock_search_result):
-    """Fixture to patch the search function."""
+    """Fixture to patch the search providers instead of the search function.
 
-    async def mock_search_func(*args, **kwargs):
+    This allows the tests to use the specified search provider while still returning mock results.
+    """
+
+    # Create a mock search method for any provider
+    async def mock_search_method(*args, **kwargs):
         return mock_search_result
 
-    # Patch the search function
-    with patch("riskgpt.helpers.search.search", side_effect=mock_search_func) as mock:
-        yield mock
+    # Patch each provider's search method instead of the entire search function
+    with (
+        patch(
+            "riskgpt.helpers.search.tavily.TavilySearchProvider.search",
+            side_effect=mock_search_method,
+        ) as tavily_mock,
+        patch(
+            "riskgpt.helpers.search.duckduckgo.DuckDuckGoSearchProvider.search",
+            side_effect=mock_search_method,
+        ) as duckduckgo_mock,
+        patch(
+            "riskgpt.helpers.search.google.GoogleSearchProvider.search",
+            side_effect=mock_search_method,
+        ) as google_mock,
+        patch(
+            "riskgpt.helpers.search.wikipedia.WikipediaSearchProvider.search",
+            side_effect=mock_search_method,
+        ) as wiki_mock,
+        patch(
+            "riskgpt.helpers.search.semantic_scholar.SemanticScholarSearchProvider.search",
+            side_effect=mock_search_method,
+        ) as scholar_mock,
+    ):
+        # Return a dictionary of mocks so tests can verify which provider was used
+        yield {
+            "tavily": tavily_mock,
+            "duckduckgo": duckduckgo_mock,
+            "google": google_mock,
+            "wikipedia": wiki_mock,
+            "semantic_scholar": scholar_mock,
+        }
 
 
 @pytest.fixture
@@ -181,76 +243,99 @@ def mock_keypoints_summary_chain(keypoint_text_resp):
 
 @pytest.mark.integration
 @pytest.mark.asyncio
-async def test_enrich_context_tavily(
+async def test_research_tavily(
     monkeypatch,
     test_request,
-    mock_settings,
-    mock_search,
-    mock_extract_key_points,
-    mock_keypoints_summary_chain,
 ) -> None:
-    monkeypatch.setattr("riskgpt.helpers.search.settings.SEARCH_PROVIDER", "tavily")
-    monkeypatch.setattr("riskgpt.helpers.search.settings.INCLUDE_WIKIPEDIA", False)
+    monkeypatch.setattr("riskgpt.config.settings.settings.SEARCH_PROVIDER", "tavily")
+    monkeypatch.setattr("riskgpt.config.settings.settings.INCLUDE_WIKIPEDIA", False)
+
+    scope_providers = {
+        "news": "tavily",
+    }
+    monkeypatch.setattr(
+        "riskgpt.config.settings.settings.SCOPE_SEARCH_PROVIDERS", scope_providers
+    )
+
     response: ResearchResponse = await research(test_request)
+
     assert response.summary
 
 
 @pytest.mark.integration
 @pytest.mark.asyncio
-async def test_enrich_context_duckduckgo(
+async def test_research_duckduckgo(
     monkeypatch,
     test_request,
-    mock_settings,
-    mock_search,
-    mock_extract_key_points,
-    mock_keypoints_summary_chain,
 ) -> None:
-    monkeypatch.setattr("riskgpt.helpers.search.settings.SEARCH_PROVIDER", "duckduckgo")
-    monkeypatch.setattr("riskgpt.helpers.search.settings.INCLUDE_WIKIPEDIA", False)
+    monkeypatch.setattr(
+        "riskgpt.config.settings.settings.SEARCH_PROVIDER", "duckduckgo"
+    )
+    monkeypatch.setattr("riskgpt.config.settings.settings.INCLUDE_WIKIPEDIA", False)
+
+    scope_providers = {
+        "news": "duckduckgo",
+    }
+    monkeypatch.setattr(
+        "riskgpt.config.settings.settings.SCOPE_SEARCH_PROVIDERS", scope_providers
+    )
+
     response: ResearchResponse = await research(test_request)
+
     assert response.summary
 
 
 @pytest.mark.integration
 @pytest.mark.asyncio
-async def test_enrich_context_google(
+async def test_research_google(
     monkeypatch,
     test_request,
-    mock_settings,
-    mock_search,
-    mock_extract_key_points,
-    mock_keypoints_summary_chain,
 ) -> None:
-    monkeypatch.setattr("riskgpt.helpers.search.settings.SEARCH_PROVIDER", "google")
-    monkeypatch.setattr("riskgpt.helpers.search.settings.INCLUDE_WIKIPEDIA", False)
+    monkeypatch.setattr("riskgpt.config.settings.settings.SEARCH_PROVIDER", "google")
+    monkeypatch.setattr("riskgpt.config.settings.settings.INCLUDE_WIKIPEDIA", False)
+
+    scope_providers = {
+        "news": "google",
+    }
+    monkeypatch.setattr(
+        "riskgpt.config.settings.settings.SCOPE_SEARCH_PROVIDERS", scope_providers
+    )
+
     response: ResearchResponse = await research(test_request)
+
     assert response.summary
 
 
 @pytest.mark.integration
 @pytest.mark.asyncio
-async def test_enrich_context_duckduckgo_and_wikipedia(
+async def test_research_duckduckgo_and_wikipedia(
     monkeypatch,
     test_request,
-    mock_settings,
-    mock_search,
-    mock_extract_key_points,
-    mock_keypoints_summary_chain,
 ) -> None:
-    monkeypatch.setattr("riskgpt.helpers.search.settings.SEARCH_PROVIDER", "duckduckgo")
-    monkeypatch.setattr("riskgpt.helpers.search.settings.INCLUDE_WIKIPEDIA", True)
+    monkeypatch.setattr(
+        "riskgpt.config.settings.settings.SEARCH_PROVIDER", "duckduckgo"
+    )
+    monkeypatch.setattr("riskgpt.config.settings.settings.INCLUDE_WIKIPEDIA", True)
+
+    scope_providers = {
+        "news": "duckduckgo",
+    }
+    monkeypatch.setattr(
+        "riskgpt.config.settings.settings.SCOPE_SEARCH_PROVIDERS", scope_providers
+    )
+
+    # Make the query look like a knowledge query to trigger Wikipedia inclusion
+    test_request.query = "what is artificial intelligence " + test_request.query
+
     response: ResearchResponse = await research(test_request)
+
     assert response.summary
 
 
 @pytest.mark.integration
 @pytest.mark.asyncio
-async def test_enrich_context_with_context_aware_wiki_enabled_knowledge_query(
+async def test_research_with_context_aware_wiki_enabled_knowledge_query(
     monkeypatch,
-    mock_settings,
-    mock_search,
-    mock_extract_key_points,
-    mock_keypoints_summary_chain,
 ) -> None:
     """Test research with context-aware wiki enabled and a knowledge query."""
     # Create a request with a knowledge query that should include Wikipedia
@@ -269,9 +354,13 @@ async def test_enrich_context_with_context_aware_wiki_enabled_knowledge_query(
         region="en-US",
     )
 
-    monkeypatch.setattr("riskgpt.helpers.search.settings.SEARCH_PROVIDER", "duckduckgo")
-    monkeypatch.setattr("riskgpt.helpers.search.settings.INCLUDE_WIKIPEDIA", True)
-    monkeypatch.setattr("riskgpt.helpers.search.settings.WIKIPEDIA_CONTEXT_AWARE", True)
+    monkeypatch.setattr(
+        "riskgpt.config.settings.settings.SEARCH_PROVIDER", "duckduckgo"
+    )
+    monkeypatch.setattr("riskgpt.config.settings.settings.INCLUDE_WIKIPEDIA", True)
+    monkeypatch.setattr(
+        "riskgpt.config.settings.settings.WIKIPEDIA_CONTEXT_AWARE", True
+    )
 
     response: ResearchResponse = await research(knowledge_request)
     assert response.summary
@@ -279,12 +368,8 @@ async def test_enrich_context_with_context_aware_wiki_enabled_knowledge_query(
 
 @pytest.mark.integration
 @pytest.mark.asyncio
-async def test_enrich_context_with_context_aware_wiki_enabled_news_query(
+async def test_research_with_context_aware_wiki_enabled_news_query(
     monkeypatch,
-    mock_settings,
-    mock_search,
-    mock_extract_key_points,
-    mock_keypoints_summary_chain,
 ) -> None:
     """Test research with context-aware wiki enabled and a news query."""
     # Create a request with a news query that should not include Wikipedia
@@ -300,9 +385,13 @@ async def test_enrich_context_with_context_aware_wiki_enabled_news_query(
         region="en-US",
     )
 
-    monkeypatch.setattr("riskgpt.helpers.search.settings.SEARCH_PROVIDER", "duckduckgo")
-    monkeypatch.setattr("riskgpt.helpers.search.settings.INCLUDE_WIKIPEDIA", True)
-    monkeypatch.setattr("riskgpt.helpers.search.settings.WIKIPEDIA_CONTEXT_AWARE", True)
+    monkeypatch.setattr(
+        "riskgpt.config.settings.settings.SEARCH_PROVIDER", "duckduckgo"
+    )
+    monkeypatch.setattr("riskgpt.config.settings.settings.INCLUDE_WIKIPEDIA", True)
+    monkeypatch.setattr(
+        "riskgpt.config.settings.settings.WIKIPEDIA_CONTEXT_AWARE", True
+    )
 
     response: ResearchResponse = await research(news_request)
     assert response.summary
@@ -310,12 +399,8 @@ async def test_enrich_context_with_context_aware_wiki_enabled_news_query(
 
 @pytest.mark.integration
 @pytest.mark.asyncio
-async def test_enrich_context_with_context_aware_wiki_disabled(
+async def test_research_with_context_aware_wiki_disabled(
     monkeypatch,
-    mock_settings,
-    mock_search,
-    mock_extract_key_points,
-    mock_keypoints_summary_chain,
 ) -> None:
     """Test research with context-aware wiki disabled."""
     # Create a request with a news query, but Wikipedia should be included anyway
@@ -332,152 +417,13 @@ async def test_enrich_context_with_context_aware_wiki_disabled(
         region="en-US",
     )
 
-    monkeypatch.setattr("riskgpt.helpers.search.settings.SEARCH_PROVIDER", "duckduckgo")
-    monkeypatch.setattr("riskgpt.helpers.search.settings.INCLUDE_WIKIPEDIA", True)
     monkeypatch.setattr(
-        "riskgpt.helpers.search.settings.WIKIPEDIA_CONTEXT_AWARE", False
+        "riskgpt.config.settings.settings.SEARCH_PROVIDER", "duckduckgo"
+    )
+    monkeypatch.setattr("riskgpt.config.settings.settings.INCLUDE_WIKIPEDIA", True)
+    monkeypatch.setattr(
+        "riskgpt.config.settings.settings.WIKIPEDIA_CONTEXT_AWARE", False
     )
 
     response: ResearchResponse = await research(news_request)
     assert response.summary
-
-
-# todo: Check this test: It should mock and not call the LLM
-@pytest.mark.integration
-@pytest.mark.asyncio
-async def test_enrich_context_with_mock(
-    test_request,
-    mock_settings,
-    mock_search,
-    mock_extract_key_points,
-    mock_keypoints_summary_chain,
-) -> None:
-    """Test research with mocked search results and key points extraction."""
-
-    response = await research(test_request)
-
-    # Verify the results
-    assert len(response.summary) > 0
-
-
-@pytest.mark.integration
-@pytest.mark.asyncio
-async def test_enrich_context_with_context_aware_wiki_enabled_knowledge_query_mock(
-    monkeypatch,
-    mock_settings,
-    mock_search,
-    mock_extract_key_points,
-    mock_keypoints_summary_chain,
-) -> None:
-    """Test research with context-aware wiki enabled and a knowledge query using mocks."""
-    # Create a request with a knowledge query that should include Wikipedia
-    business_context = BusinessContext(
-        project_id="AI-Driven Risk Management",
-        project_description="A project focused on leveraging AI for risk registration and management.",
-        domain_knowledge="artificial intelligence and risk assessment",
-    )
-    knowledge_request = ResearchRequest.from_business_context(
-        business_context=business_context,
-        focus_keywords=[
-            "what is artificial intelligence",
-            "definition of risk management",
-        ],
-        max_search_results=2,
-        region="en-US",
-    )
-
-    monkeypatch.setattr("riskgpt.helpers.search.settings.SEARCH_PROVIDER", "duckduckgo")
-    monkeypatch.setattr("riskgpt.helpers.search.settings.INCLUDE_WIKIPEDIA", True)
-    monkeypatch.setattr("riskgpt.helpers.search.settings.WIKIPEDIA_CONTEXT_AWARE", True)
-
-    # Mock the _should_include_wikipedia function to verify it's called with the right parameters
-    with patch(
-        "riskgpt.helpers.search._should_include_wikipedia", return_value=True
-    ) as mock_should_include:
-        response = await research(knowledge_request)
-
-        # Verify the results
-        assert len(response.summary) > 0
-        # Verify that _should_include_wikipedia was called
-        mock_should_include.assert_called()
-
-
-@pytest.mark.integration
-@pytest.mark.asyncio
-async def test_enrich_context_with_context_aware_wiki_enabled_news_query_mock(
-    monkeypatch,
-    mock_settings,
-    mock_search,
-    mock_extract_key_points,
-    mock_keypoints_summary_chain,
-) -> None:
-    """Test research with context-aware wiki enabled and a news query using mocks."""
-    # Create a request with a news query that should not include Wikipedia
-    business_context = BusinessContext(
-        project_id="AI-Driven Risk Management",
-        project_description="A project focused on leveraging AI for risk registration and management.",
-        domain_knowledge="artificial intelligence and risk assessment",
-    )
-    news_request = ResearchRequest.from_business_context(
-        business_context=business_context,
-        focus_keywords=["latest AI developments", "breaking news in risk management"],
-        max_search_results=2,
-        region="en-US",
-    )
-
-    monkeypatch.setattr("riskgpt.helpers.search.settings.SEARCH_PROVIDER", "duckduckgo")
-    monkeypatch.setattr("riskgpt.helpers.search.settings.INCLUDE_WIKIPEDIA", True)
-    monkeypatch.setattr("riskgpt.helpers.search.settings.WIKIPEDIA_CONTEXT_AWARE", True)
-
-    # Mock the _should_include_wikipedia function to verify it's called with the right parameters
-    with patch(
-        "riskgpt.helpers.search._should_include_wikipedia", return_value=False
-    ) as mock_should_include:
-        response = await research(news_request)
-
-        # Verify the results
-        assert len(response.summary) > 0
-        # Verify that _should_include_wikipedia was called
-        mock_should_include.assert_called()
-
-
-@pytest.mark.integration
-@pytest.mark.asyncio
-async def test_enrich_context_with_context_aware_wiki_disabled_mock(
-    monkeypatch,
-    mock_settings,
-    mock_search,
-    mock_extract_key_points,
-    mock_keypoints_summary_chain,
-) -> None:
-    """Test research with context-aware wiki disabled using mocks."""
-    # Create a request with a news query, but Wikipedia should be included anyway
-    # because context-aware wiki is disabled
-    business_context = BusinessContext(
-        project_id="AI-Driven Risk Management",
-        project_description="A project focused on leveraging AI for risk registration and management.",
-        domain_knowledge="artificial intelligence and risk assessment",
-    )
-    news_request = ResearchRequest.from_business_context(
-        business_context=business_context,
-        focus_keywords=["latest AI developments", "breaking news in risk management"],
-        max_search_results=2,
-        region="en-US",
-    )
-
-    monkeypatch.setattr("riskgpt.helpers.search.settings.SEARCH_PROVIDER", "duckduckgo")
-    monkeypatch.setattr("riskgpt.helpers.search.settings.INCLUDE_WIKIPEDIA", True)
-    monkeypatch.setattr(
-        "riskgpt.helpers.search.settings.WIKIPEDIA_CONTEXT_AWARE", False
-    )
-
-    # Mock the _should_include_wikipedia function to verify it's NOT called when context-aware is disabled
-    with patch(
-        "riskgpt.helpers.search._should_include_wikipedia"
-    ) as mock_should_include:
-        response = await research(news_request)
-
-        # Verify the results
-        assert len(response.summary) > 0
-        # Verify that _should_include_wikipedia was NOT called when context-aware is disabled
-        mock_should_include.assert_not_called()

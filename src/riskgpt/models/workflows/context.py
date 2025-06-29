@@ -1,4 +1,4 @@
-from typing import List, Optional, Set
+from typing import List, Optional
 
 from pydantic import Field
 
@@ -20,13 +20,13 @@ class ResearchRequest(BaseRequest):
         default="wt-wt", description="Region for search results, default is worldwide"
     )
     # New field to specify which scopes to include
-    scopes: Set[ScopeEnum] = Field(
-        default={
+    scopes: List[ScopeEnum] = Field(
+        default=[
             ScopeEnum.NEWS,
             ScopeEnum.LINKEDIN,
             ScopeEnum.REGULATORY,
             ScopeEnum.ACADEMIC,
-        },
+        ],
         description="Scopes to include in the research workflow",
     )
 
@@ -40,7 +40,7 @@ class ResearchRequest(BaseRequest):
         """Create a ResearchRequest from a BusinessContext."""
         keywords = " ".join(focus_keywords) if focus_keywords else ""
         query = f"{business_context.project_description} {keywords}".strip()
-        return cls(query=query, focus_keywords=focus_keywords, **kwargs)
+        return cls.model_construct(query=query, focus_keywords=focus_keywords, **kwargs)
 
     @classmethod
     def from_risk(

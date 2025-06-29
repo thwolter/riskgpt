@@ -3,11 +3,13 @@ from langgraph.graph import END, StateGraph
 from riskgpt.config.settings import RiskGPTSettings
 from riskgpt.models.workflows.context import ResearchRequest
 
+from ...helpers.search import BaseSearchProvider
 from ...helpers.search.duckduckgo import DuckDuckGoSearchProvider
 from ...helpers.search.google import GoogleSearchProvider
 from ...helpers.search.semantic_scholar import SemanticScholarSearchProvider
 from ...helpers.search.tavily import TavilySearchProvider
 from ...helpers.search.wikipedia import WikipediaSearchProvider
+from ...models.enums import ScopeEnum
 from .nodes import (
     aggregate,
     create_extract_key_points_node,
@@ -70,8 +72,9 @@ def get_research_graph(request: ResearchRequest):
             scope, focus_keywords=request.focus_keywords
         )
 
-        node_name = f"{scope.value.lower()}"
-        extract_node_name = f"extract_{scope.value.lower()}_key_points"
+        scope_value = scope.value.lower()
+        node_name = f"{scope_value}"
+        extract_node_name = f"extract_{scope_value}_key_points"
 
         search_nodes[scope] = node_name
         extract_key_points_nodes[scope] = extract_node_name
@@ -110,22 +113,21 @@ def get_research_graph(request: ResearchRequest):
     return graph
 
 
-def get_provider(scope):
-    provider = None
-    # Get provider name from settings based on scope
+def get_provider(scope: ScopeEnum) -> BaseSearchProvider:
+    scope_value = scope.value.lower()
     provider_name = settings.SCOPE_SEARCH_PROVIDERS.get(
-        scope.value.lower(), settings.SEARCH_PROVIDER
+        scope_value, settings.SEARCH_PROVIDER
     )
     # Create the appropriate provider instance
     if provider_name == "semantic_scholar":
-        provider = SemanticScholarSearchProvider()
+        return SemanticScholarSearchProvider()
     elif provider_name == "tavily":
-        provider = TavilySearchProvider()
+        return TavilySearchProvider()
     elif provider_name == "google":
-        provider = GoogleSearchProvider()
+        return GoogleSearchProvider()
     elif provider_name == "duckduckgo":
-        provider = DuckDuckGoSearchProvider()
+        return DuckDuckGoSearchProvider()
     elif provider_name == "wikipedia":
-        provider = WikipediaSearchProvider()
-    # If provider_name is not recognized, provider remains None
-    return provider
+        return WikipediaSearchProvider()
+    else:
+        raise ValueError(f"Unsupported search provider: {provider_name}")
