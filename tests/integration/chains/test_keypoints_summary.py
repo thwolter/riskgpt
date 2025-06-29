@@ -22,17 +22,18 @@ def test_key_points() -> List[KeyPoint]:
         KeyPoint(
             content="The global market for AI is expected to grow by 37% annually until 2030.",
             scope=ScopeEnum.NEWS,
-            source_url="https://example.com/ai-market-report-2023",
+            citation=Citation(url="https://example.com/ai-market-report-2023"),
         ),
         KeyPoint(
             content="Regulatory frameworks for AI are being developed in the EU, with the AI Act expected to be implemented by 2025.",
             scope=ScopeEnum.REGULATORY,
             source_url="https://example.eu/ai-regulations-2023",
+            citation=Citation(url="https://example.com/ai-market-report-2023"),
         ),
         KeyPoint(
             content="Industry leaders are investing heavily in responsible AI development to address ethical concerns.",
             scope=ScopeEnum.LINKEDIN,
-            source_url="https://linkedin.com/pulse/responsible-ai-investments-2023",
+            citation=Citation(url="https://example.com/ai-market-report-2023"),
         ),
     ]
 
@@ -112,6 +113,7 @@ def test_long_key_points() -> List[KeyPoint]:
                         content=content.strip(),
                         scope=scope,
                         source_url=url.strip(),
+                        citation=Citation(url=url.strip()),
                     )
                 )
     return key_points
@@ -203,14 +205,12 @@ async def test_keypoints_summary_with_mixed_citations():
         KeyPoint(
             content="This is key point 1",
             scope=ScopeEnum.PEER,
-            source_url="https://example.com/paper",
             citation=citation,
         ),
         KeyPoint(
             content="This is key point 2",
             scope=ScopeEnum.NEWS,
-            source_url="https://news.example.com/article",
-            # No citation for this one
+            citation=Citation(url="https://news.example.com/article"),
         ),
     ]
 

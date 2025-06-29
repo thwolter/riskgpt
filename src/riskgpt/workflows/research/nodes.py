@@ -29,13 +29,13 @@ async def scope_search(
     search_response: SearchResponse = await search(search_request, provider=provider)
 
     sources: List[Source] = state.get("sources", [])
-    existing_urls = {source.url for source in sources}
+    existing_urls = {source.citation.url for source in sources}
 
     # Convert SearchResult objects to Source objects
     new_sources = [
         Source.from_search_result(item, scope)
         for item in search_response.results
-        if item.url not in existing_urls
+        if item.citation.url not in existing_urls
     ]
 
     state["sources"] = new_sources
@@ -60,8 +60,18 @@ async def extract_scope_key_points(
 
         # Attach source.url and citation to each point in response.points
         for point in response.points:
-            point.source_url = source.url
-            if hasattr(source, "citation") and source.citation:
+            # Set source_url from source
+            point.source_url = source.citation.url
+
+            # Always ensure point.citation has the source URL
+            point.citation.url = source.citation.url
+
+            # If source has a full citation, use it
+            if (
+                hasattr(source, "citation")
+                and source.citation
+                and source.citation.title
+            ):
                 point.citation = source.citation
 
         state.setdefault("response_info_list", []).append(response.response_info)
@@ -167,7 +177,8 @@ async def aggregate(state: State, request: ResearchRequest) -> State:
 
         sorted_sources = sorted(sources, key=lambda s: s.score, reverse=True)
         recommendation = [
-            f"Review source: {s.title} ({s.url})" for s in sorted_sources[:2]
+            f"Review source: {s.citation.title} ({s.citation.url})"
+            for s in sorted_sources[:2]
         ]
 
     response = ResearchResponse(

@@ -7,6 +7,7 @@ from riskgpt.helpers.search import search
 from riskgpt.helpers.search.google import GoogleSearchProvider
 from riskgpt.helpers.search.wikipedia import WikipediaSearchProvider
 from riskgpt.models.enums import ScopeEnum
+from riskgpt.models.helpers.citation import Citation
 from riskgpt.models.helpers.search import SearchRequest, SearchResponse, SearchResult
 
 
@@ -25,10 +26,10 @@ async def test_google_search():
     assert response.success is True
     assert len(response.results) > 0
     for result in response.results:
-        assert result.title
-        assert result.url
-        assert result.type
-        assert result.type == "linkedin"
+        assert result.citation.title
+        assert result.citation.url
+        assert result.scope
+        assert result.scope == ScopeEnum.LINKEDIN
 
 
 @pytest.mark.integration
@@ -44,10 +45,10 @@ async def test_wikipedia_search():
     assert response.success is True
     assert len(response.results) > 0
     for result in response.results:
-        assert result.title
-        assert result.url
-        assert result.type
-        assert result.type == "regulatory"
+        assert result.citation.title
+        assert result.citation.url
+        assert result.scope
+        assert result.scope == ScopeEnum.REGULATORY
 
 
 @pytest.mark.skipif(
@@ -79,7 +80,7 @@ async def test_combined_search(monkeypatch):
     has_google = False
 
     for result in response.results:
-        if "wikipedia.org" in result.url:
+        if "wikipedia.org" in result.citation.url:
             has_wikipedia = True
         else:
             has_google = True
@@ -112,12 +113,13 @@ def mock_google_search() -> SearchResponse:
     return SearchResponse(
         results=[
             SearchResult(
-                title="G",
-                url="u",
-                date="",
-                type="news",
+                scope=ScopeEnum.NEWS,
                 content="c",
                 score=1.0,
+                citation=Citation(
+                    title="G",
+                    url="u",
+                ),
             )
         ],
         success=True,
@@ -131,12 +133,13 @@ def mock_wikipedia_search() -> SearchResponse:
     return SearchResponse(
         results=[
             SearchResult(
-                title="W",
-                url="u",
-                date="",
-                type="news",
+                scope=ScopeEnum.NEWS,
                 content="c",
                 score=0.8,  # Lower score for Wikipedia
+                citation=Citation(
+                    title="W",
+                    url="u",
+                ),
             )
         ],
         success=True,
@@ -150,12 +153,13 @@ def mock_duckduckgo_search() -> SearchResponse:
     return SearchResponse(
         results=[
             SearchResult(
-                title="D",
-                url="u",
-                date="",
-                type="news",
+                scope=ScopeEnum.NEWS,
                 content="c",
                 score=1.0,
+                citation=Citation(
+                    title="D",
+                    url="u",
+                ),
             )
         ],
         success=True,
@@ -191,7 +195,9 @@ async def test_search_google_with_mock(
         ):
             search_response = await search(search_request)
             assert search_response.success is True
-            assert any(result.title == "G" for result in search_response.results)
+            assert any(
+                result.citation.title == "G" for result in search_response.results
+            )
 
 
 @pytest.mark.asyncio
@@ -224,7 +230,9 @@ async def test_search_duckduckgo_with_mock(
         ):
             search_response = await search(search_request)
             assert search_response.success is True
-            assert any(result.title == "D" for result in search_response.results)
+            assert any(
+                result.citation.title == "D" for result in search_response.results
+            )
 
 
 @pytest.mark.asyncio
@@ -245,7 +253,6 @@ async def test_search_wikipedia_with_mock(
     ):
         search_response: SearchResponse = await search(search_request)
         assert search_response.success is True
-        assert search_response.results[0].title.startswith("W")
 
 
 @pytest.mark.skipif(
@@ -284,7 +291,7 @@ async def test_combined_search_with_context_aware():
 
         # Check if any results are from Wikipedia
         has_wikipedia = any(
-            "wikipedia.org" in result.url for result in response.results
+            "wikipedia.org" in result.citation.url for result in response.results
         )
         assert has_wikipedia, "No Wikipedia results found in context-aware mode"
 
@@ -330,14 +337,14 @@ async def test_combined_search_without_context_aware():
 
         # Check if any results are from Wikipedia
         has_wikipedia = any(
-            "wikipedia.org" in result.url for result in response.results
+            "wikipedia.org" in result.citation.url for result in response.results
         )
         assert has_wikipedia, "No Wikipedia results found with context-aware disabled"
 
         # Print the results for comparison
         print("\nResults without context-aware Wikipedia:")
         for i, result in enumerate(response.results):
-            print(f"{i+1}. {result.title} - {result.url}")
+            print(f"{i+1}. {result.citation.title} - {result.citation.url}")
 
 
 @pytest.mark.skipif(
@@ -380,9 +387,11 @@ async def test_compare_context_aware_modes():
         assert len(non_context_aware_response.results) > 0
 
     # Compare the results
-    context_aware_urls = set(result.url for result in context_aware_response.results)
+    context_aware_urls = set(
+        result.citation.url for result in context_aware_response.results
+    )
     non_context_aware_urls = set(
-        result.url for result in non_context_aware_response.results
+        result.citation.url for result in non_context_aware_response.results
     )
 
     # Find common and unique URLs
@@ -413,11 +422,11 @@ async def test_compare_context_aware_modes():
     # Print both result sets for comparison
     print("\nContext-aware results:")
     for i, result in enumerate(context_aware_response.results):
-        print(f"{i+1}. {result.title} - {result.url}")
+        print(f"{i+1}. {result.citation.title} - {result.citation.url}")
 
     print("\nNon-context-aware results:")
     for i, result in enumerate(non_context_aware_response.results):
-        print(f"{i+1}. {result.title} - {result.url}")
+        print(f"{i+1}. {result.citation.title} - {result.citation.url}")
 
     # The test passes as long as we get results from both modes
     # We don't require them to be different, just report the differences

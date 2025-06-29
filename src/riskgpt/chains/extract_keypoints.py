@@ -6,6 +6,7 @@ from riskgpt.models.chains.keypoints import (
     ExtractKeyPointsRequest,
     ExtractKeyPointsResponse,
 )
+from riskgpt.models.helpers.citation import Citation
 
 
 async def extract_key_points_chain(
@@ -26,8 +27,17 @@ async def extract_key_points_chain(
     result = await chain.invoke(inputs)
 
     # todo: the attribute additional_citations must be filled in by the chain
+    # todo: we have to handel the citation accordingly - when provided, it should be used for all points
+    # todo: if not, the citation has to be extracted from the content
+
     for point in result.points:
-        point.source_url = request.source_url
-        point.citation = request.citation
+        # Use the URL from the citation if available
+        if request.citation and request.citation.url:
+            point.source_url = request.citation.url
+            point.citation = request.citation
+        else:
+            # Create a minimal citation if none is provided
+            url = point.source_url or ""
+            point.citation = Citation(url=url)
 
     return result

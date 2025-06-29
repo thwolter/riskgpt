@@ -8,6 +8,7 @@ from riskgpt.helpers.circuit_breaker import duckduckgo_breaker, with_fallback
 from riskgpt.helpers.search.base import BaseSearchProvider
 from riskgpt.helpers.search.utils import create_fallback_function
 from riskgpt.logger import logger
+from riskgpt.models.helpers.citation import Citation
 from riskgpt.models.helpers.search import SearchRequest, SearchResponse, SearchResult
 
 
@@ -45,11 +46,14 @@ class DuckDuckGoSearchProvider(BaseSearchProvider):
             for item in search_results:
                 results.append(
                     SearchResult(
-                        title=item.get("title", ""),
-                        url=item.get("link", ""),
-                        date=item.get("date") or "",
-                        type=payload.scope.value,
+                        scope=payload.scope,
                         content=item.get("snippet", ""),
+                        citation=Citation(
+                            title=item.get("title", ""),
+                            url=item.get("link", ""),
+                            publication_date=None,  # Convert date string to date object if available
+                            authors=[],  # DuckDuckGo doesn't provide authors
+                        ),
                     )
                 )
 

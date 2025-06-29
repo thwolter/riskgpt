@@ -8,6 +8,7 @@ from riskgpt.helpers.circuit_breaker import wikipedia_breaker, with_fallback
 from riskgpt.helpers.search.base import BaseSearchProvider
 from riskgpt.helpers.search.utils import create_fallback_function
 from riskgpt.logger import logger
+from riskgpt.models.helpers.citation import Citation
 from riskgpt.models.helpers.search import SearchRequest, SearchResponse, SearchResult
 
 
@@ -35,11 +36,14 @@ class WikipediaSearchProvider(BaseSearchProvider):
             for item in wiki_results:
                 results.append(
                     SearchResult(
-                        title=item.metadata.get("title", ""),
-                        url=item.metadata.get("source", ""),
-                        date="",  # Wikipedia doesn't provide date in the same way
-                        type=payload.scope.value,
+                        scope=payload.scope,
                         content=item.metadata.get("summary", ""),
+                        citation=Citation(
+                            title=item.metadata.get("title", ""),
+                            url=item.metadata.get("source", ""),
+                            publication_date=None,  # Wikipedia doesn't provide date in the same way
+                            authors=[],  # Wikipedia doesn't provide authors in the API response
+                        ),
                     )
                 )
             return SearchResponse(

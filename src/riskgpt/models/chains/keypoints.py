@@ -18,20 +18,14 @@ class KeyPoint(BaseModel):
     )
     source_url: Optional[str] = None
     additional_sources: List[str] = []
-    citation: Optional[Citation] = None
+    citation: Citation = Field(
+        description="Citation information for the key point, including author, title, and publication details",
+    )
     additional_citations: List[Citation] = []
 
     def get_inline_citation(self) -> str:
         """Get Harvard-style inline citation."""
-        if self.citation:
-            return self.citation.format_harvard_citation()
-        elif self.source_url:
-            # Fallback to simple URL-based citation
-            from urllib.parse import urlparse
-
-            domain = urlparse(self.source_url).netloc
-            return domain
-        return ""
+        return self.citation.format_harvard_citation()
 
 
 class ExtractKeyPointsRequest(BaseModel):
@@ -43,8 +37,10 @@ class ExtractKeyPointsRequest(BaseModel):
     )
     content: str
     focus_keywords: Optional[List[str]] = []
-    source_url: Optional[str] = None
-    citation: Optional[Citation] = None
+    citation: Optional[Citation] = Field(
+        default=None,
+        description="Citation information for the source, including author, title, and publication details",
+    )
 
     @classmethod
     def from_source(
@@ -53,9 +49,8 @@ class ExtractKeyPointsRequest(BaseModel):
         """Create an ExtractKeyPointsRequest from a Source object."""
         return ExtractKeyPointsRequest(
             scope=source.scope,
-            content=f"Title: {source.title}\n\nContent: {source.content}",
+            content=f"{source.citation.title}\n\n{source.content}",
             focus_keywords=focus_keywords or [],
-            source_url=source.url,
             citation=source.citation,
         )
 

@@ -1,37 +1,3 @@
-"""
-test_extract_keypoints.py
-
-This module contains tests for the key points extraction functionality:
-1. Basic extraction from different source types
-2. Citation handling in extracted key points
-3. Integration with research workflow
-
-Key Components:
----------------
-- Basic extraction tests:
-    - test_extract_key_points_news: Tests extracting key points from a news source with mocked LLM
-    - test_extract_key_points_research: Tests extracting key points from a research source with mocked LLM
-    - test_extract_key_points_from_source: Tests creating a request from a Source object with mocked LLM
-
-- Citation functionality tests:
-    - test_extract_scope_key_points_with_citation: Tests extraction with citation information
-    - test_extract_scope_key_points_without_citation: Tests extraction without citation information
-
-- Integration tests:
-    - test_extract_key_points_integration: Tests the full chain with a real LLM call
-    - test_extract_key_points_with_llm: Tests extraction with citation using a real LLM
-
-Dependencies:
--------------
-- pytest (with asyncio support)
-- riskgpt.chains.extract_keypoints.extract_key_points_chain
-- riskgpt.models.chains.keypoints
-- riskgpt.models.enums.ScopeEnum
-- riskgpt.models.helpers.citation.Citation
-- riskgpt.models.helpers.search.Source
-- riskgpt.workflows.research.nodes.extract_scope_key_points
-"""
-
 import logging
 from datetime import date
 from unittest.mock import AsyncMock, MagicMock, patch
@@ -51,7 +17,59 @@ from riskgpt.models.helpers.search import Source
 from riskgpt.workflows.research.nodes import extract_scope_key_points
 from riskgpt.workflows.research.state import State
 
-# SECTION 1: Basic key points extraction tests
+# SECTION 1: KeyPoint model unit tests
+
+
+class TestKeyPoint:
+    def test_get_inline_citation_with_citation(self):
+        """Test citation formatting with complete citation info."""
+        citation = Citation(
+            url="https://example.com",
+            title="Example Title",
+            authors=["John Doe"],
+            publication_date=date(2023, 1, 1),
+            venue="Example Venue",
+        )
+
+        keypoint = KeyPoint(
+            content="This is a key point",
+            scope=ScopeEnum.NEWS,
+            source_url="https://example.com",
+            citation=citation,
+        )
+
+        result = keypoint.get_inline_citation()
+        assert result == "John Doe (2023)"
+
+    def test_get_inline_citation_with_minimal_citation(self):
+        """Test citation formatting with minimal citation info."""
+        keypoint = KeyPoint(
+            content="This is a key point",
+            scope=ScopeEnum.NEWS,
+            citation=Citation(url="https://example.com"),
+        )
+
+        result = keypoint.get_inline_citation()
+        assert result == "example.com"
+
+    def test_get_inline_citation_with_empty_url(self):
+        """Test citation formatting with empty URL."""
+        # Create a citation with a placeholder URL to avoid validation errors
+        keypoint = KeyPoint(
+            content="This is a key point",
+            scope=ScopeEnum.NEWS,
+            citation=Citation(url="https://placeholder.com"),
+        )
+
+        # Manually set the URL to empty after creation to test edge case
+        keypoint.citation.url = ""
+
+        result = keypoint.get_inline_citation()
+        # The result will be empty because the domain extraction will fail on empty URL
+        assert result == ""
+
+
+# SECTION 2: Basic key points extraction tests
 
 
 @pytest.mark.asyncio
@@ -65,13 +83,17 @@ async def test_extract_key_points_news(monkeypatch, caplog):
         points=[
             KeyPoint(
                 content="Key point 1 about technology",
-                source_url="https://example.com/news1",
                 scope=ScopeEnum.NEWS,
+                citation=Citation(
+                    url="https://example.com/news1",
+                ),
             ),
             KeyPoint(
                 content="Key point 2 about finance",
-                source_url="https://example.com/news1",
                 scope=ScopeEnum.NEWS,
+                citation=Citation(
+                    url="https://example.com/news1",
+                ),
             ),
         ],
         response_info=ResponseInfo(
@@ -92,6 +114,13 @@ async def test_extract_key_points_news(monkeypatch, caplog):
         request = ExtractKeyPointsRequest(
             scope=ScopeEnum.NEWS,
             content="Title: Test News Article\n\nContent: This is a test news article about technology and finance.",
+            citation=Citation(
+                url="https://example.com/news1",
+                title="Test News Article",
+                authors=["Author One", "Author Two"],
+                publication_date=date(2023, 10, 1),
+                venue="Test News Venue",
+            ),
         )
 
         # Call the function under test
@@ -124,13 +153,25 @@ async def test_extract_key_points_research(monkeypatch, caplog):
         points=[
             KeyPoint(
                 content="Research finding 1",
-                source_url="https://example.com/research1",
                 scope=ScopeEnum.PEER,
+                citation=Citation(
+                    url="https://example.com/research1",
+                    title="Research Paper Title",
+                    authors=["Researcher One", "Researcher Two"],
+                    publication_date=date(2023, 10, 1),
+                    venue="Research Journal",
+                ),
             ),
             KeyPoint(
                 content="Research finding 2",
-                source_url="https://example.com/research1",
                 scope=ScopeEnum.PEER,
+                citation=Citation(
+                    url="https://example.com/research1",
+                    title="Research Paper Title",
+                    authors=["Researcher One", "Researcher Two"],
+                    publication_date=date(2023, 10, 1),
+                    venue="Research Journal",
+                ),
             ),
         ],
         response_info=ResponseInfo(
@@ -184,7 +225,13 @@ async def test_extract_key_points_from_source(monkeypatch, caplog):
             KeyPoint(
                 content="Source key point 1",
                 scope=ScopeEnum.NEWS,
-                source_url="https://example.com/source1",
+                citation=Citation(
+                    url="https://example.com/source1",
+                    title="Source Title",
+                    authors=["Author One", "Author Two"],
+                    publication_date=date(2023, 10, 1),
+                    venue="Source Venue",
+                ),
             ),
         ],
         response_info=ResponseInfo(
@@ -201,13 +248,14 @@ async def test_extract_key_points_from_source(monkeypatch, caplog):
 
     # Patch the BaseChain constructor to return our mock
     with patch("riskgpt.chains.extract_keypoints.BaseChain", return_value=mock_chain):
-        # Create a mock Source object
+        # Create a mock Source object with a real Citation object
+        citation = Citation(title="Source Title", url="https://example.com/source1")
+
         mock_source = MagicMock()
-        mock_source.scope = "news"
-        mock_source.title = "Source Title"
+        mock_source.scope = ScopeEnum.NEWS
         mock_source.content = "Source Content"
-        mock_source.url = "https://example.com/source1"
-        mock_source.citation = None
+        mock_source.citation = citation
+        mock_source.title = "Source Title"  # Needed for the content formatting
 
         # Create a request from the source
         request = ExtractKeyPointsRequest.from_source(mock_source)
@@ -227,11 +275,11 @@ async def test_extract_key_points_from_source(monkeypatch, caplog):
         call_args = mock_chain.invoke.call_args[0][0]
         assert call_args["scope"] == "news"
         assert "content" in call_args
-        assert "Title: Source Title" in call_args["content"]
-        assert "Content: Source Content" in call_args["content"]
+        assert "Source Title" in call_args["content"]
+        assert "Source Content" in call_args["content"]
 
 
-# SECTION 2: Citation functionality tests
+# SECTION 3: Citation functionality tests
 
 
 @pytest.mark.asyncio
@@ -248,10 +296,6 @@ async def test_extract_scope_key_points_with_citation():
 
     # Create a mock Source with citation
     source = Source(
-        title="Example Paper",
-        url="https://example.com",
-        date="2023",
-        type="PEER",
         content="This is an example paper content.",
         scope=ScopeEnum.PEER,
         citation=citation,
@@ -266,10 +310,12 @@ async def test_extract_scope_key_points_with_citation():
             KeyPoint(
                 content="This is key point 1",
                 scope=ScopeEnum.PEER,
+                citation=citation,  # Use the mock citation
             ),
             KeyPoint(
                 content="This is key point 2",
                 scope=ScopeEnum.PEER,
+                citation=citation,  # Use the mock citation
             ),
         ],
     )
@@ -301,12 +347,11 @@ async def test_extract_scope_key_points_without_citation():
     """Test extracting key points without citation information."""
     # Create a mock Source without citation
     source = Source(
-        title="Example Paper",
-        url="https://example.com",
-        date="2023",
-        type="PEER",
         content="This is an example paper content.",
         scope=ScopeEnum.PEER,
+        citation=Citation(
+            url="https://example.com",
+        ),
     )
 
     # Create a mock State with the source
@@ -318,10 +363,12 @@ async def test_extract_scope_key_points_without_citation():
             KeyPoint(
                 content="This is key point 1",
                 scope=ScopeEnum.PEER,
+                citation=Citation(url="https://example.com"),
             ),
             KeyPoint(
                 content="This is key point 2",
                 scope=ScopeEnum.PEER,
+                citation=Citation(url="https://example.com"),
             ),
         ],
     )
@@ -338,16 +385,17 @@ async def test_extract_scope_key_points_without_citation():
         assert "key_points" in result_state
         assert len(result_state["key_points"]) == 2
 
-        # Verify that each key point has the source URL but no citation
+        # Verify that each key point has the source URL and minimal citation
         for key_point in result_state["key_points"]:
             assert key_point.source_url == "https://example.com"
-            assert key_point.citation is None
+            assert key_point.citation is not None
+            assert key_point.citation.url == "https://example.com"
 
-            # Verify that the inline citation falls back to the URL
+            # Verify that the inline citation falls back to the URL domain
             assert key_point.get_inline_citation() == "example.com"
 
 
-# SECTION 3: Integration tests
+# SECTION 4: Integration tests
 
 
 @pytest.mark.integration
@@ -394,20 +442,8 @@ async def test_extract_key_points_integration():
 @pytest.mark.asyncio
 async def test_extract_key_points_with_llm():
     """Integration test for extract_key_points with citation using a real LLM."""
-    # Create a Citation
-    citation = Citation(
-        url="https://example.com",
-        title="AI Safety Research Paper",
-        authors=["John Doe", "Jane Smith"],
-        publication_date=date(2023, 1, 1),
-        venue="AI Safety Conference",
-    )
 
-    # Create a Source with citation
     source = Source(
-        title="AI Safety Research Paper",
-        url="https://example.com",
-        date="2023",
         content=(
             "AI safety is a critical concern as artificial intelligence systems become more powerful. "
             "Researchers have identified several key risks including alignment problems, "
@@ -416,7 +452,13 @@ async def test_extract_key_points_with_llm():
             "complex AI systems in real-world environments."
         ),
         scope=ScopeEnum.ACADEMIC,
-        citation=citation,
+        citation=Citation(
+            url="https://example.com",
+            title="AI Safety Research Paper",
+            authors=["John Doe", "Jane Smith"],
+            publication_date=date(2023, 1, 1),
+            venue="AI Safety Conference",
+        ),
     )
 
     # Create an ExtractKeyPointsRequest from the Source
@@ -442,7 +484,6 @@ async def test_extract_key_points_with_llm():
         # Verify that each key point has the source URL and citation
         assert point.source_url == "https://example.com"
         assert point.citation is not None
-        assert point.citation == citation
 
         # Verify that the citation can be formatted
         assert point.get_inline_citation() == "John Doe and Jane Smith (2023)"

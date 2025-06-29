@@ -47,7 +47,7 @@ def deduplicate_results(results: List[SearchResult]) -> List[SearchResult]:
 
     for result in results:
         # Normalize URL to handle slight variations
-        normalized_url = result.url.rstrip("/").lower()
+        normalized_url = result.citation.url.rstrip("/").lower()
         if normalized_url not in unique_urls:
             unique_urls.add(normalized_url)
             unique_results.append(result)
@@ -60,11 +60,12 @@ def deduplicate_results(results: List[SearchResult]) -> List[SearchResult]:
         for kept_result in final_results:
             # Simple similarity check - if titles are very similar or content has high overlap
             if (
-                result.title
-                and kept_result.title
+                result.citation.title
+                and kept_result.citation.title
                 and (
-                    result.title.lower() in kept_result.title.lower()
-                    or kept_result.title.lower() in result.title.lower()
+                    result.citation.title.lower() in kept_result.citation.title.lower()
+                    or kept_result.citation.title.lower()
+                    in result.citation.title.lower()
                 )
             ):
                 # Check content similarity if both have content
@@ -106,6 +107,7 @@ def rank_results(results: List[SearchResult]) -> List[SearchResult]:
         "regulatory": 1.0,  # Regulatory sources are highly trusted
         "professional": 0.9,
         "peer": 0.7,
+        "academic": 0.8,
         "": 0.5,  # Default for unspecified sources
     }
 
@@ -115,11 +117,11 @@ def rank_results(results: List[SearchResult]) -> List[SearchResult]:
         score = result.score
 
         # Adjust score based on source type
-        scope = result.type.lower() if result.type else ""
+        scope = result.scope.value.lower() if result.scope else ""
         source_weight = source_weights.get(scope, 0.5)
 
         # Identify Wikipedia results
-        is_wikipedia = "wikipedia.org" in result.url.lower()
+        is_wikipedia = "wikipedia.org" in result.citation.url.lower()
 
         # Apply source weighting
         if is_wikipedia:

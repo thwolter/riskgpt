@@ -8,6 +8,7 @@ from riskgpt.helpers.search.semantic_scholar import (
     SemanticScholarSearchProvider,
 )
 from riskgpt.models.enums import ScopeEnum
+from riskgpt.models.helpers.citation import Citation
 from riskgpt.models.helpers.search import SearchRequest, SearchResponse, SearchResult
 
 
@@ -70,18 +71,24 @@ async def test_semantic_scholar_search_provider(mock_semantic_scholar_response):
         assert len(response.results) == 2
 
         # Check first result
-        assert response.results[0].title == "Machine Learning Explainability: A Survey"
-        assert response.results[0].url == "https://example.com/paper1"
-        assert response.results[0].date == "2023"
-        assert response.results[0].type == "academic"
+        assert (
+            response.results[0].citation.title
+            == "Machine Learning Explainability: A Survey"
+        )
+        assert response.results[0].citation.url == "https://example.com/paper1"
+        assert response.results[0].citation.publication_date.strftime("%Y") == "2023"
+        assert response.results[0].scope == ScopeEnum.ACADEMIC
         assert "This paper provides a survey" in response.results[0].content
         assert "John Smith, Jane Doe, Bob Johnson et al." in response.results[0].content
 
         # Check second result
-        assert response.results[1].title == "Explainable AI: Concepts and Applications"
-        assert response.results[1].url == "https://example.com/paper2"
-        assert response.results[1].date == "2022"
-        assert response.results[1].type == "academic"
+        assert (
+            response.results[1].citation.title
+            == "Explainable AI: Concepts and Applications"
+        )
+        assert response.results[1].citation.url == "https://example.com/paper2"
+        assert response.results[1].citation.publication_date.strftime("%Y") == "2022"
+        assert response.results[1].scope == ScopeEnum.ACADEMIC
         assert "This paper explores the concepts" in response.results[1].content
         assert "Sarah Wilson, Michael Lee" in response.results[1].content
 
@@ -105,7 +112,17 @@ async def test_academic_search_excludes_wikipedia():
     mock_semantic_scholar = MagicMock()
     mock_semantic_scholar.__class__.__name__ = "SemanticScholarSearchProvider"
     mock_semantic_scholar.search.return_value = SearchResponse(
-        results=[SearchResult(title="Academic Paper", url="https://example.com/paper")],
+        results=[
+            SearchResult(
+                scope=ScopeEnum.ACADEMIC,
+                content="Academic paper content",
+                score=1.0,
+                citation=Citation(
+                    title="Academic Paper",
+                    url="https://example.com/paper",
+                ),
+            )
+        ],
         success=True,
     )
 

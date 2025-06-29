@@ -9,6 +9,7 @@ from riskgpt.helpers.circuit_breaker import tavily_breaker, with_fallback
 from riskgpt.helpers.search.base import BaseSearchProvider
 from riskgpt.helpers.search.utils import create_fallback_function
 from riskgpt.logger import logger
+from riskgpt.models.helpers.citation import Citation
 from riskgpt.models.helpers.search import SearchRequest, SearchResponse, SearchResult
 
 settings = RiskGPTSettings()
@@ -66,14 +67,31 @@ class TavilySearchProvider(BaseSearchProvider):
                 )
 
             for item in search_results.get("results", []):
+                # Try to parse the published_date if available
+                from datetime import datetime
+
+                publication_date = None
+                if item.get("published_date"):
+                    try:
+                        # Assuming the date is in a standard format
+                        publication_date = datetime.strptime(
+                            item.get("published_date"), "%Y-%m-%d"
+                        ).date()
+                    except (ValueError, TypeError):
+                        # If date parsing fails, leave as None
+                        pass
+
                 results.append(
                     SearchResult(
-                        title=item.get("title", ""),
-                        url=item.get("url", ""),
-                        date=item.get("published_date", ""),
-                        type=payload.scope.value,
+                        scope=payload.scope,
                         content=item.get("raw_content", ""),
                         score=item.get("score", None),
+                        citation=Citation(
+                            title=item.get("title", ""),
+                            url=item.get("url", ""),
+                            publication_date=publication_date,
+                            authors=[],  # Tavily doesn't provide authors
+                        ),
                     )
                 )
 

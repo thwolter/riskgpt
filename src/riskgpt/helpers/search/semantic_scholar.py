@@ -171,10 +171,7 @@ class SemanticScholarSearchProvider(BaseSearchProvider):
 
                     results.append(
                         SearchResult(
-                            title=paper.get("title", ""),
-                            url=paper.get("url", ""),
-                            date=str(paper.get("year", "")),
-                            type=payload.scope.value,
+                            scope=payload.scope,
                             content=content,
                             score=paper.get("score", 0.0),
                             citation=citation,

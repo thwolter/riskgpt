@@ -8,6 +8,7 @@ from riskgpt.config.settings import RiskGPTSettings
 from riskgpt.helpers.circuit_breaker import google_search_breaker, with_fallback
 from riskgpt.helpers.search.base import BaseSearchProvider
 from riskgpt.logger import logger
+from riskgpt.models.helpers.citation import Citation
 from riskgpt.models.helpers.search import SearchRequest, SearchResponse, SearchResult
 
 settings = RiskGPTSettings()
@@ -63,11 +64,14 @@ class GoogleSearchProvider(BaseSearchProvider):
             for item in search_results:
                 results.append(
                     SearchResult(
-                        title=item.get("title", ""),
-                        url=item.get("link", ""),
-                        date="",  # Google doesn't provide date in the same way
-                        type=payload.scope.value,
+                        scope=payload.scope,
                         content=item.get("snippet", ""),
+                        citation=Citation(
+                            authors=[],  # Google search does not provide authors
+                            title=item.get("title", ""),
+                            url=item.get("link", ""),
+                            publication_date=None,  # Google search does not provide publication date
+                        ),
                     )
                 )
 

@@ -1,5 +1,3 @@
-from typing import Optional
-
 from pydantic import BaseModel, Field
 
 from riskgpt.models.enums import ScopeEnum
@@ -7,12 +5,9 @@ from riskgpt.models.helpers.citation import Citation
 
 
 class SearchResult(BaseModel):
-    title: str = Field(default="", description="Title of the search result")
-    url: str = Field(default="", description="URL of the search result")
-    date: str = Field(default="", description="Date of the search result, if available")
-    type: str = Field(
-        default="",
-        description="Type of the source (e.g., news, professional, regulatory, peer)",
+    scope: ScopeEnum = Field(
+        default=ScopeEnum.NEWS,
+        description="Type of source, e.g., news, professional, regulatory, peer",
     )
     content: str = Field(
         default="", description="Brief content or snippet from the source"
@@ -20,8 +15,8 @@ class SearchResult(BaseModel):
     score: float = Field(
         default=0.0, description="Relevance score of the search result, if applicable"
     )
-    citation: Optional[Citation] = Field(
-        default=None, description="Structured citation information"
+    citation: Citation = Field(
+        description="Citation information for the source, including author, title, and publication details",
     )
 
 
@@ -39,10 +34,6 @@ class Source(SearchResult):
     ) -> "Source":
         """Create a Source from a SearchResult and a scope."""
         return cls(
-            title=search_result.title,
-            url=search_result.url,
-            date=search_result.date,
-            type=search_result.type,
             content=search_result.content,
             citation=search_result.citation,
             scope=scope,

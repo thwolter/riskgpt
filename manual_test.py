@@ -21,7 +21,7 @@ for result in deduplicated:
 # Test ranking
 print("\nTesting ranking...")
 results = [
-    SearchResult(title="News", url="http://news.com", type="news", score=1.0),
+    SearchResult(title="News", url="http://news.com", scope="news", score=1.0),
     SearchResult(
         title="Regulatory", url="http://reg.com", type="regulatory", score=1.0
     ),

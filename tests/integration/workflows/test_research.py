@@ -9,6 +9,7 @@ from riskgpt.models.chains.keypoints import (
 )
 from riskgpt.models.common import BusinessContext
 from riskgpt.models.enums import ScopeEnum
+from riskgpt.models.helpers.citation import Citation
 from riskgpt.models.workflows.context import (
     ResearchRequest,
     ResearchResponse,
@@ -50,16 +51,25 @@ def mock_key_points():
                 content="Years of extreme volatility, caused by pandemic shocks, trade wars, and climate-driven disruptions, have exposed the complexity of the world’s logistics networks.",
                 scope=ScopeEnum.NEWS,
                 source_url="https://www.maritime-executive.com/article/two-new-chapters-in-supply-chain-data-driven-intelligence",
+                citation=Citation(
+                    url="https://www.maritime-executive.com/article/two-new-chapters-in-supply-chain-data-driven-intelligence"
+                ),
             ),
             KeyPoint(
                 content="Thanks to the increasing availability of multi-source data and rapid advancements in AI technologies, organizations now have unprecedented opportunities to unravel the complexities of supply chain operations.",
                 scope=ScopeEnum.NEWS,
                 source_url="https://www.maritime-executive.com/article/two-new-chapters-in-supply-chain-data-driven-intelligence",
+                citation=Citation(
+                    url="https://www.maritime-executive.com/article/two-new-chapters-in-supply-chain-data-driven-intelligence"
+                ),
             ),
             KeyPoint(
                 content="Organizations can drive both cost efficiencies and significant reductions in emissions by harnessing collective intelligence.",
                 scope=ScopeEnum.NEWS,
                 source_url="https://www.maritime-executive.com/article/two-new-chapters-in-supply-chain-data-driven-intelligence",
+                citation=Citation(
+                    url="https://www.maritime-executive.com/article/two-new-chapters-in-supply-chain-data-driven-intelligence"
+                ),
             ),
         ],
     )
