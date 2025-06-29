@@ -4,7 +4,7 @@ from pydantic import Field
 
 from riskgpt.models.base import BaseRequest, BaseResponse
 from riskgpt.models.chains.risk import Risk
-from riskgpt.models.enums import TopicEnum
+from riskgpt.models.enums import ScopeEnum
 from riskgpt.models.helpers import SearchRequest
 from riskgpt.models.workflows.context import ResearchRequest
 
@@ -28,9 +28,9 @@ class RiskAnalysisRequest(BaseRequest):
             risk=risk,
         )
 
-    def create_search_request(self, topic: TopicEnum) -> SearchRequest:
-        """Create a search request for the specified topic."""
-        return self.research_request.create_search_request(topic)
+    def create_search_request(self, scope: ScopeEnum) -> SearchRequest:
+        """Create a search request for the specified scope."""
+        return self.research_request.create_search_request(scope)
 
 
 class RiskAnalysisResponse(BaseResponse):

@@ -13,6 +13,7 @@
 - run mypy and ruff after making changes
 - All new features must include tests in the `/tests` directory.
 - Use `pytest` as the testing framework.
+- Run only test not marketed as `integration` unless necessary.
  
 ## Commit Messages
 - Use the format: `<type>: <short description>`

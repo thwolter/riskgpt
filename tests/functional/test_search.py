@@ -6,7 +6,7 @@ import pytest
 from riskgpt.helpers.search import search
 from riskgpt.helpers.search.google import GoogleSearchProvider
 from riskgpt.helpers.search.wikipedia import WikipediaSearchProvider
-from riskgpt.models.enums import TopicEnum
+from riskgpt.models.enums import ScopeEnum
 from riskgpt.models.helpers.search import SearchRequest, SearchResponse, SearchResult
 
 
@@ -19,7 +19,7 @@ from riskgpt.models.helpers.search import SearchRequest, SearchResponse, SearchR
 async def test_google_search():
     """Test Google Custom Search API."""
     request = SearchRequest(
-        query="artificial intelligence", source_type=TopicEnum.LINKEDIN
+        query="artificial intelligence", source_type=ScopeEnum.LINKEDIN
     )
     google_provider = GoogleSearchProvider()
     response = await google_provider.search(request)
@@ -38,7 +38,7 @@ async def test_google_search():
 async def test_wikipedia_search():
     """Test Wikipedia search."""
     request = SearchRequest(
-        query="artificial intelligence", source_type=TopicEnum.REGULATORY, max_results=5
+        query="artificial intelligence", source_type=ScopeEnum.REGULATORY, max_results=5
     )
     wiki_provider = WikipediaSearchProvider()
     response = await wiki_provider.search(request)
@@ -69,7 +69,7 @@ async def test_combined_search(monkeypatch):
     monkeypatch.setattr("riskgpt.helpers.search.settings.INCLUDE_WIKIPEDIA", True)
 
     request = SearchRequest(
-        query="artificial intelligence", source_type=TopicEnum.LINKEDIN, max_results=5
+        query="artificial intelligence", source_type=ScopeEnum.LINKEDIN, max_results=5
     )
     response = await search(request)
 
@@ -104,7 +104,7 @@ def mock_settings(monkeypatch) -> Generator[None, None, None]:
 @pytest.fixture
 def search_request() -> SearchRequest:
     """Fixture to create a SearchRequest object."""
-    return SearchRequest(query="test query", source_type=TopicEnum.NEWS, max_results=5)
+    return SearchRequest(query="test query", source_type=ScopeEnum.NEWS, max_results=5)
 
 
 # Fixtures for mocking search functions
@@ -271,7 +271,7 @@ async def test_combined_search_with_context_aware():
         # Create a search request that should include Wikipedia (knowledge query)
         request = SearchRequest(
             query="what is artificial intelligence",
-            source_type=TopicEnum.NEWS,
+            source_type=ScopeEnum.NEWS,
             max_results=3,
         )
 
@@ -317,7 +317,7 @@ async def test_combined_search_without_context_aware():
         # Create a search request
         request = SearchRequest(
             query="latest developments in AI regulation",
-            source_type=TopicEnum.NEWS,
+            source_type=ScopeEnum.NEWS,
             max_results=3,
         )
 
@@ -363,7 +363,7 @@ async def test_compare_context_aware_modes():
         patch("riskgpt.helpers.search.settings.WIKIPEDIA_CONTEXT_AWARE", True),
         patch("riskgpt.helpers.search.settings.SEARCH_PROVIDER", "google"),
     ):
-        request = SearchRequest(query=query, source_type=TopicEnum.NEWS, max_results=5)
+        request = SearchRequest(query=query, source_type=ScopeEnum.NEWS, max_results=5)
         context_aware_response = await search(request)
 
         assert context_aware_response.success is True
@@ -375,7 +375,7 @@ async def test_compare_context_aware_modes():
         patch("riskgpt.helpers.search.settings.WIKIPEDIA_CONTEXT_AWARE", False),
         patch("riskgpt.helpers.search.settings.SEARCH_PROVIDER", "google"),
     ):
-        request = SearchRequest(query=query, source_type=TopicEnum.NEWS, max_results=5)
+        request = SearchRequest(query=query, source_type=ScopeEnum.NEWS, max_results=5)
         non_context_aware_response = await search(request)
 
         assert non_context_aware_response.success is True

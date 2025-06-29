@@ -1,11 +1,11 @@
-from typing import List, Optional
+from typing import List, Optional, Set
 
 from pydantic import Field
 
 from riskgpt.models.base import BaseRequest, BaseResponse
 from riskgpt.models.chains.risk import Risk
 from riskgpt.models.common import BusinessContext
-from riskgpt.models.enums import TopicEnum
+from riskgpt.models.enums import ScopeEnum
 from riskgpt.models.helpers import SearchRequest
 
 
@@ -18,6 +18,16 @@ class ResearchRequest(BaseRequest):
     max_search_results: int = Field(default=3, ge=1, le=100)
     region: str = Field(
         default="wt-wt", description="Region for search results, default is worldwide"
+    )
+    # New field to specify which scopes to include
+    scopes: Set[ScopeEnum] = Field(
+        default={
+            ScopeEnum.NEWS,
+            ScopeEnum.LINKEDIN,
+            ScopeEnum.REGULATORY,
+            ScopeEnum.ACADEMIC,
+        },
+        description="Scopes to include in the research workflow",
     )
 
     @classmethod
@@ -41,11 +51,11 @@ class ResearchRequest(BaseRequest):
         query = f"{risk.title} {risk.description} {keywords}".strip()
         return cls(query=query, focus_keywords=focus_keywords, **kwargs)
 
-    def create_search_request(self, topic: TopicEnum) -> SearchRequest:
-        """Create a search request for the specified topic."""
+    def create_search_request(self, scope: ScopeEnum) -> SearchRequest:
+        """Create a search request for the specified scope."""
         return SearchRequest(
             query=self.query,
-            source_type=topic,
+            source_type=scope,
             max_results=self.max_search_results,
             region=self.region,
         )

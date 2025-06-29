@@ -1,7 +1,7 @@
 from datetime import date
 
 from riskgpt.models.chains.keypoints import KeyPoint
-from riskgpt.models.enums import TopicEnum
+from riskgpt.models.enums import ScopeEnum
 from riskgpt.models.helpers.citation import Citation
 
 
@@ -17,7 +17,7 @@ class TestKeyPoint:
 
         keypoint = KeyPoint(
             content="This is a key point",
-            topic=TopicEnum.NEWS,
+            topic=ScopeEnum.NEWS,
             source_url="https://example.com",
             citation=citation,
         )
@@ -28,7 +28,7 @@ class TestKeyPoint:
     def test_get_inline_citation_without_citation_with_source_url(self):
         keypoint = KeyPoint(
             content="This is a key point",
-            topic=TopicEnum.NEWS,
+            topic=ScopeEnum.NEWS,
             source_url="https://example.com",
         )
 
@@ -38,7 +38,7 @@ class TestKeyPoint:
     def test_get_inline_citation_without_citation_or_source_url(self):
         keypoint = KeyPoint(
             content="This is a key point",
-            topic=TopicEnum.NEWS,
+            topic=ScopeEnum.NEWS,
         )
 
         result = keypoint.get_inline_citation()

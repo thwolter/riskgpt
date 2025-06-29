@@ -4,14 +4,13 @@ from unittest.mock import patch
 
 import pytest
 import yaml
-
 from riskgpt.chains.keypoints_summary import keypoints_summary_chain
 from riskgpt.models.chains.keypoints import (
     KeyPoint,
     KeyPointSummaryRequest,
     KeyPointSummaryResponse,
 )
-from riskgpt.models.enums import TopicEnum
+from riskgpt.models.enums import ScopeEnum
 
 
 @pytest.fixture
@@ -20,17 +19,17 @@ def test_key_points() -> List[KeyPoint]:
     return [
         KeyPoint(
             content="The global market for AI is expected to grow by 37% annually until 2030.",
-            topic=TopicEnum.NEWS,
+            topic=ScopeEnum.NEWS,
             source_url="https://example.com/ai-market-report-2023",
         ),
         KeyPoint(
             content="Regulatory frameworks for AI are being developed in the EU, with the AI Act expected to be implemented by 2025.",
-            topic=TopicEnum.REGULATORY,
+            topic=ScopeEnum.REGULATORY,
             source_url="https://example.eu/ai-regulations-2023",
         ),
         KeyPoint(
             content="Industry leaders are investing heavily in responsible AI development to address ethical concerns.",
-            topic=TopicEnum.LINKEDIN,
+            topic=ScopeEnum.LINKEDIN,
             source_url="https://linkedin.com/pulse/responsible-ai-investments-2023",
         ),
     ]
@@ -89,10 +88,10 @@ def test_long_key_points() -> List[KeyPoint]:
     """Fixture to create KeyPoint objects from YAML with multiple topics."""
 
     TOPIC_MAP = {
-        "news": TopicEnum.NEWS,
-        "regulatory": TopicEnum.REGULATORY,
-        "linkedin": TopicEnum.LINKEDIN,
-        "peer": TopicEnum.PEER,
+        "news": ScopeEnum.NEWS,
+        "regulatory": ScopeEnum.REGULATORY,
+        "linkedin": ScopeEnum.LINKEDIN,
+        "peer": ScopeEnum.PEER,
     }
 
     with open("data/long_keypoints.yaml", "r", encoding="utf-8") as f:

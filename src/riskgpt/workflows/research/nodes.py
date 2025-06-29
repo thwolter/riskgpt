@@ -4,7 +4,7 @@ from riskgpt.chains.extract_keypoints import extract_key_points_chain
 from riskgpt.chains.keypoints_summary import keypoints_summary_chain
 from riskgpt.helpers.search import search
 from riskgpt.models.base import ResponseInfo
-from riskgpt.models.enums import TopicEnum
+from riskgpt.models.enums import ScopeEnum
 from riskgpt.models.helpers.search import SearchResponse, Source
 from riskgpt.models.workflows.context import ResearchRequest, ResearchResponse
 
@@ -19,13 +19,13 @@ from .deduplicator import KeyPointDeduplicator
 from .state import State
 
 
-async def topic_search(
+async def scope_search(
     state: State,
     request: ResearchRequest,
-    topic: TopicEnum,
+    scope: ScopeEnum,
     provider: Optional[BaseSearchProvider] = None,
 ) -> State:
-    search_request = request.create_search_request(topic)
+    search_request = request.create_search_request(scope)
     search_response: SearchResponse = await search(search_request, provider=provider)
 
     sources: List[Source] = state.get("sources", [])
@@ -33,7 +33,7 @@ async def topic_search(
 
     # Convert SearchResult objects to Source objects
     new_sources = [
-        Source.from_search_result(item, topic)
+        Source.from_search_result(item, scope)
         for item in search_response.results
         if item.url not in existing_urls
     ]
@@ -45,14 +45,14 @@ async def topic_search(
     return state
 
 
-async def extract_topic_key_points(
-    state: State, topic: TopicEnum, focus_keywords: Optional[List[str]] = None
+async def extract_scope_key_points(
+    state: State, scope: ScopeEnum, focus_keywords: Optional[List[str]] = None
 ) -> State:
-    # Filter sources by topic
+    # Filter sources by scope
     sources: List[Source] = state.get("sources", [])
-    topic_sources = [source for source in sources if source.topic == topic]
+    scope_sources = [source for source in sources if source.scope == scope]
 
-    for source in topic_sources:
+    for source in scope_sources:
         request = ExtractKeyPointsRequest.from_source(
             source, focus_keywords=focus_keywords
         )
@@ -90,21 +90,21 @@ def aggregate_response_info(state):
 # Create node factory functions
 def create_search_node(
     request: ResearchRequest,
-    topic: TopicEnum,
+    scope: ScopeEnum,
     provider: Optional[BaseSearchProvider] = None,
 ):
     async def search_node(state: State) -> State:
-        return await topic_search(state, request, topic, provider=provider)
+        return await scope_search(state, request, scope, provider=provider)
 
     return search_node
 
 
 def create_extract_key_points_node(
-    topic: TopicEnum, focus_keywords: Optional[List[str]] = None
+    scope: ScopeEnum, focus_keywords: Optional[List[str]] = None
 ):
     async def extract_node(state: State) -> State:
-        return await extract_topic_key_points(
-            state, topic, focus_keywords=focus_keywords
+        return await extract_scope_key_points(
+            state, scope, focus_keywords=focus_keywords
         )
 
     return extract_node

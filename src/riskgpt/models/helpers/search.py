@@ -2,7 +2,7 @@ from typing import Optional
 
 from pydantic import BaseModel, Field
 
-from riskgpt.models.enums import TopicEnum
+from riskgpt.models.enums import ScopeEnum
 from riskgpt.models.helpers.citation import Citation
 
 
@@ -26,15 +26,18 @@ class SearchResult(BaseModel):
 
 
 class Source(SearchResult):
-    """Source class that extends SearchResult with topic information."""
+    """Source class that extends SearchResult with scope information."""
 
-    topic: TopicEnum
+    scope: ScopeEnum
+    topic: (
+        ScopeEnum  # Kept for backward compatibility, will be removed in future versions
+    )
 
     @classmethod
     def from_search_result(
-        cls, search_result: SearchResult, topic: TopicEnum
+        cls, search_result: SearchResult, scope: ScopeEnum
     ) -> "Source":
-        """Create a Source from a SearchResult and a topic."""
+        """Create a Source from a SearchResult and a scope."""
         return cls(
             title=search_result.title,
             url=search_result.url,
@@ -42,7 +45,8 @@ class Source(SearchResult):
             type=search_result.type,
             content=search_result.content,
             citation=search_result.citation,
-            topic=topic,
+            scope=scope,
+            topic=scope,  # Set both scope and topic for backward compatibility
         )
 
 
@@ -50,8 +54,8 @@ class SearchRequest(BaseModel):
     """Request model for search queries."""
 
     query: str = Field(description="Search query string")
-    source_type: TopicEnum = Field(
-        default=TopicEnum.NEWS,
+    source_type: ScopeEnum = Field(
+        default=ScopeEnum.NEWS,
         description="Type of source to search (e.g., news, professional, regulatory, peer)",
     )
     max_results: int = Field(

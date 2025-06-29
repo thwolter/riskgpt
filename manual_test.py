@@ -2,7 +2,7 @@
 
 from riskgpt.helpers.search import _should_include_wikipedia
 from riskgpt.helpers.search.utils import deduplicate_results, rank_results
-from riskgpt.models.enums import TopicEnum
+from riskgpt.models.enums import ScopeEnum
 from riskgpt.models.helpers.search import SearchRequest, SearchResult
 
 # Test deduplication
@@ -37,9 +37,9 @@ for result in ranked:
 # Test contextual Wikipedia inclusion
 print("\nTesting contextual Wikipedia inclusion...")
 requests = [
-    SearchRequest(query="what is artificial intelligence", source_type=TopicEnum.NEWS),
-    SearchRequest(query="latest tech news today", source_type=TopicEnum.NEWS),
-    SearchRequest(query="GDPR compliance", source_type=TopicEnum.REGULATORY),
+    SearchRequest(query="what is artificial intelligence", source_type=ScopeEnum.NEWS),
+    SearchRequest(query="latest tech news today", source_type=ScopeEnum.NEWS),
+    SearchRequest(query="GDPR compliance", source_type=ScopeEnum.REGULATORY),
 ]
 for request in requests:
     include = _should_include_wikipedia(request)

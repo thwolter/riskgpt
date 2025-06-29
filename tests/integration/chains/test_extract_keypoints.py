@@ -21,7 +21,7 @@ Dependencies:
 - riskgpt.models.workflows.context.ExtractKeyPointsRequest
 - riskgpt.models.workflows.context.ExtractKeyPointsResponse
 - riskgpt.models.workflows.context.KeyPoint
-- riskgpt.models.enums.TopicEnum
+- riskgpt.models.enums.ScopeEnum
 """
 
 import logging
@@ -36,7 +36,7 @@ from riskgpt.models.chains.keypoints import (
     ExtractKeyPointsResponse,
     KeyPoint,
 )
-from riskgpt.models.enums import TopicEnum
+from riskgpt.models.enums import ScopeEnum
 
 
 @pytest.mark.asyncio
@@ -50,12 +50,12 @@ async def test_extract_key_points_news(monkeypatch, caplog):
         points=[
             KeyPoint(
                 content="Key point 1 about technology",
-                topic=TopicEnum.NEWS,
+                topic=ScopeEnum.NEWS,
                 source_url="https://example.com/news1",
             ),
             KeyPoint(
                 content="Key point 2 about finance",
-                topic=TopicEnum.REGULATORY,
+                topic=ScopeEnum.REGULATORY,
                 source_url="https://example.com/news1",
             ),
         ],
@@ -86,9 +86,9 @@ async def test_extract_key_points_news(monkeypatch, caplog):
         assert isinstance(result, ExtractKeyPointsResponse)
         assert len(result.points) == 2
         assert result.points[0].content == "Key point 1 about technology"
-        assert result.points[0].topic == TopicEnum.NEWS
+        assert result.points[0].topic == ScopeEnum.NEWS
         assert result.points[1].content == "Key point 2 about finance"
-        assert result.points[1].topic == TopicEnum.REGULATORY
+        assert result.points[1].topic == ScopeEnum.REGULATORY
         assert result.response_info.prompt_name == "extract_NEWS_key_points"
 
         # Verify that the chain was invoked with the correct inputs
@@ -109,12 +109,12 @@ async def test_extract_key_points_research(monkeypatch, caplog):
         points=[
             KeyPoint(
                 content="Research finding 1",
-                topic=TopicEnum.PEER,
+                topic=ScopeEnum.PEER,
                 source_url="https://example.com/research1",
             ),
             KeyPoint(
                 content="Research finding 2",
-                topic=TopicEnum.PEER,
+                topic=ScopeEnum.PEER,
                 source_url="https://example.com/research1",
             ),
         ],
@@ -145,9 +145,9 @@ async def test_extract_key_points_research(monkeypatch, caplog):
         assert isinstance(result, ExtractKeyPointsResponse)
         assert len(result.points) == 2
         assert result.points[0].content == "Research finding 1"
-        assert result.points[0].topic == TopicEnum.PEER
+        assert result.points[0].topic == ScopeEnum.PEER
         assert result.points[1].content == "Research finding 2"
-        assert result.points[1].topic == TopicEnum.PEER
+        assert result.points[1].topic == ScopeEnum.PEER
         assert result.response_info.prompt_name == "extract_RESEARCH_key_points"
 
         # Verify that the chain was invoked with the correct inputs
@@ -168,7 +168,7 @@ async def test_extract_key_points_from_source(monkeypatch, caplog):
         points=[
             KeyPoint(
                 content="Source key point 1",
-                topic=TopicEnum.NEWS,
+                topic=ScopeEnum.NEWS,
                 source_url="https://example.com/source1",
             ),
         ],
@@ -202,7 +202,7 @@ async def test_extract_key_points_from_source(monkeypatch, caplog):
         assert isinstance(result, ExtractKeyPointsResponse)
         assert len(result.points) == 1
         assert result.points[0].content == "Source key point 1"
-        assert result.points[0].topic == TopicEnum.NEWS
+        assert result.points[0].topic == ScopeEnum.NEWS
         assert result.response_info.prompt_name == "extract_NEWS_key_points"
 
         # Verify that the chain was invoked with the correct inputs
@@ -246,7 +246,7 @@ async def test_extract_key_points_integration():
         assert isinstance(point, KeyPoint)
         assert isinstance(point.content, str)
         assert len(point.content) > 0
-        assert isinstance(point.topic, TopicEnum)
+        assert isinstance(point.topic, ScopeEnum)
 
     # Verify response info
     assert result.response_info is not None

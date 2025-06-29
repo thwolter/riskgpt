@@ -21,6 +21,19 @@ class RiskGPTSettings(BaseSettings):
     SEARCH_PROVIDER: Literal[
         "duckduckgo", "google", "wikipedia", "tavily", "semantic_scholar"
     ] = Field(default="tavily")
+
+    # Scope-specific search provider settings
+    SCOPE_SEARCH_PROVIDERS: dict = Field(
+        default={
+            "academic": "semantic_scholar",
+            "news": "tavily",
+            "regulatory": "tavily",
+            "linkedin": "google",
+            "peer": "tavily",
+            "document": "tavily",
+        },
+        description="Mapping of scopes to search providers",
+    )
     # Enhanced Wikipedia settings
     INCLUDE_WIKIPEDIA: bool = Field(default=False)
     WIKIPEDIA_CONTEXT_AWARE: bool = Field(

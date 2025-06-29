@@ -8,7 +8,7 @@ from riskgpt.models.chains.keypoints import (
     KeyPointSummaryResponse,
 )
 from riskgpt.models.common import BusinessContext
-from riskgpt.models.enums import TopicEnum
+from riskgpt.models.enums import ScopeEnum
 from riskgpt.models.helpers.search import SearchResponse, SearchResult
 from riskgpt.models.workflows.context import (
     ResearchRequest,
@@ -114,17 +114,17 @@ def mock_key_points():
         points=[
             KeyPoint(
                 content="Years of extreme volatility, caused by pandemic shocks, trade wars, and climate-driven disruptions, have exposed the complexity of the world’s logistics networks.",
-                topic=TopicEnum.NEWS,
+                topic=ScopeEnum.NEWS,
                 source_url="https://www.maritime-executive.com/article/two-new-chapters-in-supply-chain-data-driven-intelligence",
             ),
             KeyPoint(
                 content="Thanks to the increasing availability of multi-source data and rapid advancements in AI technologies, organizations now have unprecedented opportunities to unravel the complexities of supply chain operations.",
-                topic=TopicEnum.NEWS,
+                topic=ScopeEnum.NEWS,
                 source_url="https://www.maritime-executive.com/article/two-new-chapters-in-supply-chain-data-driven-intelligence",
             ),
             KeyPoint(
                 content="Organizations can drive both cost efficiencies and significant reductions in emissions by harnessing collective intelligence.",
-                topic=TopicEnum.NEWS,
+                topic=ScopeEnum.NEWS,
                 source_url="https://www.maritime-executive.com/article/two-new-chapters-in-supply-chain-data-driven-intelligence",
             ),
         ],

@@ -3,7 +3,7 @@ from unittest.mock import AsyncMock, MagicMock, patch
 import pytest
 from riskgpt.helpers.search import _should_include_wikipedia, search
 from riskgpt.helpers.search.utils import deduplicate_results, rank_results
-from riskgpt.models.enums import TopicEnum
+from riskgpt.models.enums import ScopeEnum
 from riskgpt.models.helpers.search import SearchRequest, SearchResponse, SearchResult
 
 
@@ -143,30 +143,30 @@ class TestContextualWikipedia:
     def test_knowledge_query_inclusion(self):
         """Test that knowledge queries include Wikipedia."""
         request = SearchRequest(
-            query="what is artificial intelligence", source_type=TopicEnum.NEWS
+            query="what is artificial intelligence", source_type=ScopeEnum.NEWS
         )
         assert _should_include_wikipedia(request) is True
 
         request = SearchRequest(
-            query="explain quantum computing", source_type=TopicEnum.NEWS
+            query="explain quantum computing", source_type=ScopeEnum.NEWS
         )
         assert _should_include_wikipedia(request) is True
 
     def test_regulatory_inclusion(self):
         """Test that regulatory queries include Wikipedia."""
         request = SearchRequest(
-            query="GDPR compliance", source_type=TopicEnum.REGULATORY
+            query="GDPR compliance", source_type=ScopeEnum.REGULATORY
         )
         assert _should_include_wikipedia(request) is True
 
     def test_news_exclusion(self):
         """Test that recent news queries exclude Wikipedia."""
         request = SearchRequest(
-            query="latest tech news today", source_type=TopicEnum.NEWS
+            query="latest tech news today", source_type=ScopeEnum.NEWS
         )
         assert _should_include_wikipedia(request) is False
 
-        request = SearchRequest(query="breaking news on AI", source_type=TopicEnum.NEWS)
+        request = SearchRequest(query="breaking news on AI", source_type=ScopeEnum.NEWS)
         assert _should_include_wikipedia(request) is False
 
 
@@ -224,7 +224,7 @@ async def test_search_provider_selection(
         patch("riskgpt.helpers.search.deduplicate_results", lambda x: x),
         patch("riskgpt.helpers.search.rank_results", lambda x: x),
     ):
-        request = SearchRequest(query=query, source_type=TopicEnum.NEWS)
+        request = SearchRequest(query=query, source_type=ScopeEnum.NEWS)
         await search(request)
 
         # Check that the correct providers were called
@@ -278,7 +278,7 @@ async def test_parallel_execution(monkeypatch):
     )
 
     # Call search
-    request = SearchRequest(query="test query", source_type=TopicEnum.NEWS)
+    request = SearchRequest(query="test query", source_type=ScopeEnum.NEWS)
     result = await search(request)
 
     # Verify the search was successful

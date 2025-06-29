@@ -41,8 +41,8 @@ class AudienceEnum(str, Enum):
     operations = "operations"
 
 
-class TopicEnum(Enum):
-    """Types of topics for context enrichment."""
+class ScopeEnum(Enum):
+    """Types of scopes for context enrichment."""
 
     NEWS = "news"
     LINKEDIN = "linkedin"

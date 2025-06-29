@@ -8,7 +8,7 @@ from riskgpt.models.chains.keypoints import (
     KeyPointSummaryRequest,
     KeyPointSummaryResponse,
 )
-from riskgpt.models.enums import TopicEnum
+from riskgpt.models.enums import ScopeEnum
 from riskgpt.models.helpers.citation import Citation
 
 
@@ -35,13 +35,13 @@ async def test_keypoints_summary_with_citations():
     key_points = [
         KeyPoint(
             content="This is key point 1",
-            topic=TopicEnum.PEER,
+            topic=ScopeEnum.PEER,
             source_url="https://example.com/paper1",
             citation=citation1,
         ),
         KeyPoint(
             content="This is key point 2",
-            topic=TopicEnum.PEER,
+            topic=ScopeEnum.PEER,
             source_url="https://example.com/paper2",
             citation=citation2,
         ),
@@ -95,13 +95,13 @@ async def test_keypoints_summary_with_mixed_citations():
     key_points = [
         KeyPoint(
             content="This is key point 1",
-            topic=TopicEnum.PEER,
+            topic=ScopeEnum.PEER,
             source_url="https://example.com/paper",
             citation=citation,
         ),
         KeyPoint(
             content="This is key point 2",
-            topic=TopicEnum.NEWS,
+            topic=ScopeEnum.NEWS,
             source_url="https://news.example.com/article",
             # No citation for this one
         ),

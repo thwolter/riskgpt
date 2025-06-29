@@ -3,15 +3,15 @@ from unittest.mock import AsyncMock, patch
 
 import pytest
 from riskgpt.models.chains.keypoints import ExtractKeyPointsResponse, KeyPoint
-from riskgpt.models.enums import TopicEnum
+from riskgpt.models.enums import ScopeEnum
 from riskgpt.models.helpers.citation import Citation
 from riskgpt.models.helpers.search import Source
-from riskgpt.workflows.research.nodes import extract_topic_key_points
+from riskgpt.workflows.research.nodes import extract_scope_key_points
 from riskgpt.workflows.research.state import State
 
 
 @pytest.mark.asyncio
-async def test_extract_topic_key_points_with_citation():
+async def test_extract_scope_key_points_with_citation():
     # Create a mock Citation
     citation = Citation(
         url="https://example.com",
@@ -28,7 +28,8 @@ async def test_extract_topic_key_points_with_citation():
         date="2023",
         type="PEER",
         content="This is an example paper content.",
-        topic=TopicEnum.PEER,
+        scope=ScopeEnum.PEER,
+        topic=ScopeEnum.PEER,  # Required for backward compatibility
         citation=citation,
     )
 
@@ -40,11 +41,11 @@ async def test_extract_topic_key_points_with_citation():
         points=[
             KeyPoint(
                 content="This is key point 1",
-                topic=TopicEnum.PEER,
+                topic=ScopeEnum.PEER,
             ),
             KeyPoint(
                 content="This is key point 2",
-                topic=TopicEnum.PEER,
+                topic=ScopeEnum.PEER,
             ),
         ],
     )
@@ -54,8 +55,8 @@ async def test_extract_topic_key_points_with_citation():
         "riskgpt.workflows.research.nodes.extract_key_points_chain",
         AsyncMock(return_value=mock_response),
     ):
-        # Call the extract_topic_key_points function
-        result_state = await extract_topic_key_points(state, TopicEnum.PEER)
+        # Call the extract_scope_key_points function
+        result_state = await extract_scope_key_points(state, ScopeEnum.PEER)
 
         # Verify that key points were added to the state
         assert "key_points" in result_state
@@ -72,7 +73,7 @@ async def test_extract_topic_key_points_with_citation():
 
 
 @pytest.mark.asyncio
-async def test_extract_topic_key_points_without_citation():
+async def test_extract_scope_key_points_without_citation():
     # Create a mock Source without citation
     source = Source(
         title="Example Paper",
@@ -80,7 +81,8 @@ async def test_extract_topic_key_points_without_citation():
         date="2023",
         type="PEER",
         content="This is an example paper content.",
-        topic=TopicEnum.PEER,
+        scope=ScopeEnum.PEER,
+        topic=ScopeEnum.PEER,  # Required for backward compatibility
     )
 
     # Create a mock State with the source
@@ -91,11 +93,11 @@ async def test_extract_topic_key_points_without_citation():
         points=[
             KeyPoint(
                 content="This is key point 1",
-                topic=TopicEnum.PEER,
+                topic=ScopeEnum.PEER,
             ),
             KeyPoint(
                 content="This is key point 2",
-                topic=TopicEnum.PEER,
+                topic=ScopeEnum.PEER,
             ),
         ],
     )
@@ -105,8 +107,8 @@ async def test_extract_topic_key_points_without_citation():
         "riskgpt.workflows.research.nodes.extract_key_points_chain",
         AsyncMock(return_value=mock_response),
     ):
-        # Call the extract_topic_key_points function
-        result_state = await extract_topic_key_points(state, TopicEnum.PEER)
+        # Call the extract_scope_key_points function
+        result_state = await extract_scope_key_points(state, ScopeEnum.PEER)
 
         # Verify that key points were added to the state
         assert "key_points" in result_state

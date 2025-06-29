@@ -3,7 +3,7 @@ from typing import List, Optional
 from pydantic import BaseModel, ConfigDict
 
 from riskgpt.models.base import BaseResponse
-from riskgpt.models.enums import TopicEnum
+from riskgpt.models.enums import ScopeEnum
 from riskgpt.models.helpers import Source
 from riskgpt.models.helpers.citation import Citation
 
@@ -12,11 +12,19 @@ class KeyPoint(BaseModel):
     """Model for a key point extracted from a source."""
 
     content: str
-    topic: TopicEnum
+    topic: ScopeEnum
+    scope: Optional[ScopeEnum] = (
+        None  # New field, will replace topic in future versions
+    )
     source_url: Optional[str] = None
     additional_sources: List[str] = []
     citation: Optional[Citation] = None
     additional_citations: List[Citation] = []
+
+    def model_post_init(self, __context):
+        """Initialize scope from topic if not provided."""
+        if self.scope is None:
+            self.scope = self.topic
 
     def get_inline_citation(self) -> str:
         """Get Harvard-style inline citation."""
@@ -71,16 +79,19 @@ class ExtractKeyPointsResponse(BaseResponse):
                     {
                         "content": "Key point 1",
                         "topic": "NEWS",
+                        "scope": "NEWS",
                         "source_url": "https://example.com",
                     },
                     {
                         "content": "Key point 2",
                         "topic": "NEWS",
+                        "scope": "NEWS",
                         "source_url": "https://example.com",
                     },
                     {
                         "content": "Key point 3",
                         "topic": "NEWS",
+                        "scope": "NEWS",
                         "source_url": "https://example.com",
                     },
                 ],

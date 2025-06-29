@@ -12,7 +12,7 @@ from riskgpt.helpers.search.factory import get_search_provider
 from riskgpt.helpers.search.utils import deduplicate_results, rank_results
 from riskgpt.helpers.search.wikipedia import WikipediaSearchProvider
 from riskgpt.logger import logger
-from riskgpt.models.enums import TopicEnum
+from riskgpt.models.enums import ScopeEnum
 from riskgpt.models.helpers.search import SearchRequest, SearchResponse, SearchResult
 
 settings = RiskGPTSettings()
@@ -103,7 +103,7 @@ async def search(
     include_wiki = (
         settings.INCLUDE_WIKIPEDIA
         and settings.SEARCH_PROVIDER != "wikipedia"
-        and search_request.source_type != TopicEnum.ACADEMIC
+        and search_request.source_type != ScopeEnum.ACADEMIC
         and (
             not settings.WIKIPEDIA_CONTEXT_AWARE
             or _should_include_wikipedia(search_request)

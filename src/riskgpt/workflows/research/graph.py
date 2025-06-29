@@ -1,9 +1,13 @@
 from langgraph.graph import END, StateGraph
 
-from riskgpt.models.enums import TopicEnum
+from riskgpt.config.settings import RiskGPTSettings
 from riskgpt.models.workflows.context import ResearchRequest
 
+from ...helpers.search.duckduckgo import DuckDuckGoSearchProvider
+from ...helpers.search.google import GoogleSearchProvider
 from ...helpers.search.semantic_scholar import SemanticScholarSearchProvider
+from ...helpers.search.tavily import TavilySearchProvider
+from ...helpers.search.wikipedia import WikipediaSearchProvider
 from .nodes import (
     aggregate,
     create_extract_key_points_node,
@@ -13,8 +17,10 @@ from .nodes import (
 )
 from .state import State
 
+settings = RiskGPTSettings()
 
-def get_enrich_context_graph(request: ResearchRequest):
+
+def get_research_graph(request: ResearchRequest):
     """
     Returns the uncompiled graph for visualization purposes.
 
@@ -24,11 +30,11 @@ def get_enrich_context_graph(request: ResearchRequest):
         ```python
         from IPython.display import Image, display
         from src.workflows.research import get_enrich_context_graph
-        from src.models.workflows.context import ExternalContextRequest
+        from src.models.workflows.context import ResearchRequest
         from src.models.common import BusinessContext
 
         # Create a request
-        request = ExternalContextRequest(
+        request = ResearchRequest(
             business_context=BusinessContext(
                 project_id="Sample Project",
                 project_description="A sample project for visualization",
@@ -50,67 +56,76 @@ def get_enrich_context_graph(request: ResearchRequest):
     """
     graph = StateGraph(State)
 
-    # Create node instances
-    news_search = create_search_node(request, TopicEnum.NEWS)
-    professional_search = create_search_node(request, TopicEnum.LINKEDIN)
-    regulatory_search = create_search_node(request, TopicEnum.REGULATORY)
-    academic_search = create_search_node(
-        request, TopicEnum.ACADEMIC, provider=SemanticScholarSearchProvider()
-    )
+    # Create nodes and edges only for the scopes specified in the request
+    search_nodes = {}
+    extract_key_points_nodes = {}
 
-    extract_news_key_points = create_extract_key_points_node(
-        TopicEnum.NEWS, focus_keywords=request.focus_keywords
-    )
-    extract_professional_key_points = create_extract_key_points_node(
-        TopicEnum.LINKEDIN, focus_keywords=request.focus_keywords
-    )
-    extract_regulatory_key_points = create_extract_key_points_node(
-        TopicEnum.REGULATORY, focus_keywords=request.focus_keywords
-    )
-    extract_academic_key_points = create_extract_key_points_node(
-        TopicEnum.ACADEMIC, focus_keywords=request.focus_keywords
-    )
+    # For each scope in the request, create the corresponding nodes
+    for scope in request.scopes:
+        # Create search node for this scope with an appropriate provider from settings
+        provider = get_provider(scope)
+
+        search_node = create_search_node(request, scope, provider=provider)
+        extract_node = create_extract_key_points_node(
+            scope, focus_keywords=request.focus_keywords
+        )
+
+        node_name = f"{scope.value.lower()}"
+        extract_node_name = f"extract_{scope.value.lower()}_key_points"
+
+        search_nodes[scope] = node_name
+        extract_key_points_nodes[scope] = extract_node_name
+
+        # Add nodes to the graph
+        graph.add_node(node_name, search_node)
+        graph.add_node(extract_node_name, extract_node)
 
     # Wrap aggregate to include request
     async def aggregate_node(state: State) -> State:
         return await aggregate(state, request)
 
-    # Add nodes to the graph
+    # Add common nodes
     graph.add_node("start", start)
-    graph.add_node("news", news_search)
-    graph.add_node("professional", professional_search)
-    graph.add_node("regulatory", regulatory_search)
-    graph.add_node("academic", academic_search)
-    graph.add_node("extract_news_key_points", extract_news_key_points)
-    graph.add_node("extract_professional_key_points", extract_professional_key_points)
-    graph.add_node("extract_regulatory_key_points", extract_regulatory_key_points)
-    graph.add_node("extract_academic_key_points", extract_academic_key_points)
     graph.add_node("aggregate", aggregate_node)
     graph.add_node("summarize_key_points", summarize_key_points)
 
     # Set up the graph with connections
     graph.set_entry_point("start")
 
-    # Branch from start to all three search operations
-    graph.add_edge("start", "news")
-    graph.add_edge("start", "professional")
-    graph.add_edge("start", "regulatory")
-    graph.add_edge("start", "academic")
+    # Connect start to all search nodes
+    for scope, node_name in search_nodes.items():
+        graph.add_edge("start", node_name)
 
-    # After each search, extract key points from that source type
-    graph.add_edge("news", "extract_news_key_points")
-    graph.add_edge("professional", "extract_professional_key_points")
-    graph.add_edge("regulatory", "extract_regulatory_key_points")
-    graph.add_edge("academic", "extract_academic_key_points")
+        # Connect search to extract key points
+        extract_node_name = extract_key_points_nodes[scope]
+        graph.add_edge(node_name, extract_node_name)
 
-    # Join all extraction results to summarize key points
-    graph.add_edge("extract_news_key_points", "summarize_key_points")
-    graph.add_edge("extract_professional_key_points", "summarize_key_points")
-    graph.add_edge("extract_regulatory_key_points", "summarize_key_points")
-    graph.add_edge("extract_academic_key_points", "summarize_key_points")
+        # Connect extract key points to summarize
+        graph.add_edge(extract_node_name, "summarize_key_points")
 
     # Final steps
     graph.add_edge("summarize_key_points", "aggregate")
     graph.add_edge("aggregate", END)
 
     return graph
+
+
+def get_provider(scope):
+    provider = None
+    # Get provider name from settings based on scope
+    provider_name = settings.SCOPE_SEARCH_PROVIDERS.get(
+        scope.value.lower(), settings.SEARCH_PROVIDER
+    )
+    # Create the appropriate provider instance
+    if provider_name == "semantic_scholar":
+        provider = SemanticScholarSearchProvider()
+    elif provider_name == "tavily":
+        provider = TavilySearchProvider()
+    elif provider_name == "google":
+        provider = GoogleSearchProvider()
+    elif provider_name == "duckduckgo":
+        provider = DuckDuckGoSearchProvider()
+    elif provider_name == "wikipedia":
+        provider = WikipediaSearchProvider()
+    # If provider_name is not recognized, provider remains None
+    return provider

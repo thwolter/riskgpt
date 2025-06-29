@@ -3,7 +3,7 @@ from unittest.mock import AsyncMock
 
 import pytest
 from riskgpt.helpers.search.semantic_scholar import SemanticScholarSearchProvider
-from riskgpt.models.enums import TopicEnum
+from riskgpt.models.enums import ScopeEnum
 from riskgpt.models.helpers.citation import Citation
 from riskgpt.models.helpers.search import SearchRequest
 
@@ -35,7 +35,7 @@ async def test_semantic_scholar_creates_citation():
     # Create search request
     request = SearchRequest(
         query="example query",
-        source_type=TopicEnum.PEER,
+        source_type=ScopeEnum.PEER,
         max_results=1,
     )
 
@@ -94,7 +94,7 @@ async def test_semantic_scholar_handles_missing_fields():
     # Create search request
     request = SearchRequest(
         query="example query",
-        source_type=TopicEnum.PEER,
+        source_type=ScopeEnum.PEER,
         max_results=1,
     )
 
