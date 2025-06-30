@@ -31,9 +31,16 @@ class Citation(BaseModel):
     def __eq__(self, other):
         """Override equality to handle string comparison for url."""
         if isinstance(other, Citation):
+            # Compare URLs as strings to handle HttpUrl objects correctly
+            if str(self.url) != str(other.url):
+                return False
+            # For other fields, use the default comparison
             return super().__eq__(other)
         elif isinstance(other, str) and hasattr(self, "url"):
-            return str(self.url) == other
+            # Normalize URLs by removing trailing slashes for comparison
+            url_str = str(self.url).rstrip("/")
+            other_str = other.rstrip("/")
+            return url_str == other_str
         return NotImplemented
 
     def model_dump(self, **kwargs):

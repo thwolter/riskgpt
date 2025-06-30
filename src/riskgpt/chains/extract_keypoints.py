@@ -36,16 +36,30 @@ async def extract_key_points_chain(
             and point.citation.is_complete()
         ):
             continue
-        # todo: clen this up, this is a workaround for the fact that the citation model is not fully implemented yet
+
         # Case 2: If request has a citation with URL, use it
         if request.citation and request.citation.url:
             # If point already has a citation, try to merge with request citation
             if hasattr(point, "citation") and point.citation:
                 # Keep existing citation data if it has more information
                 request_citation = request.citation.model_copy()
-                # Don't override the URL if it already exists
-                if not point.citation.url:
+
+                # Check if the URL is valid (not 'N/A', empty, or similar)
+                try:
+                    # If the URL is invalid, empty, or placeholder, replace it with the request URL
+                    url_str = str(point.citation.url).lower()
+                    if not url_str or url_str in [
+                        "n/a",
+                        "none",
+                        "unknown",
+                        "https://example.com",
+                    ]:
+                        point.citation.url = request_citation.url
+                except (ValueError, AttributeError):
+                    # If there's an error with the URL, use the request URL
                     point.citation.url = request_citation.url
+
+                # Merge other citation fields
                 if not point.citation.title and request_citation.title:
                     point.citation.title = request_citation.title
                 if not point.citation.authors and request_citation.authors:
