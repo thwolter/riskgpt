@@ -64,16 +64,12 @@ class KeyPointDeduplicator:
                 )  # Use the first point as base
 
                 # Create a list of all source URLs for this content
-                source_urls = [p.source_url for p in points if p.source_url]
-
-                # Keep the first URL as the primary source_url
-                combined_point.source_url = source_urls[0] if source_urls else None
+                source_urls = [
+                    str(p.citation.url) for p in points if p.citation and p.citation.url
+                ]
 
                 # Store additional sources if available
-                if (
-                    hasattr(combined_point, "additional_sources")
-                    and len(source_urls) > 1
-                ):
+                if len(source_urls) > 1:
                     combined_point.additional_sources = source_urls[1:]
 
                 deduplicated_points.append(combined_point)
@@ -114,20 +110,21 @@ class KeyPointDeduplicator:
                         result_points[i].content = result_points[j].content
 
                     # If they have different source URLs, keep track of both
-                    if (
-                        result_points[j].source_url
-                        and result_points[j].source_url != result_points[i].source_url
-                    ):
+                    j_url = (
+                        str(result_points[j].citation.url)
+                        if result_points[j].citation
+                        else None
+                    )
+                    i_url = (
+                        str(result_points[i].citation.url)
+                        if result_points[i].citation
+                        else None
+                    )
+
+                    if j_url and j_url != i_url:
                         # Add the source URL from point j to point i's additional sources
-                        if hasattr(result_points[i], "additional_sources"):
-                            if (
-                                result_points[j].source_url
-                                and result_points[j].source_url
-                                not in result_points[i].additional_sources
-                            ):
-                                result_points[i].additional_sources.append(
-                                    result_points[j].source_url  # type: ignore[arg-type]
-                                )
+                        if j_url and j_url not in result_points[i].additional_sources:
+                            result_points[i].additional_sources.append(j_url)
 
                     # Remove the duplicate
                     result_points.pop(j)

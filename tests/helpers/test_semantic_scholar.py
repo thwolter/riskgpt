@@ -4,6 +4,7 @@ from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 from pydantic import HttpUrl
+
 from riskgpt.helpers.search import search
 from riskgpt.helpers.search.semantic_scholar import (
     SemanticScholarSearchProvider,

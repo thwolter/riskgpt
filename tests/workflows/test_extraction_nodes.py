@@ -1,10 +1,11 @@
-from unittest.mock import AsyncMock, MagicMock, patch
+from unittest.mock import AsyncMock, patch
 
 import pytest
 
 from riskgpt.models.chains import ExtractKeyPointsResponse
 from riskgpt.models.enums import ScopeEnum
 from riskgpt.workflows.research.nodes import extract_scope_key_points
+from riskgpt.workflows.research.state import State as ResearchState
 
 
 class TestExtractionWorkflow:
@@ -26,7 +27,7 @@ class TestExtractionWorkflow:
             AsyncMock(return_value=mock_news_keypoints_response),
         ):
             # Call the extract_scope_key_points function
-            result_state = await extract_scope_key_points(
+            result_state: ResearchState = await extract_scope_key_points(
                 state_with_sources, ScopeEnum.NEWS
             )
 
@@ -42,24 +43,26 @@ class TestExtractionWorkflow:
 
                 # Verify that the citation can be formatted
                 assert key_point.get_inline_citation() == "John Doe (2023)"
-                assert result_state.error is None
+                assert result_state.get("search_failed") is None
 
     @pytest.mark.asyncio
     async def test_extract_scope_key_points_with_empty_sources(self):
         """Test extracting key points with empty sources."""
         # Create a State with no sources
-        state = MagicMock()
-        state.sources = []
+        state = ResearchState()
+        state["sources"] = []
 
         # Call the extract_scope_key_points function
-        result_state = await extract_scope_key_points(state, ScopeEnum.NEWS)
+        result_state: ResearchState = await extract_scope_key_points(
+            state, ScopeEnum.NEWS
+        )
 
         # Verify that no key points were added to the state
         assert "key_points" not in result_state
 
-        # Verify that an error was set in the state
-        assert result_state.error is not None
-        assert "No sources found" in result_state.error
+        # Verify that search_failed flag was set in the state
+        search_failed = result_state.get("search_failed")
+        assert search_failed is True
 
     @pytest.mark.asyncio
     async def test_extract_scope_key_points_with_error(
@@ -80,13 +83,12 @@ class TestExtractionWorkflow:
             AsyncMock(return_value=error_response),
         ):
             # Call the extract_scope_key_points function
-            result_state = await extract_scope_key_points(
+            result_state: ResearchState = await extract_scope_key_points(
                 state_with_sources, ScopeEnum.NEWS
             )
 
             # Verify that no key points were added to the state
             assert "key_points" not in result_state
 
-            # Verify that an error was set in the state
-            assert result_state.error is not None
-            assert "Error extracting key points" in result_state.error
+            # Verify that search_failed flag was set in the state
+            assert result_state.get("search_failed") is True

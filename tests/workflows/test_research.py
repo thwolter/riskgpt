@@ -9,12 +9,15 @@ from riskgpt.models.workflows.context import (
 from riskgpt.workflows.research import research
 
 
+# Tests for different search providers
+# These tests verify that the research workflow works with different search providers
 @pytest.mark.integration
 @pytest.mark.asyncio
 async def test_research_tavily(
     monkeypatch,
     test_request,
 ) -> None:
+    """Test research workflow using Tavily as the search provider."""
     monkeypatch.setattr("riskgpt.config.settings.settings.SEARCH_PROVIDER", "tavily")
     monkeypatch.setattr("riskgpt.config.settings.settings.INCLUDE_WIKIPEDIA", False)
 
@@ -36,6 +39,7 @@ async def test_research_duckduckgo(
     monkeypatch,
     test_request,
 ) -> None:
+    """Test research workflow using DuckDuckGo as the search provider."""
     monkeypatch.setattr(
         "riskgpt.config.settings.settings.SEARCH_PROVIDER", "duckduckgo"
     )
@@ -59,6 +63,7 @@ async def test_research_google(
     monkeypatch,
     test_request,
 ) -> None:
+    """Test research workflow using Google as the search provider with LinkedIn scope."""
     test_request.scopes = [ScopeEnum.LINKEDIN]
 
     monkeypatch.setattr("riskgpt.config.settings.settings.SEARCH_PROVIDER", "google")
@@ -76,12 +81,15 @@ async def test_research_google(
     assert response.summary
 
 
+# Test for Wikipedia integration
+# This test verifies that Wikipedia results can be included in the research
 @pytest.mark.integration
 @pytest.mark.asyncio
 async def test_research_duckduckgo_and_wikipedia(
     monkeypatch,
     test_request,
 ) -> None:
+    """Test research workflow using DuckDuckGo with Wikipedia integration for knowledge queries."""
     monkeypatch.setattr(
         "riskgpt.config.settings.settings.SEARCH_PROVIDER", "duckduckgo"
     )
@@ -102,6 +110,8 @@ async def test_research_duckduckgo_and_wikipedia(
     assert response.summary
 
 
+# Tests for context-aware Wikipedia functionality
+# These tests verify that Wikipedia results are included or excluded based on context awareness settings
 @pytest.mark.integration
 @pytest.mark.asyncio
 async def test_research_with_context_aware_wiki_enabled_knowledge_query(

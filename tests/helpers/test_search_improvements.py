@@ -2,6 +2,7 @@ from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 from pydantic import HttpUrl
+
 from riskgpt.helpers.search import _should_include_wikipedia, search
 from riskgpt.helpers.search.utils import deduplicate_results, rank_results
 from riskgpt.models.enums import ScopeEnum

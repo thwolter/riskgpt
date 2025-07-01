@@ -52,11 +52,21 @@ async def extract_scope_key_points(
     sources: List[Source] = state.get("sources", [])
     scope_sources = [source for source in sources if source.scope == scope]
 
+    # Handle empty sources case
+    if not scope_sources:
+        state["search_failed"] = True
+        return state
+
     for source in scope_sources:
         request = ExtractKeyPointsRequest.from_source(
             source, focus_keywords=focus_keywords
         )
         response: ExtractKeyPointsResponse = await extract_key_points_chain(request)
+
+        # Check for error in response
+        if response.response_info and response.response_info.error:
+            state["search_failed"] = True
+            return state
 
         # Attach citation to each point in response.points
         for point in response.points:
