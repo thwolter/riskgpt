@@ -117,8 +117,14 @@ class KeyPointSummaryRequest(BaseModel):
 class KeyPointSummaryResponse(BaseResponse):
     """Output model containing text generated from key points with Harvard-style citations."""
 
-    text: str
-    references: List[str]
+    text: Optional[str] = Field(
+        default=None,
+        description="Generated text that incorporates all key points with inline citations.",
+    )
+    references: List[str] = Field(
+        default_factory=list,
+        description="List of references formatted in Harvard style.",
+    )
 
     def format_output(self) -> str:
         """Format the output text with references."""

@@ -14,6 +14,14 @@ template: |
 
   Key Points:
   {key_points}
+  
+  Use only the content explicitly provided in the key points.  
+  Do not add, infer, or elaborate with information not present in the key points.  
+  Do not generate or invent citations or references that do not appear in the input.
+  
+  Example (what NOT to do):  
+  If a key point says “Project risk increased due to supply chain issues (Smith, 2022),”  
+  do NOT add: “Effective supply chain management can reduce project risk (Johnson, 2020)” unless that statement and citation are in the key points.
 
   For Harvard-style citations:
   Specific citation rules:

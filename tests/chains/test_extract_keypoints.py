@@ -13,6 +13,8 @@ from riskgpt.models.chains.keypoints import (
 from riskgpt.models.enums import ScopeEnum
 from riskgpt.models.helpers.citation import Citation
 
+# Import fixtures for integration tests
+
 
 class TestExtractKeypoints:
     """
@@ -472,3 +474,42 @@ class TestIntegrationExtractKeypoints:
     # Add real integration tests here when needed
     # These tests should not use mocks and should call the LLM directly
     # They should be marked with @pytest.mark.integration
+
+    @pytest.mark.integration
+    @pytest.mark.asyncio
+    @pytest.mark.parametrize(
+        "source_fixture", ["sample_source_govtech", "sample_source_fintech"]
+    )
+    async def test_extract_key_points_with_ethics_focus(self, source_fixture, request):
+        """
+        Test extracting key points with a focus on ethics.
+
+        This test uses the sample sources and focuses on ethical aspects
+        by setting focus_keywords to ["ethic"].
+        """
+        # Get the source from the fixture
+        source = request.getfixturevalue(source_fixture)
+
+        # Create the request with focus on ethics
+        extract_request = ExtractKeyPointsRequest.from_source(
+            source=source, focus_keywords=["ethic"]
+        )
+
+        # Call the extract_key_points_chain
+        response = await extract_key_points_chain(extract_request)
+
+        # Verify the response
+        assert isinstance(response, ExtractKeyPointsResponse)
+        assert hasattr(response, "points")
+
+        # The response should have points (may be empty if no ethical points found)
+        # but the function should execute without errors
+
+        # Log the number of points found for debugging
+        print(f"Found {len(response.points)} ethical key points in {source_fixture}")
+
+        # If points were found, verify they have the required attributes
+        for point in response.points:
+            assert hasattr(point, "content")
+            assert hasattr(point, "citation")
+            assert point.citation is not None

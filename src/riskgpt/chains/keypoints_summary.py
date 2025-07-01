@@ -19,6 +19,13 @@ async def keypoints_summary_chain(
     The output includes both the text with inline citations and a references
     section formatted in Harvard style.
     """
+
+    if not request.key_points:
+        return KeyPointSummaryResponse(
+            text=None,
+            references=[],
+        )
+
     prompt_data = load_prompt("keypoint_summary")
 
     parser = PydanticOutputParser(pydantic_object=KeyPointSummaryResponse)
@@ -40,20 +47,9 @@ async def keypoints_summary_chain(
     # Generate references section
     references = []
     for kp in request.key_points:
-        if kp.citation:
-            ref = kp.citation.format_harvard_reference()
-            if ref not in references:
-                references.append(ref)
-        elif kp.source_url:
-            # Fallback to simple URL-based reference
-            from datetime import datetime
-            from urllib.parse import urlparse
-
-            domain = urlparse(kp.source_url).netloc
-            current_date = datetime.now().strftime("%d %B %Y")
-            ref = f"{domain}. [Online] Available at: {kp.source_url} [Accessed: {current_date}]"
-            if ref not in references:
-                references.append(ref)
+        ref = kp.citation.format_harvard_reference()
+        if ref not in references:
+            references.append(ref)
 
     inputs = {
         "key_points": "\n".join(formatted_points),
