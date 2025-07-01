@@ -84,4 +84,16 @@ async def extract_key_points_chain(
                 # This should not happen in practice since the KeyPoint model requires a citation
                 point.citation = Citation(url=HttpUrl("https://example.com"))
 
+    # Ensure all points have valid URLs before returning
+    for point in result.points:
+        try:
+            # If the URL is invalid, empty, or placeholder, set a default URL
+            url_str = str(point.citation.url).lower()
+            if not url_str or url_str.strip() == "":
+                # If URL is empty, set a default URL
+                point.citation.url = HttpUrl("https://example.com")
+        except (ValueError, AttributeError):
+            # If there's an error with the URL, set a default URL
+            point.citation.url = HttpUrl("https://example.com")
+
     return result
