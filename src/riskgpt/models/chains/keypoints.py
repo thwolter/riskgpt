@@ -20,7 +20,6 @@ class KeyPoint(BaseModel):
     citation: Citation = Field(
         description="Citation information for the key point, including author, title, and publication details",
     )
-    additional_citations: List[Citation] = []
 
     def get_inline_citation(self) -> str:
         """Get Harvard-style inline citation."""

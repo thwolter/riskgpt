@@ -28,7 +28,6 @@ class TestKeyPointDeduplicator:
             scope=ScopeEnum.NEWS,
             citation=citation,
             additional_sources=[],
-            additional_citations=[],
         )
 
     def test_init(self):
