@@ -13,8 +13,6 @@ from riskgpt.models.chains.keypoints import (
 from riskgpt.models.enums import ScopeEnum
 from riskgpt.models.helpers.citation import Citation
 
-# Import fixtures for integration tests
-
 
 class TestExtractKeypoints:
     """
@@ -273,6 +271,116 @@ class TestCitationMerging:
     """
 
     @pytest.mark.asyncio
+    async def test_url_preservation(self, mock_chain, configure_test_logging):
+        """Test that URL is always preserved from the original citation."""
+        # Create request with a specific URL
+        request_citation = Citation(
+            url=HttpUrl("https://example.com/original"),
+            title="Original Title",
+        )
+
+        # Create keypoint with a different URL
+        keypoint_citation = Citation(
+            url=HttpUrl("https://example.com/keypoint"),
+            title="Keypoint Title",
+        )
+
+        # Create a mock response with the keypoint citation
+        mock_response = ExtractKeyPointsResponse(
+            points=[
+                KeyPoint(
+                    content="Test key point",
+                    scope=ScopeEnum.NEWS,
+                    citation=keypoint_citation,
+                ),
+            ],
+        )
+
+        mock_chain.invoke = AsyncMock(return_value=mock_response)
+
+        # Patch the BaseChain constructor to return our mock
+        with patch(
+            "riskgpt.chains.extract_keypoints.BaseChain", return_value=mock_chain
+        ):
+            # Create a test request with the request citation
+            request = ExtractKeyPointsRequest(
+                scope=ScopeEnum.NEWS,
+                content="Test content",
+                citation=request_citation,
+            )
+
+            # Call the function under test
+            result = await extract_key_points_chain(request)
+
+            # Verify the result
+            assert isinstance(result, ExtractKeyPointsResponse)
+            assert len(result.points) == 1
+
+            # Verify that the keypoint URL is preserved
+            assert str(result.points[0].citation.url) == "https://example.com/original"
+
+    @pytest.mark.asyncio
+    async def test_missing_citation_fields(self, mock_chain, configure_test_logging):
+        """Test that missing citation fields are filled from the request."""
+        # Create request with complete citation
+        request_citation = Citation(
+            url=HttpUrl("https://example.com/request"),
+            title="Request Title",
+            authors=["Request Author"],
+            publication_date=date(2023, 1, 1),
+            venue="Request Venue",
+            publisher="Request Publisher",
+        )
+
+        # Create keypoint with partial citation (missing authors, venue, publisher)
+        keypoint_citation = Citation(
+            url=HttpUrl("https://example.com/keypoint"),
+            title="Keypoint Title",
+            publication_date=date(2023, 2, 2),
+        )
+
+        # Create a mock response with the keypoint citation
+        mock_response = ExtractKeyPointsResponse(
+            points=[
+                KeyPoint(
+                    content="Test key point",
+                    scope=ScopeEnum.NEWS,
+                    citation=keypoint_citation,
+                ),
+            ],
+        )
+
+        mock_chain.invoke = AsyncMock(return_value=mock_response)
+
+        # Patch the BaseChain constructor to return our mock
+        with patch(
+            "riskgpt.chains.extract_keypoints.BaseChain", return_value=mock_chain
+        ):
+            # Create a test request with the request citation
+            request = ExtractKeyPointsRequest(
+                scope=ScopeEnum.NEWS,
+                content="Test content",
+                citation=request_citation,
+            )
+
+            # Call the function under test
+            result = await extract_key_points_chain(request)
+
+            # Verify the result
+            assert isinstance(result, ExtractKeyPointsResponse)
+            assert len(result.points) == 1
+
+            # Verify that the keypoint URL and title are preserved
+            assert str(result.points[0].citation.url) == "https://example.com/request"
+            assert result.points[0].citation.title == "Keypoint Title"
+            assert result.points[0].citation.publication_date == date(2023, 2, 2)
+
+            # Verify that missing fields are filled from the request
+            assert result.points[0].citation.authors == ["Request Author"]
+            assert result.points[0].citation.venue == "Request Venue"
+            assert result.points[0].citation.publisher == "Request Publisher"
+
+    @pytest.mark.asyncio
     @pytest.mark.parametrize(
         "keypoint_citation,expected_merged",
         [
@@ -287,7 +395,7 @@ class TestCitationMerging:
                     "publisher": "Complete Publisher",
                 },
                 {
-                    "url": "https://example.com/complete",
+                    "url": "https://example.com/request",
                     "title": "Complete Title",
                     "authors": ["Complete Author"],
                     "publication_date": date(2023, 2, 2),
@@ -302,7 +410,7 @@ class TestCitationMerging:
                     "title": "Partial Title",
                 },
                 {
-                    "url": "https://example.com/partial",
+                    "url": "https://example.com/request",
                     "title": "Partial Title",
                     "authors": ["Request Author"],
                     "publication_date": date(2023, 1, 1),
@@ -316,7 +424,7 @@ class TestCitationMerging:
                     "url": "https://example.com/minimal",
                 },
                 {
-                    "url": "https://example.com/minimal",
+                    "url": "https://example.com/request",
                     "title": "Request Title",
                     "authors": ["Request Author"],
                     "publication_date": date(2023, 1, 1),
@@ -453,7 +561,7 @@ class TestCitationMerging:
 
             # Verify that the keypoint citation takes precedence
             merged_citation = result.points[0].citation
-            assert str(merged_citation.url) == "https://example.com/conflict"
+            assert str(merged_citation.url) == "https://example.com/request"
             assert merged_citation.title == "Conflict Title"
             assert merged_citation.authors == ["Conflict Author"]
             assert str(merged_citation.publication_date) == "2022-12-31"
@@ -471,9 +579,99 @@ class TestIntegrationExtractKeypoints:
     skipped if the OPENAI_API_KEY environment variable is not set.
     """
 
-    # Add real integration tests here when needed
-    # These tests should not use mocks and should call the LLM directly
-    # They should be marked with @pytest.mark.integration
+    @pytest.mark.integration
+    @pytest.mark.asyncio
+    async def test_citation_priority(self, sample_source_govtech):
+        """
+        Test that source citation has priority and is preserved in key points.
+
+        This test verifies that the citation from the source is copied into the keypoint
+        and only missing information is added.
+        """
+        # Create a source with a partial citation
+        source = sample_source_govtech
+        original_url = str(source.citation.url)
+
+        # Create the request
+        extract_request = ExtractKeyPointsRequest.from_source(source=source)
+
+        # Call the extract_key_points_chain
+        response = await extract_key_points_chain(extract_request)
+
+        # Verify the response
+        assert isinstance(response, ExtractKeyPointsResponse)
+        assert len(response.points) > 0
+
+        # Check that each point has the original URL and title from the source
+        for point in response.points:
+            assert str(point.citation.url) == original_url
+            assert point.citation.title is not None
+
+    @pytest.mark.integration
+    @pytest.mark.asyncio
+    async def test_incomplete_citation_enrichment(self, sample_source_fintech):
+        """
+        Test that incomplete citations are enriched with information from the content.
+
+        This test verifies that when a citation is incomplete, the function tries to
+        extract missing information from the content.
+        """
+        # Create a source with an incomplete citation (remove some fields)
+        source = sample_source_fintech
+        source.citation.authors = []
+        source.citation.publication_date = None
+        original_url = str(source.citation.url)
+        original_title = source.citation.title
+
+        # Create the request
+        extract_request = ExtractKeyPointsRequest.from_source(source=source)
+
+        # Call the extract_key_points_chain
+        response = await extract_key_points_chain(extract_request)
+
+        # Verify the response
+        assert isinstance(response, ExtractKeyPointsResponse)
+        assert len(response.points) > 0
+
+        # Check that each point has the original URL and title from the source
+        for point in response.points:
+            assert str(point.citation.url) == original_url
+            assert point.citation.title == original_title
+
+            # The function should have tried to extract authors and publication date
+            # We can't assert exact values since it depends on the LLM,
+            # but we can check if the fields were populated
+            if point.citation.authors:
+                print(f"Extracted authors: {point.citation.authors}")
+            if point.citation.publication_date:
+                print(f"Extracted publication date: {point.citation.publication_date}")
+
+    @pytest.mark.integration
+    @pytest.mark.asyncio
+    async def test_url_not_injected(self, sample_source_govtech):
+        """
+        Test that URL is not injected into the prompt but copied from source.citation.
+
+        This test verifies that the URL is not generated by the LLM but copied from
+        the source citation.
+        """
+        # Create a source with a specific URL
+        source = sample_source_govtech
+        original_url = str(source.citation.url)
+
+        # Create the request
+        extract_request = ExtractKeyPointsRequest.from_source(source=source)
+
+        # Call the extract_key_points_chain
+        response = await extract_key_points_chain(extract_request)
+
+        # Verify the response
+        assert isinstance(response, ExtractKeyPointsResponse)
+        assert len(response.points) > 0
+
+        # Check that each point has the original URL from the source
+        for point in response.points:
+            assert str(point.citation.url) == original_url
 
     @pytest.mark.integration
     @pytest.mark.asyncio

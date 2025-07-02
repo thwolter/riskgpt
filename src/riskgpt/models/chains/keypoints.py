@@ -36,8 +36,7 @@ class ExtractKeyPointsRequest(BaseModel):
     )
     content: str
     focus_keywords: Optional[List[str]] = []
-    citation: Optional[Citation] = Field(
-        default=None,
+    citation: Citation = Field(
         description="Citation information for the source, including author, title, and publication details",
     )
 
@@ -76,7 +75,7 @@ class ExtractKeyPointsResponse(BaseResponse):
                         "content": "Key point 1",
                         "scope": "NEWS",
                         "citation": {
-                            "url": "https://example.com",
+                            "url": "https://example.com/xyz",
                             "title": "Example Title",
                         },
                     },
@@ -84,15 +83,7 @@ class ExtractKeyPointsResponse(BaseResponse):
                         "content": "Key point 2",
                         "scope": "NEWS",
                         "citation": {
-                            "url": "https://example.com",
-                            "title": "Example Title",
-                        },
-                    },
-                    {
-                        "content": "Key point 3",
-                        "scope": "NEWS",
-                        "citation": {
-                            "url": "https://example.com",
+                            "url": "https://example.com/xyz",
                             "title": "Example Title",
                         },
                     },

@@ -60,6 +60,11 @@ class Citation(BaseModel):
             and self.publisher is not None
         )
 
+    def update_missing_fields(self, source, fields):
+        for field in fields:
+            if not getattr(self, field) and getattr(source, field):
+                setattr(self, field, getattr(source, field))
+
     def format_harvard_citation(self) -> str:
         """Format the citation in Harvard style."""
         # Author formatting
