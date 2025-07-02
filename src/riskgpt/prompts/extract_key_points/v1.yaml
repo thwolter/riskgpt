@@ -13,6 +13,36 @@ template: |
   - **Consider synonyms, conceptually related terms, and expressions that align with the meaning of the focus keywords**, even if the exact terms are not used.
   - If fewer than five relevant key points exist, return only those. If none exist, return an empty list.
 
+  For each key point:
+  - Populate the citation object with **all available metadata from the source**, including: `title`, `author(s)`, `publication_date`, `venue`, `publisher`, and `url`.
+  - **Do not fabricate or infer citation fields**. Only include metadata that is explicitly available or unambiguously inferable from the source content. Leave fields as `null` or empty where information is not available.
+  - Use ISO 8601 date format for publication dates (e.g., "2025-06-27").
+  - For the "authors" field, use a list of full names as provided in the source.
+
+  **Examples:**
+  Citation with full metadata:
+  ```
+  {{
+    "title": "Banking business models in a frictionless world",
+    "url": "https://fintechfutures.com/article",
+    "authors": ["Dave Wallace"],
+    "publication_date": "2025-06-27",
+    "venue": "FinTech Futures",
+    "publisher": "Informa PLC"
+  }}
+  ```
+  Citation with missing author:
+  ```
+  {{
+    "title": "Banking business models in a frictionless world",
+    "url": "https://fintechfutures.com/article",
+    "authors": [],
+    "publication_date": "2025-06-27",
+    "venue": "FinTech Futures",
+    "publisher": null
+  }}
+  ```
+
   Content: {content}
 
   {format_instructions}
