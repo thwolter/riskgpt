@@ -7,7 +7,7 @@ import pytest
 import yaml
 from pydantic import HttpUrl
 
-from riskgpt.chains.keypoints_summary import keypoints_summary_chain
+from riskgpt.chains.summarize_keypoints import keypoints_summary_chain
 from riskgpt.models.chains.keypoints import (
     KeyPoint,
     KeyPointSummaryRequest,

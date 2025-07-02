@@ -121,7 +121,7 @@ def mock_keypoints_summary_chain(keypoint_text_resp):
 
     # Patch the keypoint_text_chain to return mock_key_points
     with patch(
-        "riskgpt.chains.keypoints_summary.keypoints_summary_chain",
+        "riskgpt.chains.summarize_keypoints.keypoints_summary_chain",
         side_effect=mock_keypoints_summary_func,
     ) as mock:
         yield mock

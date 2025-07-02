@@ -8,7 +8,6 @@ from .correlation_tags import correlation_tags_chain
 from .cost_benefit import cost_benefit_chain
 from .extract_keypoints import extract_key_points_chain
 from .extract_keywords import extract_keywords_chain
-from .keypoints_summary import keypoints_summary_chain
 from .opportunities import opportunities_chain
 from .risk_assessment import risk_assessment_chain
 from .risk_categories import risk_categories_chain
@@ -16,6 +15,7 @@ from .risk_drivers import risk_drivers_chain
 from .risk_identification import risk_identification_chain
 from .risk_indicators import risk_indicators_chain
 from .risk_mitigations import risk_mitigations_chain
+from .summarize_keypoints import keypoints_summary_chain
 
 __all__ = [
     "challenge_questions_chain",

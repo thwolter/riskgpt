@@ -1,7 +1,7 @@
 from typing import List, Optional
 
 from riskgpt.chains.extract_keypoints import extract_key_points_chain
-from riskgpt.chains.keypoints_summary import keypoints_summary_chain
+from riskgpt.chains.summarize_keypoints import keypoints_summary_chain
 from riskgpt.helpers.search import search
 from riskgpt.models.base import ResponseInfo
 from riskgpt.models.enums import ScopeEnum
