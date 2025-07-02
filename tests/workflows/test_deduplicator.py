@@ -26,8 +26,7 @@ class TestKeyPointDeduplicator:
         return KeyPoint(
             content=content,
             scope=ScopeEnum.NEWS,
-            citation=citation,
-            additional_sources=[],
+            citations=[citation],
         )
 
     def test_init(self):
@@ -61,8 +60,10 @@ class TestKeyPointDeduplicator:
             (p for p in result if p.content == "Duplicate content"), None
         )
         assert deduplicated_point is not None
-        assert str(deduplicated_point.citation.url) == "https://example.com/1"
-        assert "https://example.com/2" in deduplicated_point.additional_sources
+        # Check that both citations are present
+        citation_urls = [str(citation.url) for citation in deduplicated_point.citations]
+        assert "https://example.com/1" in citation_urls
+        assert "https://example.com/2" in citation_urls
 
     def test_deduplicate_similar_points(self):
         """Test deduplication of similar (non-exact) key points."""
@@ -94,10 +95,10 @@ class TestKeyPointDeduplicator:
             similar_point.content
             == "AI technology is advancing very rapidly in the year 2023."
         )
-        assert (
-            "https://example.com/1" in similar_point.additional_sources
-            or str(similar_point.citation.url) == "https://example.com/1"
-        )
+        # Check that both citations are present
+        citation_urls = [str(citation.url) for citation in similar_point.citations]
+        assert "https://example.com/1" in citation_urls
+        assert "https://example.com/2" in citation_urls
 
     def test_full_deduplication_process(self):
         """Test the full deduplication process."""

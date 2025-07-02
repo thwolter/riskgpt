@@ -35,11 +35,12 @@ class TestExtractionWorkflow:
             assert "key_points" in result_state
             assert len(result_state["key_points"]) == 2
 
-            # Verify that each key point has the citation
+            # Verify that each key point has citations
             for key_point in result_state["key_points"]:
-                assert key_point.citation is not None
-                assert key_point.citation.title == "Example Title"
-                assert key_point.citation.authors == ["John Doe"]
+                assert key_point.citations is not None
+                assert len(key_point.citations) > 0
+                assert key_point.citations[0].title == "Example Title"
+                assert key_point.citations[0].authors == ["John Doe"]
 
                 # Verify that the citation can be formatted
                 assert key_point.get_inline_citation() == "John Doe (2023)"

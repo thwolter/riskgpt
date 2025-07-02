@@ -70,8 +70,13 @@ async def extract_scope_key_points(
 
         # Attach citation to each point in response.points
         for point in response.points:
-            # Always ensure point.citation has the source URL
-            point.citation.url = source.citation.url
+            # Ensure point has at least one citation
+            if not point.citations:
+                point.citations = [source.citation.model_copy(deep=True)]
+                continue
+
+            # Always ensure the first citation has the source URL
+            point.citations[0].url = source.citation.url
 
             # If source has a full citation, use it
             if (
@@ -79,7 +84,17 @@ async def extract_scope_key_points(
                 and source.citation
                 and source.citation.title
             ):
-                point.citation = source.citation
+                # Update the first citation with source citation data
+                point.citations[0].update_missing_fields(
+                    source=source.citation.model_copy(),
+                    fields=[
+                        "title",
+                        "authors",
+                        "publication_date",
+                        "venue",
+                        "publisher",
+                    ],
+                )
 
         state.setdefault("response_info_list", []).append(response.response_info)
         state.setdefault("key_points", []).extend(response.points)

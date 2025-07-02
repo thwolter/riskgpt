@@ -14,7 +14,7 @@ def news_keypoint(complete_citation):
     return KeyPoint(
         content="Key point about technology",
         scope=ScopeEnum.NEWS,
-        citation=complete_citation,
+        citations=[complete_citation],
     )
 
 
@@ -24,7 +24,7 @@ def academic_keypoint(complete_citation):
     return KeyPoint(
         content="Academic finding",
         scope=ScopeEnum.ACADEMIC,
-        citation=complete_citation,
+        citations=[complete_citation],
     )
 
 
@@ -44,12 +44,12 @@ def mock_news_keypoints_response(complete_citation):
             KeyPoint(
                 content="Key point 1 about technology",
                 scope=ScopeEnum.NEWS,
-                citation=complete_citation,
+                citations=[complete_citation],
             ),
             KeyPoint(
                 content="Key point 2 about finance",
                 scope=ScopeEnum.NEWS,
-                citation=complete_citation,
+                citations=[complete_citation],
             ),
         ],
         response_info=ResponseInfo(
@@ -69,12 +69,12 @@ def mock_academic_keypoints_response(complete_citation):
             KeyPoint(
                 content="Research finding 1",
                 scope=ScopeEnum.PEER,
-                citation=complete_citation,
+                citations=[complete_citation],
             ),
             KeyPoint(
                 content="Research finding 2",
                 scope=ScopeEnum.PEER,
-                citation=complete_citation,
+                citations=[complete_citation],
             ),
         ],
         response_info=ResponseInfo(

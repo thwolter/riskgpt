@@ -33,15 +33,25 @@ async def extract_key_points_chain(
 async def handle_citations(result, request):
     # Handle citations for each key point
     for point in result.points:
-        # Always use the request's citation url
-        point.citation.url = request.citation.url
+        # Ensure citations is initialized
+        if not hasattr(point, "citations"):
+            point.citations = []
 
-        # If point.citation already includes all available data, keep it as is
-        if point.citation.is_complete():
+        # If no citations exist, add the first citation from the request
+        if not point.citations and request.citations:
+            point.citations = [request.citations[0].model_copy(deep=True)]
             continue
 
-        # Otherwise, update the point's citation with the request's citation data
-        point.citation.update_missing_fields(
-            source=request.citation.model_copy(),
-            fields=["title", "authors", "publication_date", "venue", "publisher"],
-        )
+        # Always use the first request citation url for the first point citation
+        if point.citations and request.citations:
+            point.citations[0].url = request.citations[0].url
+
+            # If the first citation already includes all available data, keep it as is
+            if point.citations[0].is_complete():
+                continue
+
+            # Otherwise, update the first citation with the request's citation data
+            point.citations[0].update_missing_fields(
+                source=request.citations[0].model_copy(),
+                fields=["title", "authors", "publication_date", "venue", "publisher"],
+            )

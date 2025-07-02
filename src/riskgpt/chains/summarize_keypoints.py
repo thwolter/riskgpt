@@ -47,9 +47,10 @@ async def keypoints_summary_chain(
     # Generate references section
     references = []
     for kp in request.key_points:
-        ref = kp.citation.format_harvard_reference()
-        if ref not in references:
-            references.append(ref)
+        for cite in kp.citations:
+            ref = cite.format_harvard_reference()
+            if ref not in references:
+                references.append(ref)
 
     inputs = {
         "key_points": "\n".join(formatted_points),

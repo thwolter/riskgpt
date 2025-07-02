@@ -16,14 +16,21 @@ class KeyPoint(BaseModel):
         description="Type of the source, e.g., NEWS, RESEARCH, etc.",
         default=ScopeEnum.NEWS,
     )
-    additional_sources: List[str] = []
-    citation: Citation = Field(
+    citations: List[Citation] = Field(
         description="Citation information for the key point, including author, title, and publication details",
+        default_factory=list,
     )
 
     def get_inline_citation(self) -> str:
         """Get Harvard-style inline citation."""
-        return self.citation.format_harvard_citation()
+        if not self.citations:
+            return ""
+        if len(self.citations) == 1:
+            return self.citations[0].format_harvard_citation()
+        # For multiple citations, join them with semicolons
+        return "; ".join(
+            citation.format_harvard_citation() for citation in self.citations
+        )
 
 
 class ExtractKeyPointsRequest(BaseModel):
@@ -35,8 +42,9 @@ class ExtractKeyPointsRequest(BaseModel):
     )
     content: str
     focus_keywords: Optional[List[str]] = []
-    citation: Citation = Field(
+    citations: List[Citation] = Field(
         description="Citation information for the source, including author, title, and publication details",
+        default_factory=list,
     )
 
     @classmethod
@@ -48,7 +56,7 @@ class ExtractKeyPointsRequest(BaseModel):
             scope=source.scope,
             content=f"{source.citation.title}\n\n{source.content}",
             focus_keywords=focus_keywords or [],
-            citation=source.citation,
+            citations=[source.citation],
         )
 
     model_config = ConfigDict(
@@ -73,18 +81,22 @@ class ExtractKeyPointsResponse(BaseResponse):
                     {
                         "content": "Key point 1",
                         "scope": "NEWS",
-                        "citation": {
-                            "url": "https://example.com/xyz",
-                            "title": "Example Title",
-                        },
+                        "citations": [
+                            {
+                                "url": "https://example.com/xyz",
+                                "title": "Example Title",
+                            }
+                        ],
                     },
                     {
                         "content": "Key point 2",
                         "scope": "NEWS",
-                        "citation": {
-                            "url": "https://example.com/xyz",
-                            "title": "Example Title",
-                        },
+                        "citations": [
+                            {
+                                "url": "https://example.com/xyz",
+                                "title": "Example Title",
+                            }
+                        ],
                     },
                 ],
                 "response_info": {

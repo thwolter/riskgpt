@@ -1,0 +1,10 @@
+inputs:
+  key_points: |
+    - news: The global market for AI is expected to grow by 37% annually until 2030. https://example.com/ai-market-report-2023
+    - regulatory: Regulatory frameworks for AI are being developed in the EU, with the AI Act expected to be implemented by 2025. https://example.eu/ai-regulations-2023
+    - linkedin: Industry leaders are investing heavily in responsible AI development to address ethical concerns. https://linkedin.com/pulse/responsible-ai-investments-2023
+    - peer: Recent research shows that large language models can exhibit emergent capabilities as they scale. https://arxiv.org/abs/2303.12712
+    - news: AI adoption in healthcare is accelerating, with applications in diagnostics and personalized medicine. https://example.com/ai-healthcare-2023
+    - regulatory: The US is developing a regulatory framework for AI through executive orders and agency guidelines. https://whitehouse.gov/ai-policy-2023
+    - linkedin: Tech companies are competing for AI talent, leading to increased salaries and benefits. https://linkedin.com/pulse/ai-talent-competition-2023
+    - peer: Researchers have developed new techniques for making large language models more efficient. https://arxiv.org/abs/2304.11062

@@ -97,7 +97,7 @@ class TestCitationFormatting:
         keypoint = KeyPoint(
             content="This is a key point",
             scope=ScopeEnum.NEWS,
-            citation=citation,
+            citations=[citation],
         )
 
         # Test the inline citation formatting

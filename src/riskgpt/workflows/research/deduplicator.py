@@ -63,14 +63,22 @@ class KeyPointDeduplicator:
                     deep=True
                 )  # Use the first point as base
 
-                # Create a list of all source URLs for this content
-                source_urls = [
-                    str(p.citation.url) for p in points if p.citation and p.citation.url
-                ]
+                # Collect all citations for this content
+                all_citations = []
+                for p in points:
+                    if hasattr(p, "citations"):
+                        all_citations.extend(p.citations)
 
-                # Store additional sources if available
-                if len(source_urls) > 1:
-                    combined_point.additional_sources = source_urls[1:]
+                # Set the combined citations
+                combined_point.citations = all_citations
+
+                # Create a list of all source URLs for this content
+                source_urls = []
+                for citation in all_citations:
+                    if citation and citation.url:
+                        url_str = str(citation.url)
+                        if url_str not in source_urls:
+                            source_urls.append(url_str)
 
                 deduplicated_points.append(combined_point)
             else:
@@ -109,22 +117,17 @@ class KeyPointDeduplicator:
                     if len(result_points[j].content) > len(result_points[i].content):
                         result_points[i].content = result_points[j].content
 
-                    # If they have different source URLs, keep track of both
-                    j_url = (
-                        str(result_points[j].citation.url)
-                        if result_points[j].citation
-                        else None
-                    )
-                    i_url = (
-                        str(result_points[i].citation.url)
-                        if result_points[i].citation
-                        else None
+                    # Merge citations from point j into point i
+                    j_citations = (
+                        result_points[j].citations
+                        if hasattr(result_points[j], "citations")
+                        else []
                     )
 
-                    if j_url and j_url != i_url:
-                        # Add the source URL from point j to point i's additional sources
-                        if j_url and j_url not in result_points[i].additional_sources:
-                            result_points[i].additional_sources.append(j_url)
+                    # Add citations from point j to point i
+                    for citation in j_citations:
+                        if citation not in result_points[i].citations:
+                            result_points[i].citations.append(citation)
 
                     # Remove the duplicate
                     result_points.pop(j)
